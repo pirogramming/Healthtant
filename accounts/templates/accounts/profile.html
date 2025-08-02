@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>내 프로필 수정</title>
+</head>
+<body>
+    <h1>프로필 수정</h1>
+    <form id="profileForm">
+        <label>닉네임: <input type="text" id="nickname" value="{{ profile.nickname|default:'' }}"></label><br>
+        <label>성별: 
+            <select id="user_gender">
+                <option value="M" {% if profile.user_gender == "M" %}selected{% endif %}>남성</option>
+                <option value="F" {% if profile.user_gender == "F" %}selected{% endif %}>여성</option>
+                <option value="OTHER" {% if profile.user_gender == "OTHER" %}selected{% endif %}>기타</option>
+            </select>
+        </label><br>
+        <label>나이: <input type="number" id="user_age" value="{{ profile.user_age|default:'' }}"></label><br>
+        <label>프로필 사진 URL: <input type="text" id="profile_image_url" value="{{ profile.profile_image_url|default:'' }}"></label><br>
+        <button type="button" onclick="submitForm()">저장</button>
+    </form>
+
+    <script>
+        async function submitForm() {
+            const data = {
+                nickname: document.getElementById("nickname").value,
+                user_gender: document.getElementById("user_gender").value,
+                user_age: document.getElementById("user_age").value,
+                profile_image_url: document.getElementById("profile_image_url").value
+            };
+
+            const response = await fetch("", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": "{{ csrf_token }}"
+                },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+            alert(result.message || result.error);
+        }
+    </script>
+</body>
+</html>
