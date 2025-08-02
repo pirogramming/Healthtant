@@ -20,11 +20,6 @@ from accounts import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-
     path('accounts/', include('allauth.urls')),
-
-    path('accounts/login/', views.basic_login, name='basic_login'),
-    path('accounts/signup/', views.signup, name='signup'),
-    path('accounts/profile/', views.profile_view, name='profile'),  # 여기에 연결
-    path('accounts/check-nickname/', views.check_nickname, name='check_nickname'),
+    path('accounts/', include('accounts.urls')),
 ]
