@@ -16,13 +16,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from accounts import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
 
-    # accounts 앱 (회원가입, 기본 로그인, 프로필 등)
-    path('users/', include('accounts.urls')),  
+    path('accounts/', include('allauth.urls')),
 
-    # django-allauth 기본 제공 라우트
-    path('accounts/', include('allauth.urls')),  
+    path('accounts/login/', views.basic_login, name='basic_login'),
+    path('accounts/signup/', views.signup, name='signup'),
+    path('accounts/profile/', views.profile_view, name='profile'),  # 여기에 연결
+    path('accounts/check-nickname/', views.check_nickname, name='check_nickname'),
 ]
