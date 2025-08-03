@@ -62,13 +62,14 @@ def diet_main(request):
             "food_name": diet.food.food_name
         })
 
-    #JSON 반환
+    #일단 JsonResponse 반환으로 구현해뒀는데 나중에 프론트 구현되면 render로 창 넘어갈 수 있게 구현할게요!!
     return JsonResponse({
         "user_id": user.id,
         "year": year,
         "month": month,
         "data": data_list
     }, json_dumps_params={'ensure_ascii': False})
+
 
 #유저가 최근 먹은 식품 리스트 전달
 def diet_list(request):
@@ -98,7 +99,7 @@ def diet_list(request):
     while idx >= 0 and cnt < 5 :
         diet = diets[idx] #최근 식사
         cur_food = diet.food #최근 식사에 먹은 식품
-        #데이터 추가
+        #중복되지 않는 식품이라면 데이터에 추가
         if cur_food.food_id not in seen_food_ids:
             seen_food_ids.add(cur_food.food_id)
             recent_foods.append({
@@ -107,9 +108,10 @@ def diet_list(request):
                 "company_name": cur_food.company_name,
                 "food_img": cur_food.food_img
                 })
-            cnt += 1 #카운팅
+            cnt += 1 #식품 카운팅
         idx -= 1 #다음으로 최근에 먹은 식사로 이동
 
+    #일단은 JsonResponse를 반환하되 나중에 프론트 구현되면 render로 창 옮겨갈 수 있게 구현할게요!!
     return JsonResponse({
         "user_id": user.id,
         "recent_foods": recent_foods
