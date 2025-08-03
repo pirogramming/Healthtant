@@ -63,7 +63,7 @@ def diet_main(request):
 
     #JSON 반환
     return JsonResponse({
-        "user_id": str(user.id),
+        "user_id": user.id,
         "year": year,
         "month": month,
         "data": data_list
