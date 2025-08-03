@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from .models import Diet
 from django.contrib.auth.decorators import login_required
+from django.db.models import Case, When, Value, IntegerField
 
 #유저 식사 리스트 전달
 @login_required
@@ -71,7 +72,48 @@ def diet_main(request):
 
 #유저가 최근 먹은 식품 리스트 전달
 def diet_list(request):
-    return
+    user = request.user
+
+    #저녁 식사로 등록한 것이 가장 최근, 점심은 그 다음, 아침은 그 다음
+    meal_ordering = Case(
+        When(meal='아침', then=Value(0)),
+        When(meal='점심', then=Value(1)),
+        When(meal='저녁', then=Value(2)),
+        output_field=IntegerField()
+    )
+
+    diets = list(Diet.objects.filter(user=user).select_related('food').order_by('date', meal_ordering))
+
+    #유저가 등록한 식단이 없을 경우 예외처리
+    if not diets:
+        return JsonResponse({
+            "user_id": user.id,
+            "recent_foods": []
+        })
+    
+    idx = len(diets)-1 #가장 최근의 식사부터 시작
+    cnt = 0 #몇개의 제품이 append 되었는지 추적
+    recent_foods = [] #데이터를 담을 리스트
+    seen_food_ids = set() #중복으로 식품을 담지 않기 위해 선언한 set
+    while idx >= 0 and cnt < 5 :
+        diet = diets[idx] #최근 식사
+        cur_food = diet.food #최근 식사에 먹은 식품
+        #데이터 추가
+        if cur_food.food_id not in seen_food_ids:
+            seen_food_ids.add(cur_food.food_id)
+            recent_foods.append({
+                "food_id": str(cur_food.food_id),
+                "food_name" : cur_food.food_name,
+                "company_name": cur_food.company_name,
+                "food_img": cur_food.food_img
+                })
+            cnt += 1 #카운팅
+        idx -= 1 #다음으로 최근에 먹은 식사로 이동
+
+    return JsonResponse({
+        "user_id": user.id,
+        "recent_foods": recent_foods
+    })
 
 #유저가 식품 이름으로 검색하는 기능
 def diet_search(request):
