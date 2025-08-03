@@ -7,5 +7,5 @@ urlpatterns = [
     path('list/', views.diet_list),
     path('search/', views.diet_search),
     path('<str:food_id>/', views.diet_create),
-    path('<str:diet_id>/', views.diet_fix),
+    path('<str:diet_id>/', views.diet_update),
 ]
