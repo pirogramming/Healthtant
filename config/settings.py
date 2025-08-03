@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
 
     'accounts',
+    'diets',
+    'foods',
 ]
 
 SITE_ID = 1
