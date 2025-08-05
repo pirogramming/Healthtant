@@ -1,0 +1,176 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Koulen", "inter", Helvetica, Arial, sans-serif;
+    background-color: #ffffff;
+    width: 402px;
+    height: 874px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: scroll;
+}
+.nav-bar {
+    
+    height: 62px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.nav-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.container {
+    background-color: var(--neutralwhitepure-white);
+    width: 375px;
+    height: 874px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border-radius: 8px;
+    margin: 0;
+}
+
+.header {
+    text-align: center;
+    padding: 20px 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #666666;
+    margin-bottom: 20px;
+}
+
+.content {
+    flex: 1;
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.brand-logo {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.brand-name {
+    font-family: "Koulen";
+    font-size: 64px;
+    font-weight: 700;
+    color: #56AAB2;
+    letter-spacing: 2px;
+}
+
+.signup-form {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-label {
+    font-size: 14px;
+    font-weight: 500;
+    text-align: left;
+    color: var(--Grey, #909090);
+    font-family: "SF Pro";
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 510;
+    line-height: 22.5px; /* 173.077% */
+    letter-spacing: -0.165px;
+}
+
+.input-field {
+    padding: 12px 0;
+    border: none;
+    border-bottom: 1px solid #E0E0E0;
+    background-color: transparent;
+    transition: border-bottom-color 0.2s;
+    width: 100%;
+    outline: none;
+    color: #B7B5B5;
+
+    font-family: "SF Pro";
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 510;
+    line-height: 20px; /* 142.857% */
+    letter-spacing: -0.165px;
+}
+
+.input-field:focus {
+    border-bottom-color: var(--main);
+}
+
+.input-field::placeholder {
+    color: var(--variable-collection-text-body-gray70);
+}
+
+.signup-btn {
+    width: 100%;
+    padding: 16px;
+    background-color: #000000;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 20.66px;
+}
+
+.signup-btn:hover {
+    background-color: #333333;
+}
+
+.signup-btn:active {
+    transform: scale(0.98);
+}
+
+.error-message {
+    color: #ff4444;
+    font-size: 14px;
+    text-align: center;
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: #fff5f5;
+    border-radius: 4px;
+    border: 1px solid #ffcccc;
+}
+
+.success-message {
+    color: #00aa00;
+    font-size: 14px;
+    text-align: center;
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: #f0fff0;
+    border-radius: 4px;
+    border: 1px solid #ccffcc;
+} 
