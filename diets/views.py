@@ -148,8 +148,14 @@ def diet_create(request, food_id):
     
     diet = Diet.objects.create(user=user, food=food, meal=meal, date=date) #유저가 입력한 대로 Diet 생성
 
+    food_data = {
+        'food_id': food.food_id,
+        'food_name': food.food_name,
+        'company_name': food.company_name
+    }
+
     #반환할 mock data 구성!
-    ret = {'diet_id': diet.diet_id, 'user_id': user.id, 'food': food, 'message': "새 식사 등록이 완료되었습니다."}
+    ret = {'diet_id': diet.diet_id, 'user_id': user.id, 'food': food_data, 'message': "새 식사 등록이 완료되었습니다."}
 
     #일단은 JsonResponse를 반환하되 나중에 프론트 구현되면 render로 창 옮겨갈 수 있게 구현할게요!!
     return JsonResponse(ret, json_dumps_params={'ensure_ascii': False})
