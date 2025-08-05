@@ -70,7 +70,7 @@ def diet_main(request):
         "data": data_list
     }, json_dumps_params={'ensure_ascii': False})
 
-
+@login_required
 #유저가 최근 먹은 식품 리스트 전달
 def diet_list(request):
     user = request.user
