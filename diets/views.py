@@ -1,9 +1,10 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from .models import Diet
 from foods.models import Food
 from django.contrib.auth.decorators import login_required
 from django.db.models import Case, When, Value, IntegerField
+from datetime import date
 
 #유저 식사 리스트 전달
 @login_required
@@ -28,6 +29,14 @@ def diet_main(request):
 
     #현재 date에 속하는 식사가 1개도 없을 경우 바로 반환 (예외처리)
     if not diets:
+        context = {
+            'user_id': str(user.id),
+            'year': year,
+            'month': month,
+            'data': []
+        }
+        #To FE: 템플릿 작업 시작하면 지금 return문 지우고 바로 아래에 주석처리 해둔 return문 채워서 사용해주세요!!!
+        #return render(request, '템플릿 이름.html', context)
         return JsonResponse({
             "user_id": str(user.id),
             "year": year,
@@ -63,7 +72,15 @@ def diet_main(request):
             "food_name": diet.food.food_name
         })
 
-    #일단 JsonResponse 반환으로 구현해뒀는데 나중에 프론트 구현되면 render로 창 넘어갈 수 있게 구현할게요!!
+    context= {
+        "user_id": user.id,
+        "year": year,
+        "month": month,
+        "data": data_list
+    }
+    
+    #To FE: 템플릿 작업 시작하면 지금 return문 지우고 바로 아래에 주석처리 해둔 return문 채워서 사용해주세요!!!
+    #return render(request, '템플릿 이름.html', context)
     return JsonResponse({
         "user_id": user.id,
         "year": year,
@@ -88,6 +105,8 @@ def diet_list(request):
 
     #유저가 등록한 식단이 없을 경우 예외처리
     if not diets:
+        #To FE: 템플릿 작업 시작하면 지금 return문 지우고 바로 아래에 주석처리 해둔 return문 채워서 사용해주세요!!!
+        #return render(request, '템플릿 이름.html', {"user_id": user.id, "recent_foods": []})
         return JsonResponse({
             "user_id": user.id,
             "recent_foods": []
@@ -112,7 +131,8 @@ def diet_list(request):
             cnt += 1 #식품 카운팅
         idx -= 1 #다음으로 최근에 먹은 식사로 이동
 
-    #일단은 JsonResponse를 반환하되 나중에 프론트 구현되면 render로 창 옮겨갈 수 있게 구현할게요!!
+    #To FE: 템플릿 작업 시작하면 지금 return문 지우고 바로 아래에 주석처리 해둔 return문 채워서 사용해주세요!!!
+    #return render(request, '템플릿 이름.html', {"user_id": user.id, "recent_foods": recent_foods})
     return JsonResponse({
         "user_id": user.id,
         "recent_foods": recent_foods
@@ -136,7 +156,8 @@ def diet_search(request):
         food_data['food_img'] = food.food_img
         ret['foods'].append(food_data) #food_data 에 정보를 모두 담았으니 ret['foods']에 추가
 
-    #일단은 JsonResponse를 반환하되 나중에 프론트 구현되면 render로 창 옮겨갈 수 있게 구현할게요!!
+    #To FE: 템플릿 작업 시작하면 지금 return문 지우고 바로 아래에 주석처리 해둔 return문 채워서 사용해주세요!!!
+    #return render(request, '템플릿 이름.html', ret)
     return JsonResponse(ret, json_dumps_params={'ensure_ascii': False})
 
 #식사 생성
@@ -158,6 +179,8 @@ def diet_create(request, food_id):
     ret = {'diet_id': diet.diet_id, 'user_id': user.id, 'food': food_data, 'message': "새 식사 등록이 완료되었습니다."}
 
     #일단은 JsonResponse를 반환하되 나중에 프론트 구현되면 render로 창 옮겨갈 수 있게 구현할게요!!
+    #To FE: 템플릿 작업 시작하면 지금 return문 지우고 바로 아래에 주석처리 해둔 return문 채워서 사용해주세요!!!
+    #return redirect(f'/diets/?year={date.today().year}&month={date.today().month}')
     return JsonResponse(ret, json_dumps_params={'ensure_ascii': False})
 
 #식사 수정/삭제
