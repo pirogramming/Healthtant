@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'diets/diets_main.css' %}">
+</head>
+<body>
+    <div class="page-title">식사기록페이지</div>
+    
+    <div class="meal-record-container">
+        <!-- 월 네비게이션 -->
+        <div class="month-navigation">
+            < 2025년 8월 >
+        </div>
+        <!-- 헤더 섹션 -->
+        <div class="header-section">
+            <div class="section-title">
+                <span class="cutlery-icon">🍴</span>
+                식사기록
+            </div>
+            <button class="add-meal-btn">
+                <span class="plus-icon">+</span>
+                새 식사
+            </button>
+        </div>
+        <!-- 오늘의 식사 추가하기 -->
+        <div class="add-today-meal">
+            <div class="add-today-content">
+                <span class="plus-icon-large">+</span>
+                <span class="add-today-text">오늘의 식사 추가하기</span>
+            </div>
+        </div>
+        
+        <!-- 일별 식사 기록 -->
+        <div class="daily-meals">
+            <!-- 1일 (금) -->
+            <div class="day-card">
+                <div class="day-header">1 (금)</div>
+                <div class="meal-item">
+                    <span class="meal-type">아침</span>
+                    <span class="meal-content">하림 닭가슴살 블랙페퍼, 800g, 1개</span>
+                    <div class="meal-actions">
+                        <span class="edit-icon">✏️</span>
+                        <span class="delete-icon">🗑️</span>
+                    </div>
+                </div>
+                <div class="meal-item">
+                    <span class="meal-type">점심</span>
+                    <span class="meal-content">하림 닭가슴살 블랙페퍼, 800g, 1개</span>
+                    <div class="meal-actions">
+                        <span class="edit-icon">✏️</span>
+                        <span class="delete-icon">🗑️</span>
+                    </div>
+                </div>
+                <div class="meal-item">
+                    <span class="meal-type">저녁</span>
+                    <span class="meal-content">하림 닭가슴살 블랙페퍼, 800g, 1개</span>
+                    <div class="meal-actions">
+                        <span class="edit-icon">✏️</span>
+                        <span class="delete-icon">🗑️</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 2일 (토) -->
+            <div class="day-card">
+                <div class="day-header">2 (토)</div>
+                <div class="meal-item">
+                    <span class="meal-type">아침</span>
+                    <span class="meal-content">하림 닭가슴살 블랙페퍼, 800g, 1개</span>
+                    <div class="meal-actions">
+                        <span class="edit-icon">✏️</span>
+                        <span class="delete-icon">🗑️</span>
+                    </div>
+                </div>
+                <div class="meal-item">
+                    <span class="meal-type">점심</span>
+                    <span class="meal-content">하림 닭가슴살 블랙페퍼, 800g, 1개</span>
+                    <div class="meal-actions">
+                        <span class="edit-icon">✏️</span>
+                        <span class="delete-icon">🗑️</span>
+                    </div>
+                </div>
+                <div class="meal-item">
+                    <span class="meal-type">저녁</span>
+                    <span class="meal-content">하림 닭가슴살 블랙페퍼, 800g, 1개</span>
+                    <div class="meal-actions">
+                        <span class="edit-icon">✏️</span>
+                        <span class="delete-icon">🗑️</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 3일 (일) -->
+            <div class="day-card">
+                <div class="day-header">3 (일)</div>
+                <div class="meal-item">
+                    <span class="meal-type">아침</span>
+                    <span class="meal-content">하림 닭가슴살 블랙페퍼, 800g, 1개</span>
+                    <div class="meal-actions">
+                        <span class="edit-icon">✏️</span>
+                        <span class="delete-icon">🗑️</span>
+                    </div>
+                </div>
+                <div class="meal-item">
+                    <span class="meal-type">점심</span>
+                    <span class="meal-content">하림 닭가슴살 블랙페퍼, 800g, 1개</span>
+                    <div class="meal-actions">
+                        <span class="edit-icon">✏️</span>
+                        <span class="delete-icon">🗑️</span>
+                    </div>
+                </div>
+                <div class="meal-item">
+                    <span class="meal-type">저녁</span>
+                    <span class="meal-content">하림 닭가슴살 블랙페퍼, 800g, 1개</span>
+                    <div class="meal-actions">
+                        <span class="edit-icon">✏️</span>
+                        <span class="delete-icon">🗑️</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 4일 (월) -->
+            <div class="day-card">
+                <div class="day-header">4 (월)</div>
+                <div class="meal-item">
+                    <span class="meal-type">아침</span>
+                    <span class="meal-content">하림 닭가슴살 블랙페퍼, 800g, 1개</span>
+                    <div class="meal-actions">
+                        <span class="edit-icon">✏️</span>
+                        <span class="delete-icon">🗑️</span>
+                    </div>
+                </div>
+                <div class="meal-item">
+                    <span class="meal-type">점심</span>
+                    <span class="meal-content">하림 닭가슴살 블랙페퍼, 800g, 1개</span>
+                    <div class="meal-actions">
+                        <span class="edit-icon">✏️</span>
+                        <span class="delete-icon">🗑️</span>
+                    </div>
+                </div>
+                <div class="meal-item">
+                    <span class="meal-type">저녁</span>
+                    <span class="meal-content">하림 닭가슴살 블랙페퍼, 800g, 1개</span>
+                    <div class="meal-actions">
+                        <span class="edit-icon">✏️</span>
+                        <span class="delete-icon">🗑️</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

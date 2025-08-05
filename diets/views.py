@@ -28,12 +28,9 @@ def diet_main(request):
 
     #현재 date에 속하는 식사가 1개도 없을 경우 바로 반환 (예외처리)
     if not diets:
-        return JsonResponse({
-            "user_id": str(user.id),
-            "year": year,
-            "month": month,
-            "data": []
-        }, json_dumps_params={'ensure_ascii': False})
+        # 
+        return render(request, 'diets/diets_main.html')
+
 
     #--------------------여기부터 API 명세 형식에 맞게 데이터 구성해서 반환하는 부분---------------------------------
     current_date = diets[0].date #diets에서 가장 앞의 데이터(가장 빠른 데이터)를 가져와 현재 날짜로 설정
@@ -64,12 +61,13 @@ def diet_main(request):
         })
 
     #일단 JsonResponse 반환으로 구현해뒀는데 나중에 프론트 구현되면 render로 창 넘어갈 수 있게 구현할게요!!
-    return JsonResponse({
-        "user_id": user.id,
-        "year": year,
-        "month": month,
-        "data": data_list
-    }, json_dumps_params={'ensure_ascii': False})
+    # return JsonResponse({
+    #     "user_id": user.id,
+    #     "year": year,
+    #     "month": month,
+    #     "data": data_list
+    # }, json_dumps_params={'ensure_ascii': False})
+    return render(request, 'diets/diets_main.html')
 
 @login_required
 #유저가 최근 먹은 식품 리스트 전달
