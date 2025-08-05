@@ -39,12 +39,6 @@ body {
     gap: 8px;
 }
 
-.nav-icon {
-    width: 20px;
-    height: 20px;
-    color: white;
-}
-
 .container {
     background-color: var(--neutralwhitepure-white);
     width: 375px;
