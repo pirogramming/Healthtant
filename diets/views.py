@@ -197,10 +197,15 @@ def diet_update(request, diet_id):
                 food = Food.objects.get(food_id = data['food'])
                 diet.food = food
             else:
-                setattr(diet, field, data[field])
+                setattr(diet, field, data[field]) #diet 모델 필드 값 수정
         diet.save() #저★장
         return redirect(f'/diets/?year={date.today().year}&month={date.today().month}')
     
+    #DELETE 메소드 분기
     elif request.method == 'DELETE':
-        return
-    return
+        diet = Diet.objects.get(diet_id=diet_id)
+        diet.delete()
+        return redirect('/diets/') #식사 관리 메인 페이지로 redirect
+    
+    #Http 메소드가 PATCH, DELETE 중 무엇도 아닌 경우
+    return JsonResponse({'message': "예상치 못한 오류가 발생했습니다."}, status=404)
