@@ -1,0 +1,97 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="{% static 'accounts/accounts_global.css'  %}" />
+  <link rel="stylesheet" href="{% static 'accounts/accounts_styleguide.css' %}" />
+  <link rel="stylesheet" href="{% static 'accounts/accounts_style.css' %}" />
+  <title>추가 정보 입력</title>
+</head>
+<body>
+    <div class="screen">
+        <div class="body">
+
+            <div class="view">
+
+            <div class="div">
+                <div class="view-2">
+                    <div class="text-wrapper">성별</div>
+                    <div class="frame">
+                        <div class="div-wrapper">
+                            <div>
+                                <input type="radio" name="gender" class="text-wrapper-2" value="F" {% if profile.user_gender == "F" %}selected{% endif %}/>
+                                <span>여성</span>
+                            </div>
+                        </div>
+                        <div class="div-wrapper">
+                            <input type="radio" name="gender" class="text-wrapper-2" value="M" {% if profile.user_gender == "M" %}selected{% endif %}/>
+                            <span>남성</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="view-3">
+                    <div class="text-wrapper">나이</div>
+                    <div class="frame-2">
+                        <div class="text-wrapper-3">나이를 작성해주세요.</div>
+                    </div>
+                </div>
+                <div class="view-4">
+                <div class="text-wrapper">닉네임</div>
+                <div class="frame-2"><div>
+                    <input
+                        type="text"
+                        class="text-wrapper-4"
+                        
+                        id="nickname"
+                        name="nickname"
+                        placeholder="닉네임을 설정해주세요"
+                        aria-label="닉네임 입력"
+                        value="{{ profile.nickname|default:'' }}"
+                    /></div></div>
+                </div>
+            </div>
+            <div class="div-wrapper-2"><div class="text-wrapper-5">완료</div></div>
+            </div>
+
+            <div class="profile-picture">
+                <img class="profile" src="img/profile.svg" />
+                <div class="text-wrapper-6">프로필선택</div>
+            </div>
+        <p class="p">더 나은 서비스를 위해<br />추가 정보를 입력해주세요.</p>
+      </div>
+
+      <div class="overlap-group-wrapper">
+        <div class="overlap-group">
+          <div class="rectangle"></div>
+          <div class="status-bar-iphone"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <script>
+        async function submitForm() {
+            const data = {
+                nickname: document.getElementById("nickname").value,
+                user_gender: document.getElementById("user_gender").value,
+                user_age: document.getElementById("user_age").value,
+                profile_image_url: document.getElementById("profile_image_url").value
+            };
+
+            const response = await fetch("", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": "{{ csrf_token }}"
+                },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+            alert(result.message || result.error);
+        }
+    </script>
+</body>
+</html>
