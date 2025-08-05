@@ -15,29 +15,6 @@ body {
     height: 874px;
 }
 
-.nav-bar {
-    
-    height: 62px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 20px;
-    color: white;
-    font-size: 14px;
-    font-weight: 500;
-}
-
-.nav-left {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.nav-right {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
 .container {
     background-color: var(--neutralwhitepure-white);
     width: 100%;
