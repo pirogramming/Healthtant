@@ -141,7 +141,18 @@ def diet_search(request):
 
 #식사 생성
 def diet_create(request, food_id):
-    return
+    food = Food.objects.get(food_id=food_id)
+    user = request.user
+    date = request.date
+    meal = request.meal
+    
+    diet = Diet.objects.create(user=user, food=food, meal=meal, date=date) #유저가 입력한 대로 Diet 생성
+
+    #반환할 mock data 구성!
+    ret = {'diet_id': diet.diet_id, 'user_id': user.id, 'food': food, 'message': "새 식사 등록이 완료되었습니다."}
+
+    #일단은 JsonResponse를 반환하되 나중에 프론트 구현되면 render로 창 옮겨갈 수 있게 구현할게요!!
+    return JsonResponse(ret, json_dumps_params={'ensure_ascii': False})
 
 #식사 수정/삭제
 def diet_update(request, diet_id):
