@@ -82,7 +82,7 @@ body {
 
 /* 새 식사 버튼 */
 .add-meal-btn {
-    background-color: #4a90e2;
+    background-color: var(--main-color);
     color: white;
     border: none;
     border-radius: 20px;
@@ -147,7 +147,7 @@ body {
 
 .add-today-text {
     font-size: 16px;
-    color: #4a90e2;
+    color: var(--main-color);
     font-weight: 500;
 }
 
@@ -160,10 +160,12 @@ body {
 
 /* 일별 카드 */
 .day-card {
-    border-radius: 16px;
-    border: 1px solid var(#E8E9EA);
+    border-radius: 12px;  /* 16px에서 12px로 변경 - 더 둥글게 */
+    border: 1px solid #e0e0e0;  /* var(#E8E9EA)에서 #e0e0e0로 변경 */
     background: #FFF;
-    box-shadow: 0 4px 24px -6px rgba(64, 72, 82, 0.15);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);  /* 그림자 더 부드럽게 */
+    padding: 25px;  /* 20px에서 25px로 증가 - 더 여유롭게 */
+    margin-bottom: 20px;  /* 카드 간 간격 추가 */
 }
 
 /* 일 헤더 */
@@ -171,8 +173,8 @@ body {
     font-size: 16px;
     font-weight: 600;
     color: #333;
-    margin-bottom: 15px;
-    padding-bottom: 10px;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
     border-bottom: 1px solid #eee;
 }
 
@@ -180,8 +182,8 @@ body {
 .meal-item {
     display: flex;
     align-items: center;
-    padding: 12px 0;
-    border-bottom: 1px solid #f5f5f5;
+    padding: 15px 0;
+    border-bottom: 1px solid #f8f8f8;
 }
 
 .meal-item:last-child {
@@ -192,34 +194,42 @@ body {
     font-size: 14px;
     font-weight: 500;
     color: #666;
-    min-width: 50px;
-    margin-right: 15px;
+    min-width: 60px;
+    margin-right: 20px;
 }
 
 .meal-content {
     flex: 1;
     font-size: 14px;
     color: #333;
-    line-height: 1.4;
+    line-height: 1.5;
 }
 
 /* 식사 액션 버튼 */
 .meal-actions {
     display: flex;
-    gap: 10px;
-    margin-left: 15px;
+    gap: 12px;
+    margin-left: 20px;
 }
 
-.edit-icon, .delete-icon {
-    font-size: 16px;
+.edit-btn, .delete-btn {
+    background: none;
+    border: none;
+    padding: 6px;
+    border-radius: 6px;
     cursor: pointer;
-    padding: 5px;
-    border-radius: 4px;
     transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.edit-icon:hover, .delete-icon:hover {
+.edit-btn:hover, .delete-btn:hover {
     background-color: #f5f5f5;
+}
+
+.edit-btn svg, .delete-btn svg {
+    display: block;
 }
 
 /* 반응형 디자인 */
