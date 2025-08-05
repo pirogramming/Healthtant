@@ -143,8 +143,8 @@ def diet_search(request):
 def diet_create(request, food_id):
     food = Food.objects.get(food_id=food_id)
     user = request.user
-    date = request.date
-    meal = request.meal
+    date = request.POST.get('date')
+    meal = request.POST.get('meal')
     
     diet = Diet.objects.create(user=user, food=food, meal=meal, date=date) #유저가 입력한 대로 Diet 생성
 
