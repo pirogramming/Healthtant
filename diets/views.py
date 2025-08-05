@@ -5,6 +5,7 @@ from foods.models import Food
 from django.contrib.auth.decorators import login_required
 from django.db.models import Case, When, Value, IntegerField
 from datetime import date
+import json
 
 #유저 식사 리스트 전달
 @login_required
@@ -184,4 +185,27 @@ def diet_create(request, food_id):
 
 #식사 수정/삭제
 def diet_update(request, diet_id):
-    return
+    #PATCH 메소드 분기
+    if request.method == 'PATCH':
+        diet = Diet.objects.get(diet_id = diet_id) #수정할 Diet 객체
+        data = json.loads(request.body) #PATCH로 전달받은 수정 필드
+
+        field_name = ['food', 'date', 'meal'] #Diet 모델이 가지고 있는 필드 (수정 가능한 필드만)
+        #필드 하나씩 돌면서 PATCH가 전달한 수정사항 반영
+        for field in field_name:
+            if field == 'food':
+                food = Food.objects.get(food_id = data['food'])
+                diet.food = food
+            else:
+                setattr(diet, field, data[field]) #diet 모델 필드 값 수정
+        diet.save() #저★장
+        return redirect(f'/diets/?year={date.today().year}&month={date.today().month}')
+    
+    #DELETE 메소드 분기
+    elif request.method == 'DELETE':
+        diet = Diet.objects.get(diet_id=diet_id)
+        diet.delete()
+        return redirect('/diets/') #식사 관리 메인 페이지로 redirect
+    
+    #Http 메소드가 PATCH, DELETE 중 무엇도 아닌 경우
+    return JsonResponse({'message': "예상치 못한 오류가 발생했습니다."}, status=404)
