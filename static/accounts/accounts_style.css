@@ -126,6 +126,7 @@
   white-space: nowrap;
   letter-spacing: 0;
   line-height: normal;
+ 
 }
 
 .screen .view-4 {
@@ -148,7 +149,7 @@
   font-size: 18px;
   letter-spacing: 0;
   line-height: normal;
-  border-style: none;
+
 }
 
 .screen .div-wrapper-2 {
@@ -351,9 +352,10 @@
   background-color: #ffffff;
   border: 1px solid var(--variable-collection-border-gary40);
   border-radius: 4px;
+  border-style: none;
 }
 
-.gender-options {
+.gender-input {
   display: flex;
   justify-content: space-between;
 }
