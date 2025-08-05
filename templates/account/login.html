@@ -1,0 +1,41 @@
+{% load static %}
+{% load account socialaccount %}  {# allauth 템플릿 태그 로드 #}
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>로그인</title>
+    <link rel="stylesheet" href="{% static 'accounts/accounts_global.css' %}">
+    <link rel="stylesheet" href="{% static 'accounts/accounts_style.css' %}">
+    <link rel="stylesheet" href="{% static 'accounts/accounts_styleguide.css' %}">
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
+        .login-container { display: inline-block; padding: 30px; border: 1px solid #ccc; border-radius: 10px; background: #fafafa; }
+        .social-btn { display: block; width: 250px; margin: 10px auto; padding: 10px; border-radius: 5px; text-decoration: none; font-weight: bold; }
+        .google-btn { background: white; border: 1px solid #ddd; color: #444; }
+        .kakao-btn { background: #FEE500; color: #3A1D1D; border: none; }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2>로그인</h2>
+
+        {% if form.errors %}
+            <p style="color:red;">아이디 또는 비밀번호가 올바르지 않습니다.</p>
+        {% endif %}
+
+        <form method="post" action="{% url 'account_login' %}">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">로그인</button>
+        </form>
+
+        <hr>
+        <h3>소셜 로그인</h3>
+        {% providers_media_js %}
+        <a href="{% provider_login_url 'google' %}" class="social-btn google-btn">구글로 로그인</a>
+        <a href="{% provider_login_url 'kakao' %}" class="social-btn kakao-btn">카카오로 로그인</a>
+    </div>
+</body>
+</html>
