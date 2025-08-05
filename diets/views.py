@@ -150,7 +150,7 @@ def diet_search(request):
     # 검색 결과 조회된 food를 하나씩 순회
     for food in foods:
         food_data = dict() #food의 정보를 담을 dict
-        food_data['food_id'] = food.food_id
+        food_data['food_id'] = str(food.food_id)
         food_data['food_name'] = food.food_name
         food_data['company_name'] = food.company_name
         food_data['food_img'] = food.food_img
@@ -170,13 +170,13 @@ def diet_create(request, food_id):
     diet = Diet.objects.create(user=user, food=food, meal=meal, date=date) #유저가 입력한 대로 Diet 생성
 
     food_data = {
-        'food_id': food.food_id,
+        'food_id': str(food.food_id),
         'food_name': food.food_name,
         'company_name': food.company_name
     }
 
     #반환할 mock data 구성!
-    ret = {'diet_id': diet.diet_id, 'user_id': user.id, 'food': food_data, 'message': "새 식사 등록이 완료되었습니다."}
+    ret = {'diet_id': str(diet.diet_id), 'user_id': user.id, 'food': str(food_data), 'message': "새 식사 등록이 완료되었습니다."}
 
     #To FE: 템플릿 작업 시작하면 지금 return문 지우고 바로 아래에 주석처리 해둔 return문 채워서 사용해주세요!!!
     #return redirect(f'/diets/?year={date.today().year}&month={date.today().month}')
