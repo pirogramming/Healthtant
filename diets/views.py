@@ -178,7 +178,6 @@ def diet_create(request, food_id):
     #반환할 mock data 구성!
     ret = {'diet_id': diet.diet_id, 'user_id': user.id, 'food': food_data, 'message': "새 식사 등록이 완료되었습니다."}
 
-    #일단은 JsonResponse를 반환하되 나중에 프론트 구현되면 render로 창 옮겨갈 수 있게 구현할게요!!
     #To FE: 템플릿 작업 시작하면 지금 return문 지우고 바로 아래에 주석처리 해둔 return문 채워서 사용해주세요!!!
     #return redirect(f'/diets/?year={date.today().year}&month={date.today().month}')
     return JsonResponse(ret, json_dumps_params={'ensure_ascii': False})
