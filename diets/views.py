@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from .models import Diet
+from foods.models import Food
 from django.contrib.auth.decorators import login_required
 from django.db.models import Case, When, Value, IntegerField
 
@@ -70,7 +71,7 @@ def diet_main(request):
         "data": data_list
     }, json_dumps_params={'ensure_ascii': False})
 
-
+@login_required
 #유저가 최근 먹은 식품 리스트 전달
 def diet_list(request):
     user = request.user
@@ -117,9 +118,26 @@ def diet_list(request):
         "recent_foods": recent_foods
     })
 
+@login_required
 #유저가 식품 이름으로 검색하는 기능
 def diet_search(request):
-    return
+    user = request.user
+    keyword = request.GET.get('keyword', '').strip() #유저가 검색한 키워드
+
+    foods = list(Food.objects.filter(food_name__icontains=keyword)) #keyword를 포함하는 Food 모델 모두 가져오기
+    ret = {'user_id': user.id, 'foods': []} #프론트로 넘겨줄 mock data
+
+    # 검색 결과 조회된 food를 하나씩 순회
+    for food in foods:
+        food_data = dict() #food의 정보를 담을 dict
+        food_data['food_id'] = food.food_id
+        food_data['food_name'] = food.food_name
+        food_data['company_name'] = food.company_name
+        food_data['food_img'] = food.food_img
+        ret['foods'].append(food_data) #food_data 에 정보를 모두 담았으니 ret['foods']에 추가
+
+    #일단은 JsonResponse를 반환하되 나중에 프론트 구현되면 render로 창 옮겨갈 수 있게 구현할게요!!
+    return JsonResponse(ret, json_dumps_params={'ensure_ascii': False})
 
 #식사 생성
 def diet_create(request, food_id):
