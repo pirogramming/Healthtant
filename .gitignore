@@ -1,6 +1,9 @@
 # Created by https://www.toptal.com/developers/gitignore/api/windows,macos,django,python,linux
 # Edit at https://www.toptal.com/developers/gitignore?templates=windows,macos,django,python,linux
 
+기획.md
+DB 탐색하기.md
+
 ### Django ###
 *.log
 *.pot
