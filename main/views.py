@@ -531,6 +531,57 @@ def parse_order_by_conditions(order_by_data, queryset, join_info=None):
     
     return queryset
 
+def parse_offset_conditions(offset_data, limit, queryset):
+    """
+    OFFSET 조건을 Django ORM 쿼리로 변환하는 함수 (5-2단계)
+    
+    Args:
+        offset_data (int): OFFSET 값 또는 페이지네이션 데이터
+        limit (int): LIMIT 값
+        queryset: Django QuerySet
+    
+    Returns:
+        QuerySet: OFFSET이 적용된 QuerySet
+    """
+    if not offset_data:
+        return queryset
+    
+    offset = 0
+    
+    # OFFSET 데이터 타입에 따른 처리
+    if isinstance(offset_data, int):
+        # 직접 OFFSET 값 제공
+        offset = offset_data
+    elif isinstance(offset_data, dict):
+        # 페이지네이션 형태: {"page": 1, "page_size": 10}
+        page = offset_data.get('page', 1)
+        page_size = offset_data.get('page_size', limit)
+        
+        # 페이지와 페이지 크기 검증
+        if not isinstance(page, int) or page < 1:
+            page = 1
+        if not isinstance(page_size, int) or page_size < 1:
+            page_size = limit
+        
+        # OFFSET 계산: (페이지 - 1) * 페이지 크기
+        offset = (page - 1) * page_size
+    else:
+        # 잘못된 타입이면 OFFSET 적용 안함
+        return queryset
+    
+    # OFFSET 값 검증
+    if offset < 0:
+        offset = 0
+    
+    # OFFSET 적용
+    try:
+        queryset = queryset[offset:offset + limit]
+    except Exception:
+        # OFFSET 적용 중 오류가 발생하면 원본 QuerySet 반환
+        return queryset
+    
+    return queryset
+
 @csrf_exempt
 @require_http_methods(["POST"])
 def db_explorer(request):
@@ -630,7 +681,12 @@ def db_explorer(request):
         if limit > 1000:  # 최대 1000개로 제한
             limit = 1000
         
-        # 10. 쿼리 실행 (3-5단계 최적화된 순서)
+        # 10. OFFSET 값 검증 및 적용 (5-2단계)
+        offset_data = data.get('offset', 0)
+        if not isinstance(offset_data, int) and not isinstance(offset_data, dict):
+            offset_data = 0 # 기본값 설정
+        
+        # 11. 쿼리 실행 (3-5단계 최적화된 순서)
         start_time = time.time()
         
         try:
@@ -672,10 +728,14 @@ def db_explorer(request):
             # 6단계: SELECT 필드 적용 (최적화된 순서)
             queryset = queryset.values(*select_fields)
             
-            # 7단계: LIMIT 적용 (성능 최적화)
+            # 7단계: OFFSET 적용 (5-2단계)
+            queryset = parse_offset_conditions(offset_data, limit, queryset)
+            
+            # 8단계: LIMIT 적용 (성능 최적화)
+            # OFFSET이 적용된 후 LIMIT를 다시 적용해야 함
             queryset = queryset[:limit]
             
-            # 8단계: 결과 변환 (지연 평가)
+            # 9단계: 결과 변환 (지연 평가)
             results = list(queryset)
             
         except Exception as query_error:
@@ -687,7 +747,7 @@ def db_explorer(request):
         
         execution_time = time.time() - start_time
         
-        # 11. WHERE 조건 정보 수집
+        # 12. WHERE 조건 정보 수집
         where_info = None
         if where_applied:
             conditions_count = len(where_data['conditions'])
@@ -707,7 +767,7 @@ def db_explorer(request):
                         'value': condition['value']
                     })
         
-        # 12. JOIN 조건 정보 수집 (개선: 상세 정보 추가)
+        # 13. JOIN 조건 정보 수집 (개선: 상세 정보 추가)
         join_info_response = None
         if join_applied:
             join_info_response = {
@@ -727,7 +787,7 @@ def db_explorer(request):
                     'flexible_join': True  # 유연한 JOIN 조건 지원
                 }
         
-        # 13. ORDER BY 조건 정보 수집 (개선: 상세 정보 추가)
+        # 14. ORDER BY 조건 정보 수집 (개선: 상세 정보 추가)
         order_by_info = None
         if order_by_applied:
             order_by_info = {
@@ -747,7 +807,27 @@ def db_explorer(request):
                             'direction': order_item.get('direction', 'ASC').upper()
                         })
         
-        # 14. 응답 메시지 생성 (ORDER BY 개선 반영)
+        # 15. OFFSET 조건 정보 수집 (5-2단계)
+        offset_info = None
+        if offset_data:
+            if isinstance(offset_data, int):
+                offset_info = {
+                    'offset_type': 'direct',
+                    'offset_value': offset_data,
+                    'calculated_offset': offset_data
+                }
+            elif isinstance(offset_data, dict):
+                page = offset_data.get('page', 1)
+                page_size = offset_data.get('page_size', limit)
+                calculated_offset = (page - 1) * page_size
+                offset_info = {
+                    'offset_type': 'pagination',
+                    'page': page,
+                    'page_size': page_size,
+                    'calculated_offset': calculated_offset
+                }
+        
+        # 16. 응답 메시지 생성 (OFFSET 개선 반영)
         response_message = f'{table_name} 테이블 조회가 완료되었습니다. (총 {len(results)}개 결과)'
         if where_applied:
             response_message += f' (WHERE 조건 {len(where_data["conditions"])}개 적용됨)'
@@ -767,7 +847,14 @@ def db_explorer(request):
             order_count = len(order_by_data) if isinstance(order_by_data, list) else 1
             response_message += f' (ORDER BY {order_count}개 조건 적용됨)'
         
-        # 15. 응답 반환 (3-5단계 개선)
+        # OFFSET 정보 추가
+        if offset_info:
+            if offset_info['offset_type'] == 'direct':
+                response_message += f' (OFFSET {offset_info["offset_value"]} 적용됨)'
+            else:
+                response_message += f' (페이지 {offset_info["page"]}, 페이지 크기 {offset_info["page_size"]} 적용됨)'
+        
+        # 17. 응답 반환 (3-5단계 개선)
         return JsonResponse({
             'success': True,
             'message': response_message,
@@ -779,12 +866,14 @@ def db_explorer(request):
                     'table_name': table_name,
                     'selected_fields': select_fields,
                     'limit_applied': limit,
+                    'offset_applied': offset_data, # OFFSET 값 추가
                     'where_applied': where_applied,
                     'where_info': where_info,
                     'join_applied': join_applied,
                     'join_info': join_info_response,
                     'order_by_applied': order_by_applied,
                     'order_by_info': order_by_info,
+                    'offset_applied': offset_info, # OFFSET 정보 추가
                     'optimization_applied': {
                         'join_where_optimization': join_applied and where_applied,
                         'query_optimization': join_applied,
