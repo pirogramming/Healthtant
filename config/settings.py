@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'accounts',
     'diets',
     'foods',
+    'main',
 ]
 
 SITE_ID = 1

@@ -11,20 +11,31 @@ class Food(models.Model):
 
     # 기준량과 기본 영양소
     nutritional_value_standard_amount = models.BigIntegerField()
+<<<<<<< HEAD
     calorie = models.BigIntegerField()
+=======
+    calorie = models.FloatField()
+>>>>>>> 3188cd412b198d6922072d87994c51ed9f92c04f
     moisture = models.FloatField()
     protein = models.FloatField()
     fat = models.FloatField()
     carbohydrate = models.FloatField()
 
+<<<<<<< HEAD
     # 선택적 영양소 (Float로 변경)
+=======
+>>>>>>> 3188cd412b198d6922072d87994c51ed9f92c04f
     sugar = models.FloatField(null=True, blank=True)
     dietary_fiber = models.FloatField(null=True, blank=True)
     calcium = models.FloatField(null=True, blank=True)
     iron_content = models.FloatField(null=True, blank=True)
     phosphorus = models.FloatField(null=True, blank=True)
     potassium = models.FloatField(null=True, blank=True)
+<<<<<<< HEAD
     salt = models.BigIntegerField(null=True, blank=True)  # 나트륨은 mg 단위이므로 BigInt 유지
+=======
+    salt = models.FloatField(null=True, blank=True)
+>>>>>>> 3188cd412b198d6922072d87994c51ed9f92c04f
 
     VitaminA = models.FloatField(null=True, blank=True)
     VitaminB = models.FloatField(null=True, blank=True)
@@ -36,8 +47,8 @@ class Food(models.Model):
     saturated_fatty_acids = models.FloatField(null=True, blank=True)
     trans_fatty_acids = models.FloatField(null=True, blank=True)
 
-    serving_size = models.BigIntegerField(null=True, blank=True)
-    weight = models.BigIntegerField()
+    serving_size = models.FloatField(null=True, blank=True)
+    weight = models.FloatField()
     company_name = models.CharField(max_length=255)
 
     # 영양 점수 관련 필드 추가
