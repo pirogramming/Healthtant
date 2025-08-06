@@ -1,0 +1,97 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ko" data-colors-mode="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}HEALTHTANT{% endblock %}</title>
+    
+    <!-- 폰트 로드 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Koulen&family=Satoshi:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- 기본 CSS 파일 로드 -->
+    <link rel="stylesheet" href="{% static 'accounts/accounts_styleguide.css' %}">
+    
+    <!-- 페이지별 CSS -->
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="screen">
+        <div class="view">
+            <!-- 헤더 영역 -->
+            <header class="app-header">
+                <div class="status-bar"></div>
+                <h1 class="app-title">
+                    {% block app_title %}HEALTHTANT{% endblock %}
+                </h1>
+            </header>
+            
+            <!-- 메인 콘텐츠 -->
+            <main class="main-content">
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+        
+        <!-- 네비게이션 바 -->
+        {% block navigation %}
+        <nav class="main-nav">
+            <ul class="nav-list">
+                <li class="nav-item {% if request.resolver_match.url_name == 'diet_main' %}active{% endif %}">
+                    <a href="#" class="nav-link" aria-label="식단 기록">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M19 3H5C3.89543 3 3 3.89543 3 5V19C3 20.1046 3.89543 21 5 21H19C20.1046 21 21 20.1046 21 19V5C21 3.89543 20.1046 3 19 3Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M16 2V6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M8 2V6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M3 10H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span class="nav-text">식단기록</span>
+                    </a>
+                </li>
+                <li class="nav-item {% if request.resolver_match.url_name == 'diet_analysis' %}active{% endif %}">
+                    <a href="#" class="nav-link" aria-label="분석하기">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M3 3V18C3 19.1046 3.89543 20 5 20H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M7 14L12 9L16 13L21 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span class="nav-text">분석하기</span>
+                    </a>
+                </li>
+                <li class="nav-item {% if request.resolver_match.url_name == 'main' %}active{% endif %}">
+                    <a href="#" class="nav-link" aria-label="홈">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M3 9L12 2L21 9V20C21 20.5304 20.7893 21.0391 20.4142 21.4142C20.0391 21.7893 19.5304 22 19 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.0391 3 20.5304 3 20V9Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M9 22V12H15V22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span class="nav-text">홈</span>
+                    </a>
+                </li>
+                <li class="nav-item {% if request.resolver_match.url_name == 'diet_search' %}active{% endif %}">
+                    <a href="#" class="nav-link" aria-label="상세검색">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
+                            <path d="M21 21L16.65 16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span class="nav-text">상세검색</span>
+                    </a>
+                </li>
+                <li class="nav-item {% if request.resolver_match.url_name == 'profile' %}active{% endif %}">
+                    <a href="#" class="nav-link" aria-label="내 페이지">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span class="nav-text">내 페이지</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        {% endblock %}
+    </div>
+    
+    <!-- 페이지별 JavaScript -->
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
