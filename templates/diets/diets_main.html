@@ -7,9 +7,20 @@
     <link rel="stylesheet" href="{% static 'diets/diets_main.css' %}">
 </head>
 <body>
-    <div class="page-title">식사기록페이지</div>
+    <div class="page-title"></div>
     
     <div class="meal-record-container">
+
+        <div class="nav-bar">
+            <div class="nav-left">
+               
+            </div>
+            <div class="nav-right">
+                {% comment %} <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M9 3L7.17 5H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2h-3.17L15 3H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/>
+                </svg> {% endcomment %}
+            </div>
+        </div>
         <!-- 월 네비게이션 -->
         <div class="month-navigation">
             < 2025년 8월 >
@@ -35,218 +46,116 @@
         
         <!-- 일별 식사 기록 -->
         <div class="daily-meals">
-            <!-- 1일 (금) -->
+            {% for date in data %}
             <div class="day-card">
-                <div class="day-header">1 (금)</div>
+                <div class="day-header">{{ date.date }}</div>
+                
+                <!-- 아침 -->
+                {% if date.diets %}
                 <div class="meal-item">
                     <span class="meal-type">아침</span>
-                    <span class="meal-content">하림 닭가슴살 블랙페퍼, 800g, 1개</span>
+                    <span class="meal-content">
+                        {% for food in date.diets.breakfast %}
+                            {{ food.food_name }}{% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                    </span>
                     <div class="meal-actions">
-                        <button class="edit-btn" type="button">
+                        <button class="edit-btn" type="button" onclick="editMeal('{{ date.date }}', 'breakfast')">
                           <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15" fill="none">
                             <path d="M1 14.1993H3.82833L14.1993 3.82833L11.3707 1L1 11.371V14.1993Z" stroke="#B7B5B5" stroke-width="1.5" stroke-linejoin="round"/>
                           </svg>
                         </button>
-                        <button class="delete-btn" type="button">
+                        <button class="delete-btn" type="button" onclick="deleteMeal('{{ date.date }}', 'breakfast')">
                           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="16" viewBox="0 0 14 16" fill="none">
                             <path d="M1 4.11111H12.9255M5.47205 7.22222V11.8889M8.45342 7.22222V11.8889M1.74534 4.11111L2.49068 13.4444C2.49068 13.857 2.64774 14.2527 2.92729 14.5444C3.20685 14.8361 3.58601 15 3.98137 15H9.9441C10.3395 15 10.7186 14.8361 10.9982 14.5444C11.2777 14.2527 11.4348 13.857 11.4348 13.4444L12.1801 4.11111M4.72671 4.11111V1.77778C4.72671 1.5715 4.80524 1.37367 4.94501 1.22781C5.08479 1.08194 5.27437 1 5.47205 1H8.45342C8.65109 1 8.84067 1.08194 8.98045 1.22781C9.12023 1.37367 9.19876 1.5715 9.19876 1.77778V4.11111" stroke="#B7B5B5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                           </svg>
                         </button>
                     </div>
                 </div>
+                {% endif %}
+                
+                <!-- 점심 -->
+                {% if date.diets.lunch %}
                 <div class="meal-item">
                     <span class="meal-type">점심</span>
-                    <span class="meal-content">하림 닭가슴살 블랙페퍼, 800g, 1개</span>
+                    <span class="meal-content">
+                        {% for food in date.diets.lunch %}
+                            {{ food.food_name }}{% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                    </span>
                     <div class="meal-actions">
-                        <button class="edit-btn" type="button">
+                        <button class="edit-btn" type="button" onclick="editMeal('{{ date.date }}', 'lunch')">
                           <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15" fill="none">
                             <path d="M1 14.1993H3.82833L14.1993 3.82833L11.3707 1L1 11.371V14.1993Z" stroke="#B7B5B5" stroke-width="1.5" stroke-linejoin="round"/>
                           </svg>
                         </button>
-                        <button class="delete-btn" type="button">
+                        <button class="delete-btn" type="button" onclick="deleteMeal('{{ date.date }}', 'lunch')">
                           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="16" viewBox="0 0 14 16" fill="none">
                             <path d="M1 4.11111H12.9255M5.47205 7.22222V11.8889M8.45342 7.22222V11.8889M1.74534 4.11111L2.49068 13.4444C2.49068 13.857 2.64774 14.2527 2.92729 14.5444C3.20685 14.8361 3.58601 15 3.98137 15H9.9441C10.3395 15 10.7186 14.8361 10.9982 14.5444C11.2777 14.2527 11.4348 13.857 11.4348 13.4444L12.1801 4.11111M4.72671 4.11111V1.77778C4.72671 1.5715 4.80524 1.37367 4.94501 1.22781C5.08479 1.08194 5.27437 1 5.47205 1H8.45342C8.65109 1 8.84067 1.08194 8.98045 1.22781C9.12023 1.37367 9.19876 1.5715 9.19876 1.77778V4.11111" stroke="#B7B5B5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                           </svg>
                         </button>
                     </div>
                 </div>
+                {% endif %}
+                
+                <!-- 저녁 -->
+                {% if date.diets.dinner %}
                 <div class="meal-item">
                     <span class="meal-type">저녁</span>
-                    <span class="meal-content">하림 닭가슴살 블랙페퍼, 800g, 1개</span>
+                    <span class="meal-content">
+                        {% for food in date.diets.dinner %}
+                            {{ food.food_name }}{% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                    </span>
                     <div class="meal-actions">
-                        <button class="edit-btn" type="button">
+                        <button class="edit-btn" type="button" onclick="editMeal('{{ day_data.date }}', 'dinner')">
                           <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15" fill="none">
                             <path d="M1 14.1993H3.82833L14.1993 3.82833L11.3707 1L1 11.371V14.1993Z" stroke="#B7B5B5" stroke-width="1.5" stroke-linejoin="round"/>
                           </svg>
                         </button>
-                        <button class="delete-btn" type="button">
+                        <button class="delete-btn" type="button" onclick="deleteMeal('{{ date.date }}', 'dinner')">
                           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="16" viewBox="0 0 14 16" fill="none">
                             <path d="M1 4.11111H12.9255M5.47205 7.22222V11.8889M8.45342 7.22222V11.8889M1.74534 4.11111L2.49068 13.4444C2.49068 13.857 2.64774 14.2527 2.92729 14.5444C3.20685 14.8361 3.58601 15 3.98137 15H9.9441C10.3395 15 10.7186 14.8361 10.9982 14.5444C11.2777 14.2527 11.4348 13.857 11.4348 13.4444L12.1801 4.11111M4.72671 4.11111V1.77778C4.72671 1.5715 4.80524 1.37367 4.94501 1.22781C5.08479 1.08194 5.27437 1 5.47205 1H8.45342C8.65109 1 8.84067 1.08194 8.98045 1.22781C9.12023 1.37367 9.19876 1.5715 9.19876 1.77778V4.11111" stroke="#B7B5B5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                           </svg>
                         </button>
                     </div>
                 </div>
+                {% endif %}
             </div>
-            
-            <!-- 2일 (토) -->
-            <div class="day-card">
-                <div class="day-header">2 (토)</div>
-                <div class="meal-item">
-                    <span class="meal-type">아침</span>
-                    <span class="meal-content">하림 닭가슴살 블랙페퍼, 800g, 1개</span>
-                    <div class="meal-actions">
-                        <button class="edit-btn" type="button">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15" fill="none">
-                            <path d="M1 14.1993H3.82833L14.1993 3.82833L11.3707 1L1 11.371V14.1993Z" stroke="#B7B5B5" stroke-width="1.5" stroke-linejoin="round"/>
-                          </svg>
-                        </button>
-                        <button class="delete-btn" type="button">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="16" viewBox="0 0 14 16" fill="none">
-                            <path d="M1 4.11111H12.9255M5.47205 7.22222V11.8889M8.45342 7.22222V11.8889M1.74534 4.11111L2.49068 13.4444C2.49068 13.857 2.64774 14.2527 2.92729 14.5444C3.20685 14.8361 3.58601 15 3.98137 15H9.9441C10.3395 15 10.7186 14.8361 10.9982 14.5444C11.2777 14.2527 11.4348 13.857 11.4348 13.4444L12.1801 4.11111M4.72671 4.11111V1.77778C4.72671 1.5715 4.80524 1.37367 4.94501 1.22781C5.08479 1.08194 5.27437 1 5.47205 1H8.45342C8.65109 1 8.84067 1.08194 8.98045 1.22781C9.12023 1.37367 9.19876 1.5715 9.19876 1.77778V4.11111" stroke="#B7B5B5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                          </svg>
-                        </button>
-                    </div>
-                </div>
-                <div class="meal-item">
-                    <span class="meal-type">점심</span>
-                    <span class="meal-content">하림 닭가슴살 블랙페퍼, 800g, 1개</span>
-                    <div class="meal-actions">
-                        <button class="edit-btn" type="button">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15" fill="none">
-                            <path d="M1 14.1993H3.82833L14.1993 3.82833L11.3707 1L1 11.371V14.1993Z" stroke="#B7B5B5" stroke-width="1.5" stroke-linejoin="round"/>
-                          </svg>
-                        </button>
-                        <button class="delete-btn" type="button">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="16" viewBox="0 0 14 16" fill="none">
-                            <path d="M1 4.11111H12.9255M5.47205 7.22222V11.8889M8.45342 7.22222V11.8889M1.74534 4.11111L2.49068 13.4444C2.49068 13.857 2.64774 14.2527 2.92729 14.5444C3.20685 14.8361 3.58601 15 3.98137 15H9.9441C10.3395 15 10.7186 14.8361 10.9982 14.5444C11.2777 14.2527 11.4348 13.857 11.4348 13.4444L12.1801 4.11111M4.72671 4.11111V1.77778C4.72671 1.5715 4.80524 1.37367 4.94501 1.22781C5.08479 1.08194 5.27437 1 5.47205 1H8.45342C8.65109 1 8.84067 1.08194 8.98045 1.22781C9.12023 1.37367 9.19876 1.5715 9.19876 1.77778V4.11111" stroke="#B7B5B5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                          </svg>
-                        </button>
-                    </div>
-                </div>
-                <div class="meal-item">
-                    <span class="meal-type">저녁</span>
-                    <span class="meal-content">하림 닭가슴살 블랙페퍼, 800g, 1개</span>
-                    <div class="meal-actions">
-                        <button class="edit-btn" type="button">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15" fill="none">
-                            <path d="M1 14.1993H3.82833L14.1993 3.82833L11.3707 1L1 11.371V14.1993Z" stroke="#B7B5B5" stroke-width="1.5" stroke-linejoin="round"/>
-                          </svg>
-                        </button>
-                        <button class="delete-btn" type="button">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="16" viewBox="0 0 14 16" fill="none">
-                            <path d="M1 4.11111H12.9255M5.47205 7.22222V11.8889M8.45342 7.22222V11.8889M1.74534 4.11111L2.49068 13.4444C2.49068 13.857 2.64774 14.2527 2.92729 14.5444C3.20685 14.8361 3.58601 15 3.98137 15H9.9441C10.3395 15 10.7186 14.8361 10.9982 14.5444C11.2777 14.2527 11.4348 13.857 11.4348 13.4444L12.1801 4.11111M4.72671 4.11111V1.77778C4.72671 1.5715 4.80524 1.37367 4.94501 1.22781C5.08479 1.08194 5.27437 1 5.47205 1H8.45342C8.65109 1 8.84067 1.08194 8.98045 1.22781C9.12023 1.37367 9.19876 1.5715 9.19876 1.77778V4.11111" stroke="#B7B5B5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                          </svg>
-                        </button>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- 3일 (일) -->
-            <div class="day-card">
-                <div class="day-header">3 (일)</div>
-                <div class="meal-item">
-                    <span class="meal-type">아침</span>
-                    <span class="meal-content">하림 닭가슴살 블랙페퍼, 800g, 1개</span>
-                    <div class="meal-actions">
-                        <button class="edit-btn" type="button">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15" fill="none">
-                            <path d="M1 14.1993H3.82833L14.1993 3.82833L11.3707 1L1 11.371V14.1993Z" stroke="#B7B5B5" stroke-width="1.5" stroke-linejoin="round"/>
-                          </svg>
-                        </button>
-                        <button class="delete-btn" type="button">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="16" viewBox="0 0 14 16" fill="none">
-                            <path d="M1 4.11111H12.9255M5.47205 7.22222V11.8889M8.45342 7.22222V11.8889M1.74534 4.11111L2.49068 13.4444C2.49068 13.857 2.64774 14.2527 2.92729 14.5444C3.20685 14.8361 3.58601 15 3.98137 15H9.9441C10.3395 15 10.7186 14.8361 10.9982 14.5444C11.2777 14.2527 11.4348 13.857 11.4348 13.4444L12.1801 4.11111M4.72671 4.11111V1.77778C4.72671 1.5715 4.80524 1.37367 4.94501 1.22781C5.08479 1.08194 5.27437 1 5.47205 1H8.45342C8.65109 1 8.84067 1.08194 8.98045 1.22781C9.12023 1.37367 9.19876 1.5715 9.19876 1.77778V4.11111" stroke="#B7B5B5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                          </svg>
-                        </button>
-                    </div>
-                </div>
-                <div class="meal-item">
-                    <span class="meal-type">점심</span>
-                    <span class="meal-content">하림 닭가슴살 블랙페퍼, 800g, 1개</span>
-                    <div class="meal-actions">
-                        <button class="edit-btn" type="button">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15" fill="none">
-                            <path d="M1 14.1993H3.82833L14.1993 3.82833L11.3707 1L1 11.371V14.1993Z" stroke="#B7B5B5" stroke-width="1.5" stroke-linejoin="round"/>
-                          </svg>
-                        </button>
-                        <button class="delete-btn" type="button">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="16" viewBox="0 0 14 16" fill="none">
-                            <path d="M1 4.11111H12.9255M5.47205 7.22222V11.8889M8.45342 7.22222V11.8889M1.74534 4.11111L2.49068 13.4444C2.49068 13.857 2.64774 14.2527 2.92729 14.5444C3.20685 14.8361 3.58601 15 3.98137 15H9.9441C10.3395 15 10.7186 14.8361 10.9982 14.5444C11.2777 14.2527 11.4348 13.857 11.4348 13.4444L12.1801 4.11111M4.72671 4.11111V1.77778C4.72671 1.5715 4.80524 1.37367 4.94501 1.22781C5.08479 1.08194 5.27437 1 5.47205 1H8.45342C8.65109 1 8.84067 1.08194 8.98045 1.22781C9.12023 1.37367 9.19876 1.5715 9.19876 1.77778V4.11111" stroke="#B7B5B5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                          </svg>
-                        </button>
-                    </div>
-                </div>
-                <div class="meal-item">
-                    <span class="meal-type">저녁</span>
-                    <span class="meal-content">하림 닭가슴살 블랙페퍼, 800g, 1개</span>
-                    <div class="meal-actions">
-                        <button class="edit-btn" type="button">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15" fill="none">
-                            <path d="M1 14.1993H3.82833L14.1993 3.82833L11.3707 1L1 11.371V14.1993Z" stroke="#B7B5B5" stroke-width="1.5" stroke-linejoin="round"/>
-                          </svg>
-                        </button>
-                        <button class="delete-btn" type="button">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="16" viewBox="0 0 14 16" fill="none">
-                            <path d="M1 4.11111H12.9255M5.47205 7.22222V11.8889M8.45342 7.22222V11.8889M1.74534 4.11111L2.49068 13.4444C2.49068 13.857 2.64774 14.2527 2.92729 14.5444C3.20685 14.8361 3.58601 15 3.98137 15H9.9441C10.3395 15 10.7186 14.8361 10.9982 14.5444C11.2777 14.2527 11.4348 13.857 11.4348 13.4444L12.1801 4.11111M4.72671 4.11111V1.77778C4.72671 1.5715 4.80524 1.37367 4.94501 1.22781C5.08479 1.08194 5.27437 1 5.47205 1H8.45342C8.65109 1 8.84067 1.08194 8.98045 1.22781C9.12023 1.37367 9.19876 1.5715 9.19876 1.77778V4.11111" stroke="#B7B5B5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                          </svg>
-                        </button>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- 4일 (월) -->
-            <div class="day-card">
-                <div class="day-header">4 (월)</div>
-                <div class="meal-item">
-                    <span class="meal-type">아침</span>
-                    <span class="meal-content">하림 닭가슴살 블랙페퍼, 800g, 1개</span>
-                    <div class="meal-actions">
-                        <button class="edit-btn" type="button">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15" fill="none">
-                            <path d="M1 14.1993H3.82833L14.1993 3.82833L11.3707 1L1 11.371V14.1993Z" stroke="#B7B5B5" stroke-width="1.5" stroke-linejoin="round"/>
-                          </svg>
-                        </button>
-                        <button class="delete-btn" type="button">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="16" viewBox="0 0 14 16" fill="none">
-                            <path d="M1 4.11111H12.9255M5.47205 7.22222V11.8889M8.45342 7.22222V11.8889M1.74534 4.11111L2.49068 13.4444C2.49068 13.857 2.64774 14.2527 2.92729 14.5444C3.20685 14.8361 3.58601 15 3.98137 15H9.9441C10.3395 15 10.7186 14.8361 10.9982 14.5444C11.2777 14.2527 11.4348 13.857 11.4348 13.4444L12.1801 4.11111M4.72671 4.11111V1.77778C4.72671 1.5715 4.80524 1.37367 4.94501 1.22781C5.08479 1.08194 5.27437 1 5.47205 1H8.45342C8.65109 1 8.84067 1.08194 8.98045 1.22781C9.12023 1.37367 9.19876 1.5715 9.19876 1.77778V4.11111" stroke="#B7B5B5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                          </svg>
-                        </button>
-                    </div>
-                </div>
-                <div class="meal-item">
-                    <span class="meal-type">점심</span>
-                    <span class="meal-content">하림 닭가슴살 블랙페퍼, 800g, 1개</span>
-                    <div class="meal-actions">
-                        <button class="edit-btn" type="button">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15" fill="none">
-                            <path d="M1 14.1993H3.82833L14.1993 3.82833L11.3707 1L1 11.371V14.1993Z" stroke="#B7B5B5" stroke-width="1.5" stroke-linejoin="round"/>
-                          </svg>
-                        </button>
-                        <button class="delete-btn" type="button">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="16" viewBox="0 0 14 16" fill="none">
-                            <path d="M1 4.11111H12.9255M5.47205 7.22222V11.8889M8.45342 7.22222V11.8889M1.74534 4.11111L2.49068 13.4444C2.49068 13.857 2.64774 14.2527 2.92729 14.5444C3.20685 14.8361 3.58601 15 3.98137 15H9.9441C10.3395 15 10.7186 14.8361 10.9982 14.5444C11.2777 14.2527 11.4348 13.857 11.4348 13.4444L12.1801 4.11111M4.72671 4.11111V1.77778C4.72671 1.5715 4.80524 1.37367 4.94501 1.22781C5.08479 1.08194 5.27437 1 5.47205 1H8.45342C8.65109 1 8.84067 1.08194 8.98045 1.22781C9.12023 1.37367 9.19876 1.5715 9.19876 1.77778V4.11111" stroke="#B7B5B5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                          </svg>
-                        </button>
-                    </div>
-                </div>
-                <div class="meal-item">
-                    <span class="meal-type">저녁</span>
-                    <span class="meal-content">하림 닭가슴살 블랙페퍼, 800g, 1개</span>
-                    <div class="meal-actions">
-                        <button class="edit-btn" type="button">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15" fill="none">
-                            <path d="M1 14.1993H3.82833L14.1993 3.82833L11.3707 1L1 11.371V14.1993Z" stroke="#B7B5B5" stroke-width="1.5" stroke-linejoin="round"/>
-                          </svg>
-                        </button>
-                        <button class="delete-btn" type="button">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="16" viewBox="0 0 14 16" fill="none">
-                            <path d="M1 4.11111H12.9255M5.47205 7.22222V11.8889M8.45342 7.22222V11.8889M1.74534 4.11111L2.49068 13.4444C2.49068 13.857 2.64774 14.2527 2.92729 14.5444C3.20685 14.8361 3.58601 15 3.98137 15H9.9441C10.3395 15 10.7186 14.8361 10.9982 14.5444C11.2777 14.2527 11.4348 13.857 11.4348 13.4444L12.1801 4.11111M4.72671 4.11111V1.77778C4.72671 1.5715 4.80524 1.37367 4.94501 1.22781C5.08479 1.08194 5.27437 1 5.47205 1H8.45342C8.65109 1 8.84067 1.08194 8.98045 1.22781C9.12023 1.37367 9.19876 1.5715 9.19876 1.77778V4.11111" stroke="#B7B5B5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                          </svg>
-                        </button>
-                    </div>
-                </div>
-            </div>
+            {% endfor %}
         </div>
     </div>
+    
+    <script>
+        // 수정 기능
+        function editMeal(date, mealType) {
+            console.log('수정:', date, mealType);
+            // 수정 페이지로 이동하는 로직
+            // 예: window.location.href = `/diets/edit/${date}/${mealType}/`;
+        }
+        
+        // 삭제 기능
+        function deleteMeal(date, mealType) {
+            if (confirm('정말로 이 식사를 삭제하시겠습니까?')) {
+                console.log('삭제:', date, mealType);
+                // 삭제 API 호출 로직
+                // 예: fetch(`/diets/delete/${date}/${mealType}/`, {method: 'DELETE'})
+            }
+        }
+        
+        // 새 식사 추가 기능
+        document.querySelector('.add-meal-btn').addEventListener('click', function() {
+            console.log('새 식사 추가');
+            // 새 식사 추가 페이지로 이동
+            // 예: window.location.href = '/diets/add/';
+        });
+        
+        // 오늘의 식사 추가하기 기능
+        document.querySelector('.add-today-meal').addEventListener('click', function() {
+            console.log('오늘의 식사 추가하기');
+            // 오늘 날짜의 식사 추가 페이지로 이동
+            // 예: window.location.href = '/diets/add/today/';
+        });
+    </script>
 </body>
 </html> 
