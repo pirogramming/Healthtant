@@ -658,6 +658,338 @@ def calculate_pagination_metadata(queryset, offset_data, limit):
             'offset_applied': 0
         }
 
+def get_model_indexes(model_class):
+    """
+    Django 모델의 인덱스 정보를 수집하는 함수 (5-4단계)
+    
+    Args:
+        model_class: Django 모델 클래스
+    
+    Returns:
+        dict: 인덱스 정보
+    """
+    try:
+        indexes = {
+            'single_indexes': [],
+            'composite_indexes': [],
+            'unique_indexes': []
+        }
+        
+        # 모델의 메타데이터에서 인덱스 정보 추출
+        meta = model_class._meta
+        
+        # 단일 필드 인덱스 수집
+        for field in meta.fields:
+            if field.db_index:
+                indexes['single_indexes'].append({
+                    'field': field.name,
+                    'type': 'single',
+                    'unique': field.unique,
+                    'null': field.null
+                })
+        
+        # 복합 인덱스 수집 (Django 3.2+ Meta.indexes)
+        if hasattr(meta, 'indexes'):
+            for index in meta.indexes:
+                index_info = {
+                    'fields': index.fields,
+                    'type': 'composite',
+                    'name': getattr(index, 'name', None),
+                    'unique': getattr(index, 'unique', False)
+                }
+                indexes['composite_indexes'].append(index_info)
+        
+        # 고유 인덱스 수집
+        if hasattr(meta, 'unique_together'):
+            for unique_group in meta.unique_together:
+                indexes['unique_indexes'].append({
+                    'fields': list(unique_group),
+                    'type': 'unique_together'
+                })
+        
+        return indexes
+        
+    except Exception:
+        return {
+            'single_indexes': [],
+            'composite_indexes': [],
+            'unique_indexes': []
+        }
+
+def analyze_sorting_optimization(order_fields, model_class, join_info=None):
+    """
+    정렬 최적화를 분석하고 힌트를 제공하는 함수 (5-4단계)
+    
+    Args:
+        order_fields (list): 정렬 필드 리스트
+        model_class: Django 모델 클래스
+        join_info (dict): JOIN 정보
+    
+    Returns:
+        dict: 정렬 최적화 분석 결과
+    """
+    try:
+        # 인덱스 정보 수집
+        indexes = get_model_indexes(model_class)
+        
+        # 정렬 필드 분석
+        sort_analysis = {
+            'order_fields': order_fields,
+            'index_coverage': [],
+            'optimization_suggestions': [],
+            'performance_impact': 'medium',
+            'recommended_indexes': []
+        }
+        
+        # 각 정렬 필드에 대한 인덱스 커버리지 분석
+        for i, field in enumerate(order_fields):
+            field_name = field.lstrip('-')  # DESC 정렬의 '-' 제거
+            direction = 'DESC' if field.startswith('-') else 'ASC'
+            
+            field_analysis = {
+                'field': field_name,
+                'direction': direction,
+                'position': i + 1,
+                'has_index': False,
+                'index_type': None,
+                'optimization_score': 0
+            }
+            
+            # 단일 인덱스 확인
+            for single_index in indexes['single_indexes']:
+                if single_index['field'] == field_name:
+                    field_analysis['has_index'] = True
+                    field_analysis['index_type'] = 'single'
+                    field_analysis['optimization_score'] = 8
+                    break
+            
+            # 복합 인덱스 확인 (첫 번째 필드인 경우)
+            if i == 0:  # 첫 번째 정렬 필드만 복합 인덱스의 첫 번째 필드로 사용 가능
+                for composite_index in indexes['composite_indexes']:
+                    if composite_index['fields'] and composite_index['fields'][0] == field_name:
+                        field_analysis['has_index'] = True
+                        field_analysis['index_type'] = 'composite_leading'
+                        field_analysis['optimization_score'] = 9
+                        break
+            
+            sort_analysis['index_coverage'].append(field_analysis)
+        
+        # 최적화 제안 생성
+        unindexed_fields = [f for f in sort_analysis['index_coverage'] if not f['has_index']]
+        if unindexed_fields:
+            sort_analysis['optimization_suggestions'].append({
+                'type': 'add_index',
+                'priority': 'high' if len(order_fields) == 1 else 'medium',
+                'message': f"정렬 필드 '{', '.join([f['field'] for f in unindexed_fields])}'에 인덱스 추가 권장"
+            })
+        
+        # 복합 인덱스 제안
+        if len(order_fields) > 1:
+            sort_analysis['recommended_indexes'].append({
+                'type': 'composite',
+                'fields': [f.lstrip('-') for f in order_fields],
+                'priority': 'high',
+                'description': f"복합 인덱스 생성: {', '.join([f.lstrip('-') for f in order_fields])}"
+            })
+        
+        # 성능 영향 평가
+        indexed_count = sum(1 for f in sort_analysis['index_coverage'] if f['has_index'])
+        total_count = len(sort_analysis['index_coverage'])
+        
+        if indexed_count == total_count:
+            sort_analysis['performance_impact'] = 'low'
+        elif indexed_count == 0:
+            sort_analysis['performance_impact'] = 'high'
+        else:
+            sort_analysis['performance_impact'] = 'medium'
+        
+        return sort_analysis
+        
+    except Exception:
+        return {
+            'order_fields': order_fields,
+            'index_coverage': [],
+            'optimization_suggestions': [],
+            'performance_impact': 'unknown',
+            'recommended_indexes': []
+        }
+
+def optimize_sorting_query(queryset, order_fields, model_class, join_info=None):
+    """
+    정렬 쿼리를 최적화하는 함수 (5-4단계)
+    
+    Args:
+        queryset: Django QuerySet
+        order_fields (list): 정렬 필드 리스트
+        model_class: Django 모델 클래스
+        join_info (dict): JOIN 정보
+    
+    Returns:
+        tuple: (최적화된 QuerySet, 최적화 정보)
+    """
+    try:
+        # 정렬 최적화 분석
+        sort_analysis = analyze_sorting_optimization(order_fields, model_class, join_info)
+        
+        # 기본 정렬 적용
+        optimized_queryset = queryset.order_by(*order_fields)
+        
+        # 성능 최적화 힌트 적용
+        optimization_info = {
+            'analysis': sort_analysis,
+            'optimizations_applied': [],
+            'query_hints': []
+        }
+        
+        # 인덱스 힌트 추가
+        if sort_analysis['performance_impact'] == 'high':
+            optimization_info['query_hints'].append({
+                'type': 'warning',
+                'message': '정렬 성능이 낮을 수 있습니다. 인덱스 추가를 고려하세요.'
+            })
+        
+        # JOIN이 있는 경우 추가 최적화
+        if join_info and join_info.get('join_model'):
+            join_table = join_info['join_table']
+            join_model = join_info['join_model']
+            
+            # JOIN된 테이블의 정렬 필드 분석
+            join_order_fields = [f for f in order_fields if f.startswith(f'{join_table}__')]
+            if join_order_fields:
+                join_sort_analysis = analyze_sorting_optimization(
+                    [f.replace(f'{join_table}__', '') for f in join_order_fields], 
+                    join_model
+                )
+                optimization_info['join_optimization'] = join_sort_analysis
+        
+        # 메모리 최적화 힌트
+        if len(order_fields) > 3:
+            optimization_info['query_hints'].append({
+                'type': 'info',
+                'message': '다중 정렬 필드 사용 시 메모리 사용량이 증가할 수 있습니다.'
+            })
+        
+        return optimized_queryset, optimization_info
+        
+    except Exception:
+        # 오류 발생 시 기본 정렬만 적용
+        return queryset.order_by(*order_fields), {
+            'analysis': None,
+            'optimizations_applied': [],
+            'query_hints': [{
+                'type': 'error',
+                'message': '정렬 최적화 분석 중 오류가 발생했습니다.'
+            }]
+        }
+
+def monitor_sorting_performance(queryset, order_fields, execution_time, model_class):
+    """
+    정렬 성능을 모니터링하고 분석하는 함수 (5-4단계)
+    
+    Args:
+        queryset: Django QuerySet
+        order_fields (list): 정렬 필드 리스트
+        execution_time (float): 실행 시간
+        model_class: Django 모델 클래스
+    
+    Returns:
+        dict: 성능 모니터링 결과
+    """
+    try:
+        # 기본 성능 메트릭
+        performance_metrics = {
+            'execution_time': execution_time,
+            'order_fields_count': len(order_fields),
+            'estimated_records': queryset.count() if hasattr(queryset, 'count') else 'unknown',
+            'performance_rating': 'good',
+            'recommendations': []
+        }
+        
+        # 실행 시간 기반 성능 평가
+        if execution_time < 0.1:
+            performance_metrics['performance_rating'] = 'excellent'
+        elif execution_time < 0.5:
+            performance_metrics['performance_rating'] = 'good'
+        elif execution_time < 2.0:
+            performance_metrics['performance_rating'] = 'fair'
+        else:
+            performance_metrics['performance_rating'] = 'poor'
+            performance_metrics['recommendations'].append({
+                'type': 'performance',
+                'priority': 'high',
+                'message': f'정렬 실행 시간이 {execution_time:.3f}초로 느립니다. 인덱스 최적화를 고려하세요.'
+            })
+        
+        # 정렬 필드 수 기반 권장사항
+        if len(order_fields) > 3:
+            performance_metrics['recommendations'].append({
+                'type': 'complexity',
+                'priority': 'medium',
+                'message': f'{len(order_fields)}개의 정렬 필드를 사용하고 있습니다. 복합 인덱스 생성을 고려하세요.'
+            })
+        
+        # 인덱스 분석
+        indexes = get_model_indexes(model_class)
+        indexed_fields = [idx['field'] for idx in indexes['single_indexes']]
+        composite_fields = []
+        for idx in indexes['composite_indexes']:
+            if idx['fields']:
+                composite_fields.extend(idx['fields'])
+        
+        # 정렬 필드별 인덱스 커버리지 분석
+        field_coverage = []
+        for field in order_fields:
+            field_name = field.lstrip('-')
+            has_single_index = field_name in indexed_fields
+            has_composite_index = field_name in composite_fields
+            
+            field_coverage.append({
+                'field': field_name,
+                'direction': 'DESC' if field.startswith('-') else 'ASC',
+                'has_single_index': has_single_index,
+                'has_composite_index': has_composite_index,
+                'index_coverage': 'full' if has_single_index or has_composite_index else 'none'
+            })
+        
+        performance_metrics['field_coverage'] = field_coverage
+        
+        # 전체 인덱스 커버리지 계산
+        covered_fields = sum(1 for f in field_coverage if f['index_coverage'] != 'none')
+        total_fields = len(field_coverage)
+        coverage_percentage = (covered_fields / total_fields * 100) if total_fields > 0 else 0
+        
+        performance_metrics['index_coverage_percentage'] = coverage_percentage
+        
+        if coverage_percentage < 50:
+            performance_metrics['recommendations'].append({
+                'type': 'index',
+                'priority': 'high',
+                'message': f'인덱스 커버리지가 {coverage_percentage:.1f}%로 낮습니다. 정렬 필드에 인덱스를 추가하세요.'
+            })
+        elif coverage_percentage < 100:
+            performance_metrics['recommendations'].append({
+                'type': 'index',
+                'priority': 'medium',
+                'message': f'인덱스 커버리지가 {coverage_percentage:.1f}%입니다. 추가 인덱스로 성능을 향상시킬 수 있습니다.'
+            })
+        
+        return performance_metrics
+        
+    except Exception:
+        return {
+            'execution_time': execution_time,
+            'order_fields_count': len(order_fields),
+            'estimated_records': 'unknown',
+            'performance_rating': 'unknown',
+            'recommendations': [{
+                'type': 'error',
+                'priority': 'low',
+                'message': '성능 모니터링 중 오류가 발생했습니다.'
+            }],
+            'field_coverage': [],
+            'index_coverage_percentage': 0
+        }
+
 @csrf_exempt
 @require_http_methods(["POST"])
 def db_explorer(request):
@@ -772,8 +1104,45 @@ def db_explorer(request):
             # 2단계: WHERE 조건 적용 (JOIN된 테이블 필드 지원)
             queryset = parse_where_conditions(where_data, queryset, join_info)
             
-            # 3단계: ORDER BY 조건 적용 (5-1단계)
-            queryset = parse_order_by_conditions(order_by_data, queryset, join_info)
+            # 3단계: ORDER BY 조건 적용 및 최적화 (5-4단계)
+            sort_optimization_info = None
+            if order_by_applied:
+                # 정렬 필드 추출
+                order_fields = []
+                if isinstance(order_by_data, list):
+                    for order_item in order_by_data:
+                        if isinstance(order_item, str):
+                            parts = order_item.strip().split()
+                            field_name = parts[0]
+                            direction = parts[1].upper() if len(parts) > 1 else 'ASC'
+                            if direction == 'DESC':
+                                order_fields.append(f'-{field_name}')
+                            else:
+                                order_fields.append(field_name)
+                        elif isinstance(order_item, dict):
+                            field_name = order_item.get('field', '')
+                            direction = order_item.get('direction', 'ASC').upper()
+                            if direction == 'DESC':
+                                order_fields.append(f'-{field_name}')
+                            else:
+                                order_fields.append(field_name)
+                elif isinstance(order_by_data, str):
+                    parts = order_by_data.strip().split()
+                    field_name = parts[0]
+                    direction = parts[1].upper() if len(parts) > 1 else 'ASC'
+                    if direction == 'DESC':
+                        order_fields.append(f'-{field_name}')
+                    else:
+                        order_fields.append(field_name)
+                
+                # 정렬 최적화 적용
+                if order_fields:
+                    queryset, sort_optimization_info = optimize_sorting_query(
+                        queryset, order_fields, model_class, join_info
+                    )
+            else:
+                # ORDER BY가 없는 경우 기본 정렬 적용
+                queryset = parse_order_by_conditions(order_by_data, queryset, join_info)
             
             # 4단계: SELECT 필드 적용 (JOIN된 테이블 필드 포함)
             if join_info and join_info.get('join_model'):
@@ -823,6 +1192,42 @@ def db_explorer(request):
         
         execution_time = time.time() - start_time
         
+        # 정렬 성능 모니터링 (5-4단계)
+        sorting_performance_metrics = None
+        if order_by_applied and sort_optimization_info:
+            # 정렬 필드 추출 (모니터링용)
+            monitor_order_fields = []
+            if isinstance(order_by_data, list):
+                for order_item in order_by_data:
+                    if isinstance(order_item, str):
+                        parts = order_item.strip().split()
+                        field_name = parts[0]
+                        direction = parts[1].upper() if len(parts) > 1 else 'ASC'
+                        if direction == 'DESC':
+                            monitor_order_fields.append(f'-{field_name}')
+                        else:
+                            monitor_order_fields.append(field_name)
+                    elif isinstance(order_item, dict):
+                        field_name = order_item.get('field', '')
+                        direction = order_item.get('direction', 'ASC').upper()
+                        if direction == 'DESC':
+                            monitor_order_fields.append(f'-{field_name}')
+                        else:
+                            monitor_order_fields.append(field_name)
+            elif isinstance(order_by_data, str):
+                parts = order_by_data.strip().split()
+                field_name = parts[0]
+                direction = parts[1].upper() if len(parts) > 1 else 'ASC'
+                if direction == 'DESC':
+                    monitor_order_fields.append(f'-{field_name}')
+                else:
+                    monitor_order_fields.append(field_name)
+            
+            if monitor_order_fields:
+                sorting_performance_metrics = monitor_sorting_performance(
+                    queryset, monitor_order_fields, execution_time, model_class
+                )
+        
         # 12. WHERE 조건 정보 수집
         where_info = None
         if where_applied:
@@ -863,7 +1268,7 @@ def db_explorer(request):
                     'flexible_join': True  # 유연한 JOIN 조건 지원
                 }
         
-        # 14. ORDER BY 조건 정보 수집 (개선: 상세 정보 추가)
+        # 14. ORDER BY 조건 정보 수집 및 정렬 최적화 정보 (5-4단계)
         order_by_info = None
         if order_by_applied:
             order_by_info = {
@@ -882,6 +1287,29 @@ def db_explorer(request):
                             'field': order_item.get('field', ''),
                             'direction': order_item.get('direction', 'ASC').upper()
                         })
+            
+            # 정렬 최적화 정보 추가 (5-4단계)
+            if sort_optimization_info:
+                order_by_info['sort_optimization'] = {
+                    'analysis': sort_optimization_info.get('analysis', {}),
+                    'query_hints': sort_optimization_info.get('query_hints', []),
+                    'join_optimization': sort_optimization_info.get('join_optimization', {}),
+                    'performance_impact': sort_optimization_info.get('analysis', {}).get('performance_impact', 'unknown'),
+                    'optimization_score': sum(
+                        f.get('optimization_score', 0) 
+                        for f in sort_optimization_info.get('analysis', {}).get('index_coverage', [])
+                    ) / max(len(sort_optimization_info.get('analysis', {}).get('index_coverage', [])), 1)
+                }
+                
+                # 성능 모니터링 정보 추가 (5-4단계)
+                if sorting_performance_metrics:
+                    order_by_info['sort_optimization']['performance_monitoring'] = {
+                        'execution_time': sorting_performance_metrics.get('execution_time', 0),
+                        'performance_rating': sorting_performance_metrics.get('performance_rating', 'unknown'),
+                        'index_coverage_percentage': sorting_performance_metrics.get('index_coverage_percentage', 0),
+                        'field_coverage': sorting_performance_metrics.get('field_coverage', []),
+                        'recommendations': sorting_performance_metrics.get('recommendations', [])
+                    }
         
         # 15. 페이지네이션 메타데이터 계산 (5-3단계) - 성능 최적화
         pagination_meta = None
@@ -957,10 +1385,29 @@ def db_explorer(request):
                 if field_validation['main_field_valid'] and field_validation['join_field_valid']:
                     response_message += ' - 유연한 JOIN 조건 지원'
         
-        # ORDER BY 정보 추가
+        # ORDER BY 정보 추가 (정렬 최적화 포함)
         if order_by_applied:
             order_count = len(order_by_data) if isinstance(order_by_data, list) else 1
             response_message += f' (ORDER BY {order_count}개 조건 적용됨)'
+            
+            # 정렬 최적화 정보 추가 (5-4단계)
+            if sort_optimization_info and sort_optimization_info.get('analysis'):
+                analysis = sort_optimization_info['analysis']
+                performance_impact = analysis.get('performance_impact', 'unknown')
+                
+                if performance_impact == 'low':
+                    response_message += ' - 정렬 최적화 완료 (인덱스 활용)'
+                elif performance_impact == 'medium':
+                    response_message += ' - 정렬 최적화 부분 적용'
+                elif performance_impact == 'high':
+                    response_message += ' - 정렬 최적화 필요 (인덱스 추가 권장)'
+                
+                # 최적화 제안이 있는 경우
+                suggestions = analysis.get('optimization_suggestions', [])
+                if suggestions:
+                    high_priority = [s for s in suggestions if s.get('priority') == 'high']
+                    if high_priority:
+                        response_message += ' - 고우선순위 최적화 제안 있음'
         
         # OFFSET 정보 추가
         if offset_info:
