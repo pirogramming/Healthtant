@@ -15,13 +15,14 @@ def main_page(request):
     """메인 페이지 뷰(바꾸셔도 돼요요)"""
     return render(request, 'main/main_mainpage.html')
 
-def parse_where_conditions(where_data, queryset):
+def parse_where_conditions(where_data, queryset, join_info=None):
     """
-    WHERE 조건을 Django ORM 쿼리로 변환하는 함수
+    WHERE 조건을 Django ORM 쿼리로 변환하는 함수 (3-5단계 개선)
     
     Args:
         where_data (dict): WHERE 조건 데이터
         queryset: Django QuerySet
+        join_info (dict): JOIN 정보 (JOIN된 테이블의 필드 조건 지원)
     
     Returns:
         QuerySet: 필터링된 QuerySet
@@ -49,6 +50,15 @@ def parse_where_conditions(where_data, queryset):
     # 지원하는 연산자 목록
     supported_operators = ['=', '!=', '>', '<', '>=', '<=', 'LIKE', 'IN', 'BETWEEN']
     
+    # JOIN 정보가 있으면 사용 가능한 필드 확장
+    available_fields = [field.name for field in queryset.model._meta.fields]
+    if join_info and join_info.get('join_model'):
+        join_model = join_info['join_model']
+        join_table_name = join_info['join_table']
+        join_fields = [field.name for field in join_model._meta.fields]
+        # JOIN 테이블 필드는 "테이블명__필드명" 형태로 접근
+        available_fields.extend([f"{join_table_name}__{field}" for field in join_fields])
+    
     # 단일 조건 처리
     if len(conditions) == 1:
         condition = conditions[0]
@@ -61,9 +71,7 @@ def parse_where_conditions(where_data, queryset):
         operator = condition['operator']
         value = condition['value']
         
-        # 필드명 유효성 검사 강화 (모델 클래스 추출)
-        model_class = queryset.model
-        available_fields = [field.name for field in model_class._meta.fields]
+        # 필드명 유효성 검사 강화 (JOIN된 테이블 필드 포함)
         if field_name not in available_fields:
             return queryset
         
@@ -130,9 +138,7 @@ def parse_where_conditions(where_data, queryset):
                 operator = condition['operator']
                 value = condition['value']
                 
-                # 필드명 유효성 검사 강화 (모델 클래스 추출)
-                model_class = queryset.model
-                available_fields = [field.name for field in model_class._meta.fields]
+                # 필드명 유효성 검사 강화 (JOIN된 테이블 필드 포함)
                 if field_name not in available_fields:
                     continue
                 
@@ -254,14 +260,14 @@ def parse_join_conditions(join_data, model_class):
         model_class: 메인 Django 모델 클래스
     
     Returns:
-        QuerySet: JOIN된 QuerySet
+        tuple: (QuerySet, join_info) - JOIN된 QuerySet과 JOIN 정보
     """
     if not join_data:
-        return model_class.objects.all()
+        return model_class.objects.all(), None
     
     # JOIN 조건 구조 검증
     if not all(key in join_data for key in ['table', 'type', 'on']):
-        return model_class.objects.all()
+        return model_class.objects.all(), None
     
     join_table = join_data['table']
     join_type = join_data['type'].upper()
@@ -269,11 +275,11 @@ def parse_join_conditions(join_data, model_class):
     
     # JOIN 타입 유효성 검사
     if join_type not in ['INNER', 'LEFT', 'RIGHT']:
-        return model_class.objects.all()
+        return model_class.objects.all(), None
     
     # JOIN 조건 구조 검증
     if not all(key in join_on for key in ['left', 'right']):
-        return model_class.objects.all()
+        return model_class.objects.all(), None
     
     # 모델 매핑
     model_mapping = {
@@ -343,14 +349,14 @@ def parse_join_conditions(join_data, model_class):
             break
     
     if not main_table:
-        return model_class.objects.all()
+        return model_class.objects.all(), None
     
     # JOIN 가능한 테이블 조합 검증
     if main_table not in table_relationships:
-        return model_class.objects.all()
+        return model_class.objects.all(), None
     
     if join_table not in table_relationships[main_table]:
-        return model_class.objects.all()
+        return model_class.objects.all(), None
     
     # 관계 정보 가져오기
     relationship_info = table_relationships[main_table][join_table]
@@ -363,12 +369,22 @@ def parse_join_conditions(join_data, model_class):
     
     # 필드명이 예상과 일치하는지 검사
     if left_field != expected_main_field or right_field != expected_join_field:
-        return model_class.objects.all()
+        return model_class.objects.all(), None
     
     # JOIN 모델 가져오기
     join_model_class = relationship_info['join_model']
     
-    # JOIN 타입별 처리 (3-3단계)
+    # JOIN 정보 생성
+    join_info = {
+        'join_table': join_table,
+        'join_type': join_type,
+        'join_model': join_model_class,
+        'relationship': relationship_info['relationship'],
+        'join_conditions': join_on,
+        'is_reversed': False  # RIGHT JOIN인지 여부
+    }
+    
+    # JOIN 타입별 처리 (3-4단계 개선)
     try:
         if join_type == 'INNER':
             # INNER JOIN: 두 테이블 모두에 매칭되는 레코드만
@@ -376,7 +392,7 @@ def parse_join_conditions(join_data, model_class):
                 # 메인 테이블에서 JOIN 테이블로 (1:N)
                 queryset = model_class.objects.filter(
                     **{f'{join_table}__isnull': False}
-                ).select_related(join_table)
+                ).prefetch_related(join_table)
             else:
                 # 메인 테이블에서 JOIN 테이블로 (N:1)
                 queryset = model_class.objects.select_related(join_table)
@@ -393,6 +409,8 @@ def parse_join_conditions(join_data, model_class):
         elif join_type == 'RIGHT':
             # RIGHT JOIN: Django ORM에서는 직접 지원하지 않으므로 LEFT JOIN으로 시뮬레이션
             # JOIN 테이블을 메인으로 하고 LEFT JOIN으로 처리
+            join_info['is_reversed'] = True
+            
             if relationship_info['relationship'] == 'one_to_many':
                 # JOIN 테이블을 메인으로 하고 메인 테이블로 LEFT JOIN
                 queryset = join_model_class.objects.select_related(main_table)
@@ -400,11 +418,11 @@ def parse_join_conditions(join_data, model_class):
                 # JOIN 테이블을 메인으로 하고 메인 테이블로 LEFT JOIN
                 queryset = join_model_class.objects.select_related(main_table)
         
-        return queryset
+        return queryset, join_info
         
     except Exception:
         # JOIN 처리 중 오류가 발생하면 원본 QuerySet 반환
-        return model_class.objects.all()
+        return model_class.objects.all(), None
 
 @csrf_exempt
 @require_http_methods(["POST"])
@@ -445,7 +463,7 @@ def db_explorer(request):
         
         model_class = model_mapping[table_name]
         
-        # 5. SELECT 필드 결정 및 유효성 검사
+        # 5. SELECT 필드 결정 및 유효성 검사 (3-5단계 개선)
         select_fields = data.get('select', [])
         if not select_fields:
             # select 필드가 없으면 모든 필드 선택
@@ -453,6 +471,22 @@ def db_explorer(request):
         else:
             # select 필드가 있으면 유효성 검사
             available_fields = [field.name for field in model_class._meta.fields]
+            
+            # JOIN 조건이 있는지 미리 확인
+            join_data = data.get('join', None)
+            join_applied = join_data is not None and all(key in join_data for key in ['table', 'type', 'on'])
+            
+            # JOIN된 테이블의 필드도 사용 가능하도록 추가
+            if join_applied:
+                # JOIN 정보를 미리 생성하여 필드 검증에 사용
+                temp_queryset, temp_join_info = parse_join_conditions(join_data, model_class)
+                if temp_join_info and temp_join_info.get('join_model'):
+                    join_model = temp_join_info['join_model']
+                    join_table_name = temp_join_info['join_table']
+                    join_fields = [field.name for field in join_model._meta.fields]
+                    # JOIN 테이블 필드는 "테이블명__필드명" 형태로 접근
+                    available_fields.extend([f"{join_table_name}__{field}" for field in join_fields])
+            
             invalid_fields = [field for field in select_fields if field not in available_fields]
             
             if invalid_fields:
@@ -466,7 +500,7 @@ def db_explorer(request):
         where_data = data.get('where', None)
         where_applied = where_data is not None and 'conditions' in where_data and len(where_data['conditions']) > 0
         
-        # 7. JOIN 조건 처리 (3-1단계)
+        # 7. JOIN 조건 처리 (3-5단계 최적화)
         join_data = data.get('join', None)
         join_applied = join_data is not None and all(key in join_data for key in ['table', 'type', 'on'])
         
@@ -482,23 +516,49 @@ def db_explorer(request):
         if limit > 1000:  # 최대 1000개로 제한
             limit = 1000
         
-        # 9. 쿼리 실행 (최적화된 순서)
+        # 9. 쿼리 실행 (3-5단계 최적화된 순서)
         start_time = time.time()
         
         try:
             # 1단계: JOIN 조건 적용 (기본 구조만)
-            queryset = parse_join_conditions(join_data, model_class)
+            queryset, join_info = parse_join_conditions(join_data, model_class)
             
-            # 2단계: WHERE 조건 적용
-            queryset = parse_where_conditions(where_data, queryset)
+            # 2단계: WHERE 조건 적용 (JOIN된 테이블 필드 지원)
+            queryset = parse_where_conditions(where_data, queryset, join_info)
             
-            # 3단계: SELECT 필드 적용
+            # 3단계: SELECT 필드 적용 (JOIN된 테이블 필드 포함)
+            if join_info and join_info.get('join_model'):
+                # JOIN된 테이블의 필드도 선택 가능하도록 처리
+                join_table_name = join_info['join_table']
+                join_model = join_info['join_model']
+                join_fields = [field.name for field in join_model._meta.fields]
+                
+                # JOIN 테이블 필드가 선택된 경우 처리
+                join_selected_fields = [field for field in select_fields if field.startswith(f"{join_table_name}__")]
+                if join_selected_fields:
+                    # JOIN 테이블 필드가 선택된 경우 select_related/prefetch_related 최적화
+                    if join_info['relationship'] == 'many_to_one':
+                        queryset = queryset.select_related(join_table_name)
+                    else:
+                        queryset = queryset.prefetch_related(join_table_name)
+            
+            # 4단계: 쿼리 최적화 (3-5단계)
+            if join_info:
+                # JOIN이 있는 경우 쿼리 최적화
+                if join_info['relationship'] == 'many_to_one':
+                    # N:1 관계인 경우 select_related로 최적화
+                    queryset = queryset.select_related(join_info['join_table'])
+                else:
+                    # 1:N 관계인 경우 prefetch_related로 최적화
+                    queryset = queryset.prefetch_related(join_info['join_table'])
+            
+            # 5단계: SELECT 필드 적용 (최적화된 순서)
             queryset = queryset.values(*select_fields)
             
-            # 4단계: LIMIT 적용
+            # 6단계: LIMIT 적용 (성능 최적화)
             queryset = queryset[:limit]
             
-            # 5단계: 결과 변환
+            # 7단계: 결과 변환 (지연 평가)
             results = list(queryset)
             
         except Exception as query_error:
@@ -531,22 +591,26 @@ def db_explorer(request):
                     })
         
         # 11. JOIN 조건 정보 수집
-        join_info = None
+        join_info_response = None
         if join_applied:
-            join_info = {
+            join_info_response = {
                 'join_table': join_data['table'],
                 'join_type': join_data['type'],
                 'join_conditions': join_data['on']
             }
+            if join_info and join_info['is_reversed']:
+                join_info_response['is_reversed'] = True
         
-        # 12. 응답 메시지 생성
+        # 12. 응답 메시지 생성 (3-5단계 개선)
         response_message = f'{table_name} 테이블 조회가 완료되었습니다. (총 {len(results)}개 결과)'
         if where_applied:
             response_message += f' (WHERE 조건 {len(where_data["conditions"])}개 적용됨)'
         if join_applied:
             response_message += f' (JOIN {join_data["table"]} 테이블 적용됨)'
+            if where_applied:
+                response_message += ' - JOIN 후 WHERE 조건 최적화 적용'
         
-        # 13. 응답 반환
+        # 13. 응답 반환 (3-5단계 개선)
         return JsonResponse({
             'success': True,
             'message': response_message,
@@ -561,7 +625,12 @@ def db_explorer(request):
                     'where_applied': where_applied,
                     'where_info': where_info,
                     'join_applied': join_applied,
-                    'join_info': join_info
+                    'join_info': join_info_response,
+                    'optimization_applied': {
+                        'join_where_optimization': join_applied and where_applied,
+                        'query_optimization': join_applied,
+                        'execution_order': 'JOIN -> WHERE -> SELECT -> LIMIT (3-5단계 최적화)'
+                    }
                 },
                 'results': results
             }
