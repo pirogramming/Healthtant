@@ -368,10 +368,43 @@ def parse_join_conditions(join_data, model_class):
     # JOIN 모델 가져오기
     join_model_class = relationship_info['join_model']
     
-    # 기본 QuerySet 반환 (아직 JOIN 처리 안함)
-    # TODO: 3-3단계에서 실제 JOIN 처리 구현
-    
-    return model_class.objects.all()
+    # JOIN 타입별 처리 (3-3단계)
+    try:
+        if join_type == 'INNER':
+            # INNER JOIN: 두 테이블 모두에 매칭되는 레코드만
+            if relationship_info['relationship'] == 'one_to_many':
+                # 메인 테이블에서 JOIN 테이블로 (1:N)
+                queryset = model_class.objects.filter(
+                    **{f'{join_table}__isnull': False}
+                ).select_related(join_table)
+            else:
+                # 메인 테이블에서 JOIN 테이블로 (N:1)
+                queryset = model_class.objects.select_related(join_table)
+                
+        elif join_type == 'LEFT':
+            # LEFT JOIN: 메인 테이블의 모든 레코드 + 매칭되는 JOIN 테이블 레코드
+            if relationship_info['relationship'] == 'one_to_many':
+                # 메인 테이블에서 JOIN 테이블로 (1:N)
+                queryset = model_class.objects.prefetch_related(join_table)
+            else:
+                # 메인 테이블에서 JOIN 테이블로 (N:1)
+                queryset = model_class.objects.select_related(join_table)
+                
+        elif join_type == 'RIGHT':
+            # RIGHT JOIN: Django ORM에서는 직접 지원하지 않으므로 LEFT JOIN으로 시뮬레이션
+            # JOIN 테이블을 메인으로 하고 LEFT JOIN으로 처리
+            if relationship_info['relationship'] == 'one_to_many':
+                # JOIN 테이블을 메인으로 하고 메인 테이블로 LEFT JOIN
+                queryset = join_model_class.objects.select_related(main_table)
+            else:
+                # JOIN 테이블을 메인으로 하고 메인 테이블로 LEFT JOIN
+                queryset = join_model_class.objects.select_related(main_table)
+        
+        return queryset
+        
+    except Exception:
+        # JOIN 처리 중 오류가 발생하면 원본 QuerySet 반환
+        return model_class.objects.all()
 
 @csrf_exempt
 @require_http_methods(["POST"])
