@@ -4,40 +4,73 @@ from diets.models import Diet
 from datetime import datetime
 
 def calculate_recommendation(user):
-    gender = user.gender
-    age = user.age
+    gender = user.gender  # '남성' 또는 '여성'
+    age = user.age        # int
+
     ret = {
-        'calorie' : 0,
-        'carbohydrate' : 0,
-        'protein' : 0,
-        'salt' : 0
+        'calorie': 0,
+        'carbohydrate': 0,
+        'protein': 0,
+        'salt': 0
     }
 
-    if 1 <= age <= 2:
-        ret['calorie'] = 900
+    age_interval = [(1,2), (3,5), (6,8), (9,11), (12,14), (15,18), (19,29), (30,49), (50,64), (65,74), (75,150)]
+    for i in range(len(age_interval)):
+        start, end = age_interval[i]
+        if start <= age <= end:
+            idx = i
+            break
+    
+    # 에너지 필요추정량 표
+    eer_table = [
+        (900, 900),
+        (1400, 1400),
+        (1700, 1500),
+        (2000, 1800),
+        (2500, 2100),
+        (2700, 2000),
+        (2600, 2000),
+        (2600, 2000),
+        (2400, 1900),
+        (2200, 1800),
+        (2000, 1600)
+    ]
 
-    elif 3 <= age <= 5:
-        ret['calorie'] = 1400
+    # 단백질 권장량 (g)
+    protein_table = [
+        (15, 15),
+        (20, 20),
+        (30, 25),
+        (40, 35),
+        (55, 45),
+        (60, 50),
+        (60, 50),
+        (60, 50),
+        (60, 50),
+        (60, 50),
+        (60, 50)
+    ]
 
-    elif 6 <= age <= 8:
-        
-    
-    elif 9 <= age <= 11:
-    
-    elif 12 <= age <= 14:
-    
-    elif 15 <= age <= 18:
-    
-    elif 19 <= age <= 29:
-    
-    elif 30 <= age <= 49:
-    
-    elif 50 <= age <= 64:
-    
-    elif 65 <= age <= 74:
+    salt_table = [
+        1200,
+        1600,
+        1900,
+        2300,
+        2300,
+        2300,
+        2300,
+        2300,
+        2300,
+        2300,
+        1700
+    ]
 
-    else:
+    ret['calorie'] = eer_table[idx][0] if gender == "남성" else eer_table[idx][1]
+    ret['carbohydrate'] = 130 #탄수화물 권장섭취량 130g으로 고정됨
+    ret['protein'] = protein_table[idx][0] if gender == "남성" else protein_table[idx][1]
+    ret['salt'] = salt_table[idx] #만성질환 위험감소 섭취량은 남성과 여성이 동일
 
+    return ret
 
 
 @login_required
