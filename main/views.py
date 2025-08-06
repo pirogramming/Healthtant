@@ -275,8 +275,98 @@ def parse_join_conditions(join_data, model_class):
     if not all(key in join_on for key in ['left', 'right']):
         return model_class.objects.all()
     
-    # JOIN 가능한 테이블 조합 검증 (3-2단계에서 구현 예정)
-    # TODO: 테이블 관계 매핑 및 검증
+    # 모델 매핑
+    model_mapping = {
+        'food': Food,
+        'price': Price,
+        'diet': Diet,
+        'user': UserProfile
+    }
+    
+    # 테이블 관계 매핑 및 검증 (3-2단계)
+    table_relationships = {
+        # food 테이블과의 관계
+        'food': {
+            'price': {
+                'main_field': 'food_id',
+                'join_field': 'food_id',
+                'join_model': Price,
+                'relationship': 'one_to_many'  # food 1개 -> price 여러개
+            },
+            'diet': {
+                'main_field': 'food_id',
+                'join_field': 'food_id',
+                'join_model': Diet,
+                'relationship': 'one_to_many'  # food 1개 -> diet 여러개
+            }
+        },
+        # price 테이블과의 관계
+        'price': {
+            'food': {
+                'main_field': 'food_id',
+                'join_field': 'food_id',
+                'join_model': Food,
+                'relationship': 'many_to_one'  # price 여러개 -> food 1개
+            }
+        },
+        # diet 테이블과의 관계
+        'diet': {
+            'food': {
+                'main_field': 'food_id',
+                'join_field': 'food_id',
+                'join_model': Food,
+                'relationship': 'many_to_one'  # diet 여러개 -> food 1개
+            },
+            'user': {
+                'main_field': 'user_id',
+                'join_field': 'user_id',
+                'join_model': UserProfile,
+                'relationship': 'many_to_one'  # diet 여러개 -> user 1개
+            }
+        },
+        # user 테이블과의 관계
+        'user': {
+            'diet': {
+                'main_field': 'user_id',
+                'join_field': 'user_id',
+                'join_model': Diet,
+                'relationship': 'one_to_many'  # user 1개 -> diet 여러개
+            }
+        }
+    }
+    
+    # 메인 테이블명 추출
+    main_table = None
+    for table_name, model in model_mapping.items():
+        if model == model_class:
+            main_table = table_name
+            break
+    
+    if not main_table:
+        return model_class.objects.all()
+    
+    # JOIN 가능한 테이블 조합 검증
+    if main_table not in table_relationships:
+        return model_class.objects.all()
+    
+    if join_table not in table_relationships[main_table]:
+        return model_class.objects.all()
+    
+    # 관계 정보 가져오기
+    relationship_info = table_relationships[main_table][join_table]
+    expected_main_field = relationship_info['main_field']
+    expected_join_field = relationship_info['join_field']
+    
+    # JOIN 조건 필드 유효성 검사
+    left_field = join_on['left']
+    right_field = join_on['right']
+    
+    # 필드명이 예상과 일치하는지 검사
+    if left_field != expected_main_field or right_field != expected_join_field:
+        return model_class.objects.all()
+    
+    # JOIN 모델 가져오기
+    join_model_class = relationship_info['join_model']
     
     # 기본 QuerySet 반환 (아직 JOIN 처리 안함)
     # TODO: 3-3단계에서 실제 JOIN 처리 구현
