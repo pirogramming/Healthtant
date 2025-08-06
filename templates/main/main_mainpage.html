@@ -4,34 +4,16 @@
 {% block title %}HEALTHTANT{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'main/mainpage.css' %}">
+{% comment %} <link rel="stylesheet" href="{% static 'main/main.css' %}"> {% endcomment %}
 {% endblock %}
 
 {% block content %}
-<!-- 검색 영역 -->
-<section class="search-container">
-    <form class="search-form" method="GET" action="#">
-        <input 
-            type="text" 
-            class="search-input" 
-            name="q"
-            placeholder="What's your daily needs?"
-            aria-label="건강 제품 검색"
-        >
-        <button type="submit" class="search-button" aria-label="검색">
-            <svg class="search-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M21 21L16.514 16.506L21 21ZM19 10.5C19 15.194 15.194 19 10.5 19C5.806 19 2 15.194 2 10.5C2 5.806 5.806 2 10.5 2C15.194 2 19 5.806 19 10.5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-        </button>
-    </form>
-</section>
-
 <!-- 추천 제품 영역 -->
 <section class="featured-container">
     <div class="featured-product">
         <img 
-            src="https://via.placeholder.com/321x255/d4f4dd/56aab2?text=Candleaf+Green+Smoothie" 
-            alt="Candleaf 그린 스무디" 
+            src="#" 
+            alt="제품 랜덤으로 바뀔부분" 
             class="product-image"
         >
     </div>
