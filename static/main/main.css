@@ -19,8 +19,7 @@
 .view {
     width: 100%;
     min-height: 100vh;
-    padding-bottom: 80px; /* 네비게이션 바 공간 확보 */
-    /* overflow 속성들 제거 */
+    padding-bottom: 80px;
 }
 
 .view::-webkit-scrollbar {
@@ -48,7 +47,7 @@
     color: var(--main);
     text-align: center;
     font-weight: 400;
-    margin: 0;
+    margin: -5px;
 }
 
 /* 메인 콘텐츠 */
