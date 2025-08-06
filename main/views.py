@@ -454,6 +454,83 @@ def parse_join_conditions(join_data, model_class):
         # JOIN 처리 중 오류가 발생하면 원본 QuerySet 반환
         return model_class.objects.all(), None
 
+def parse_order_by_conditions(order_by_data, queryset, join_info=None):
+    """
+    ORDER BY 조건을 Django ORM 쿼리로 변환하는 함수 (5-1단계)
+    
+    Args:
+        order_by_data (list): ORDER BY 조건 데이터
+        queryset: Django QuerySet
+        join_info (dict): JOIN 정보 (JOIN된 테이블의 필드 정렬 지원)
+    
+    Returns:
+        QuerySet: 정렬된 QuerySet
+    """
+    if not order_by_data:
+        return queryset
+    
+    # ORDER BY 조건이 리스트가 아니면 변환
+    if not isinstance(order_by_data, list):
+        order_by_data = [order_by_data]
+    
+    # 정렬 조건 개수 제한 (보안상 복잡한 쿼리 방지)
+    if len(order_by_data) > 5:
+        return queryset
+    
+    # 사용 가능한 필드 목록 생성
+    available_fields = [field.name for field in queryset.model._meta.fields]
+    if join_info and join_info.get('join_model'):
+        join_model = join_info['join_model']
+        join_table_name = join_info['join_table']
+        join_fields = [field.name for field in join_model._meta.fields]
+        # JOIN 테이블 필드는 "테이블명__필드명" 형태로 접근
+        available_fields.extend([f"{join_table_name}__{field}" for field in join_fields])
+    
+    # 정렬 필드 리스트 생성
+    order_fields = []
+    
+    for order_item in order_by_data:
+        try:
+            # 문자열 형태: "field" 또는 "field ASC/DESC"
+            if isinstance(order_item, str):
+                parts = order_item.strip().split()
+                field_name = parts[0]
+                direction = parts[1].upper() if len(parts) > 1 else 'ASC'
+            # 딕셔너리 형태: {"field": "field_name", "direction": "ASC/DESC"}
+            elif isinstance(order_item, dict):
+                field_name = order_item.get('field', '')
+                direction = order_item.get('direction', 'ASC').upper()
+            else:
+                continue
+            
+            # 필드명 유효성 검사
+            if field_name not in available_fields:
+                continue
+            
+            # 정렬 방향 검증
+            if direction not in ['ASC', 'DESC']:
+                direction = 'ASC'
+            
+            # Django ORM 정렬 필드 생성
+            if direction == 'DESC':
+                order_fields.append(f'-{field_name}')
+            else:
+                order_fields.append(field_name)
+                
+        except Exception:
+            # 개별 정렬 조건 처리 중 오류가 발생하면 해당 조건만 무시
+            continue
+    
+    # 정렬 적용
+    if order_fields:
+        try:
+            queryset = queryset.order_by(*order_fields)
+        except Exception:
+            # 정렬 적용 중 오류가 발생하면 원본 QuerySet 반환
+            return queryset
+    
+    return queryset
+
 @csrf_exempt
 @require_http_methods(["POST"])
 def db_explorer(request):
@@ -534,7 +611,14 @@ def db_explorer(request):
         join_data = data.get('join', None)
         join_applied = join_data is not None and all(key in join_data for key in ['table', 'type', 'on'])
         
-        # 8. LIMIT 값 검증
+        # 8. ORDER BY 조건 처리 (5-1단계)
+        order_by_data = data.get('order_by', None)
+        order_by_applied = order_by_data is not None and (
+            isinstance(order_by_data, list) and len(order_by_data) > 0 or
+            isinstance(order_by_data, str) and order_by_data.strip()
+        )
+        
+        # 9. LIMIT 값 검증
         limit = data.get('limit', 100)
         if not isinstance(limit, int) or limit < 1:
             return JsonResponse({
@@ -546,7 +630,7 @@ def db_explorer(request):
         if limit > 1000:  # 최대 1000개로 제한
             limit = 1000
         
-        # 9. 쿼리 실행 (3-5단계 최적화된 순서)
+        # 10. 쿼리 실행 (3-5단계 최적화된 순서)
         start_time = time.time()
         
         try:
@@ -556,7 +640,10 @@ def db_explorer(request):
             # 2단계: WHERE 조건 적용 (JOIN된 테이블 필드 지원)
             queryset = parse_where_conditions(where_data, queryset, join_info)
             
-            # 3단계: SELECT 필드 적용 (JOIN된 테이블 필드 포함)
+            # 3단계: ORDER BY 조건 적용 (5-1단계)
+            queryset = parse_order_by_conditions(order_by_data, queryset, join_info)
+            
+            # 4단계: SELECT 필드 적용 (JOIN된 테이블 필드 포함)
             if join_info and join_info.get('join_model'):
                 # JOIN된 테이블의 필드도 선택 가능하도록 처리
                 join_table_name = join_info['join_table']
@@ -572,7 +659,7 @@ def db_explorer(request):
                     else:
                         queryset = queryset.prefetch_related(join_table_name)
             
-            # 4단계: 쿼리 최적화 (3-5단계)
+            # 5단계: 쿼리 최적화 (3-5단계)
             if join_info:
                 # JOIN이 있는 경우 쿼리 최적화
                 if join_info['relationship'] == 'many_to_one':
@@ -582,13 +669,13 @@ def db_explorer(request):
                     # 1:N 관계인 경우 prefetch_related로 최적화
                     queryset = queryset.prefetch_related(join_info['join_table'])
             
-            # 5단계: SELECT 필드 적용 (최적화된 순서)
+            # 6단계: SELECT 필드 적용 (최적화된 순서)
             queryset = queryset.values(*select_fields)
             
-            # 6단계: LIMIT 적용 (성능 최적화)
+            # 7단계: LIMIT 적용 (성능 최적화)
             queryset = queryset[:limit]
             
-            # 7단계: 결과 변환 (지연 평가)
+            # 8단계: 결과 변환 (지연 평가)
             results = list(queryset)
             
         except Exception as query_error:
@@ -600,7 +687,7 @@ def db_explorer(request):
         
         execution_time = time.time() - start_time
         
-        # 10. WHERE 조건 정보 수집
+        # 11. WHERE 조건 정보 수집
         where_info = None
         if where_applied:
             conditions_count = len(where_data['conditions'])
@@ -620,7 +707,7 @@ def db_explorer(request):
                         'value': condition['value']
                     })
         
-        # 11. JOIN 조건 정보 수집 (개선: 상세 정보 추가)
+        # 12. JOIN 조건 정보 수집 (개선: 상세 정보 추가)
         join_info_response = None
         if join_applied:
             join_info_response = {
@@ -640,7 +727,27 @@ def db_explorer(request):
                     'flexible_join': True  # 유연한 JOIN 조건 지원
                 }
         
-        # 12. 응답 메시지 생성 (JOIN 개선 반영)
+        # 13. ORDER BY 조건 정보 수집 (개선: 상세 정보 추가)
+        order_by_info = None
+        if order_by_applied:
+            order_by_info = {
+                'order_by_conditions': order_by_data,
+                'applied_conditions': []
+            }
+            if order_by_data:
+                for order_item in order_by_data:
+                    if isinstance(order_item, str):
+                        order_by_info['applied_conditions'].append({
+                            'field': order_item.strip().split()[0],
+                            'direction': order_item.strip().split()[1].upper() if len(order_item.strip().split()) > 1 else 'ASC'
+                        })
+                    elif isinstance(order_item, dict):
+                        order_by_info['applied_conditions'].append({
+                            'field': order_item.get('field', ''),
+                            'direction': order_item.get('direction', 'ASC').upper()
+                        })
+        
+        # 14. 응답 메시지 생성 (ORDER BY 개선 반영)
         response_message = f'{table_name} 테이블 조회가 완료되었습니다. (총 {len(results)}개 결과)'
         if where_applied:
             response_message += f' (WHERE 조건 {len(where_data["conditions"])}개 적용됨)'
@@ -655,7 +762,12 @@ def db_explorer(request):
                 if field_validation['main_field_valid'] and field_validation['join_field_valid']:
                     response_message += ' - 유연한 JOIN 조건 지원'
         
-        # 13. 응답 반환 (3-5단계 개선)
+        # ORDER BY 정보 추가
+        if order_by_applied:
+            order_count = len(order_by_data) if isinstance(order_by_data, list) else 1
+            response_message += f' (ORDER BY {order_count}개 조건 적용됨)'
+        
+        # 15. 응답 반환 (3-5단계 개선)
         return JsonResponse({
             'success': True,
             'message': response_message,
@@ -671,6 +783,8 @@ def db_explorer(request):
                     'where_info': where_info,
                     'join_applied': join_applied,
                     'join_info': join_info_response,
+                    'order_by_applied': order_by_applied,
+                    'order_by_info': order_by_info,
                     'optimization_applied': {
                         'join_where_optimization': join_applied and where_applied,
                         'query_optimization': join_applied,
