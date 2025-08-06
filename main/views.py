@@ -582,6 +582,72 @@ def parse_offset_conditions(offset_data, limit, queryset):
     
     return queryset
 
+def calculate_pagination_metadata(queryset, offset_data, limit):
+    """
+    페이지네이션 메타데이터를 계산하는 함수 (5-3단계)
+    
+    Args:
+        queryset: Django QuerySet (필터링된 상태)
+        offset_data: OFFSET 데이터 (int 또는 dict)
+        limit (int): LIMIT 값
+    
+    Returns:
+        dict: 페이지네이션 메타데이터
+    """
+    try:
+        # 전체 레코드 수 계산 (성능 최적화: count() 사용)
+        total_records = queryset.count()
+        
+        # 기본값 설정
+        current_page = 1
+        page_size = limit
+        
+        # OFFSET 데이터에서 페이지 정보 추출
+        if isinstance(offset_data, dict):
+            current_page = offset_data.get('page', 1)
+            page_size = offset_data.get('page_size', limit)
+        elif isinstance(offset_data, int) and offset_data > 0:
+            # 직접 OFFSET 값이 주어진 경우 페이지 계산
+            current_page = (offset_data // limit) + 1
+        
+        # 값 검증
+        if not isinstance(current_page, int) or current_page < 1:
+            current_page = 1
+        if not isinstance(page_size, int) or page_size < 1:
+            page_size = limit
+        
+        # 총 페이지 수 계산 (올림 나눗셈)
+        total_pages = (total_records + page_size - 1) // page_size if total_records > 0 else 0
+        
+        # 페이지네이션 메타데이터 생성
+        pagination_meta = {
+            'total_records': total_records,
+            'total_pages': total_pages,
+            'current_page': current_page,
+            'page_size': page_size,
+            'has_next': current_page < total_pages if total_pages > 0 else False,
+            'has_previous': current_page > 1,
+            'start_record': (current_page - 1) * page_size + 1 if total_records > 0 else 0,
+            'end_record': min(current_page * page_size, total_records),
+            'offset_applied': (current_page - 1) * page_size
+        }
+        
+        return pagination_meta
+        
+    except Exception:
+        # 오류 발생 시 기본 메타데이터 반환
+        return {
+            'total_records': 0,
+            'total_pages': 0,
+            'current_page': 1,
+            'page_size': limit,
+            'has_next': False,
+            'has_previous': False,
+            'start_record': 0,
+            'end_record': 0,
+            'offset_applied': 0
+        }
+
 @csrf_exempt
 @require_http_methods(["POST"])
 def db_explorer(request):
@@ -807,7 +873,38 @@ def db_explorer(request):
                             'direction': order_item.get('direction', 'ASC').upper()
                         })
         
-        # 15. OFFSET 조건 정보 수집 (5-2단계)
+        # 15. 페이지네이션 메타데이터 계산 (5-3단계) - 성능 최적화
+        pagination_meta = None
+        if offset_data:
+            # 성능 최적화: 메타데이터 계산용 쿼리셋 생성
+            # (실제 결과와 동일한 필터링 조건 적용, 하지만 SELECT와 LIMIT는 제외)
+            meta_queryset = model_class.objects.all()
+            
+            # JOIN 조건 적용 (메타데이터 계산용)
+            if join_applied:
+                meta_queryset, meta_join_info = parse_join_conditions(join_data, model_class)
+            else:
+                meta_join_info = None
+            
+            # WHERE 조건 적용
+            if where_applied:
+                meta_queryset = parse_where_conditions(where_data, meta_queryset, meta_join_info)
+            
+            # ORDER BY 조건은 메타데이터 계산에 불필요하므로 제외 (성능 최적화)
+            # 실제 결과에는 ORDER BY가 적용되지만, 전체 개수 계산에는 영향 없음
+            
+            # JOIN 최적화 (메타데이터 계산용)
+            if meta_join_info and meta_join_info.get('join_model'):
+                join_table_name = meta_join_info['join_table']
+                if meta_join_info['relationship'] == 'many_to_one':
+                    meta_queryset = meta_queryset.select_related(join_table_name)
+                else:
+                    meta_queryset = meta_queryset.prefetch_related(join_table_name)
+            
+            # 페이지네이션 메타데이터 계산
+            pagination_meta = calculate_pagination_metadata(meta_queryset, offset_data, limit)
+        
+        # 16. OFFSET 조건 정보 수집 (5-2단계) - 기존 로직 유지
         offset_info = None
         if offset_data:
             if isinstance(offset_data, int):
@@ -827,8 +924,16 @@ def db_explorer(request):
                     'calculated_offset': calculated_offset
                 }
         
-        # 16. 응답 메시지 생성 (OFFSET 개선 반영)
+        # 17. 응답 메시지 생성 (페이지네이션 메타데이터 포함)
         response_message = f'{table_name} 테이블 조회가 완료되었습니다. (총 {len(results)}개 결과)'
+        
+        # 페이지네이션 정보 추가 (5-3단계)
+        if pagination_meta:
+            total_records = pagination_meta['total_records']
+            total_pages = pagination_meta['total_pages']
+            current_page = pagination_meta['current_page']
+            response_message += f' (전체 {total_records}개 중 {pagination_meta["start_record"]}-{pagination_meta["end_record"]}번째, {total_pages}페이지 중 {current_page}페이지)'
+        
         if where_applied:
             response_message += f' (WHERE 조건 {len(where_data["conditions"])}개 적용됨)'
         if join_applied:
@@ -854,34 +959,40 @@ def db_explorer(request):
             else:
                 response_message += f' (페이지 {offset_info["page"]}, 페이지 크기 {offset_info["page_size"]} 적용됨)'
         
-        # 17. 응답 반환 (3-5단계 개선)
+        # 18. 응답 반환 (5-3단계 페이지네이션 메타데이터 포함)
+        response_data = {
+            'query_info': {
+                'executed_sql': f'SELECT {", ".join(select_fields)} FROM {table_name} LIMIT {limit}',
+                'execution_time': round(execution_time, 3),
+                'total_rows': len(results),
+                'table_name': table_name,
+                'selected_fields': select_fields,
+                'limit_applied': limit,
+                'offset_applied': offset_data, # OFFSET 값 추가
+                'where_applied': where_applied,
+                'where_info': where_info,
+                'join_applied': join_applied,
+                'join_info': join_info_response,
+                'order_by_applied': order_by_applied,
+                'order_by_info': order_by_info,
+                'offset_applied': offset_info, # OFFSET 정보 추가
+                'optimization_applied': {
+                    'join_where_optimization': join_applied and where_applied,
+                    'query_optimization': join_applied,
+                    'execution_order': 'JOIN -> WHERE -> SELECT -> LIMIT (3-5단계 최적화)'
+                }
+            },
+            'results': results
+        }
+        
+        # 페이지네이션 메타데이터 추가 (5-3단계)
+        if pagination_meta:
+            response_data['pagination'] = pagination_meta
+        
         return JsonResponse({
             'success': True,
             'message': response_message,
-            'data': {
-                'query_info': {
-                    'executed_sql': f'SELECT {", ".join(select_fields)} FROM {table_name} LIMIT {limit}',
-                    'execution_time': round(execution_time, 3),
-                    'total_rows': len(results),
-                    'table_name': table_name,
-                    'selected_fields': select_fields,
-                    'limit_applied': limit,
-                    'offset_applied': offset_data, # OFFSET 값 추가
-                    'where_applied': where_applied,
-                    'where_info': where_info,
-                    'join_applied': join_applied,
-                    'join_info': join_info_response,
-                    'order_by_applied': order_by_applied,
-                    'order_by_info': order_by_info,
-                    'offset_applied': offset_info, # OFFSET 정보 추가
-                    'optimization_applied': {
-                        'join_where_optimization': join_applied and where_applied,
-                        'query_optimization': join_applied,
-                        'execution_order': 'JOIN -> WHERE -> SELECT -> LIMIT (3-5단계 최적화)'
-                    }
-                },
-                'results': results
-            }
+            'data': response_data
         })
         
     except json.JSONDecodeError as json_error:
