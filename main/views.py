@@ -2,7 +2,12 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
+from django.db import connection
 import json
+import time
+from foods.models import Food, Price
+from accounts.models import UserProfile
+from diets.models import Diet
 
 # Create your views here.
 def main_page(request):
@@ -38,17 +43,50 @@ def db_explorer(request):
                 'data': None
             }, status=400)
         
-        # 4. 기본 응답 (아직 쿼리 실행 안함)
+        # 4. 테이블명에 따른 모델 매핑
+        model_mapping = {
+            'food': Food,
+            'price': Price,
+            'diet': Diet,
+            'user': UserProfile
+        }
+        
+        model_class = model_mapping[table_name]
+        
+        # 5. SELECT 필드 결정
+        select_fields = data.get('select', [])
+        if not select_fields:
+            # select 필드가 없으면 모든 필드 선택
+            select_fields = [field.name for field in model_class._meta.fields]
+        
+        # 6. 기본 쿼리 실행
+        start_time = time.time()
+        
+        # values() 메서드로 딕셔너리 형태로 결과 반환
+        queryset = model_class.objects.values(*select_fields)
+        
+        # LIMIT 처리 (기본값: 100)
+        limit = data.get('limit', 100)
+        if limit > 1000:  # 최대 1000개로 제한
+            limit = 1000
+        queryset = queryset[:limit]
+        
+        # 결과를 리스트로 변환
+        results = list(queryset)
+        
+        execution_time = time.time() - start_time
+        
+        # 7. 응답 반환
         return JsonResponse({
             'success': True,
-            'message': f'{table_name} 테이블 요청이 유효합니다.',
+            'message': f'{table_name} 테이블 조회가 완료되었습니다.',
             'data': {
                 'query_info': {
-                    'executed_sql': '아직 구현되지 않음',
-                    'execution_time': 0.0,
-                    'total_rows': 0
+                    'executed_sql': f'SELECT {", ".join(select_fields)} FROM {table_name} LIMIT {limit}',
+                    'execution_time': round(execution_time, 3),
+                    'total_rows': len(results)
                 },
-                'results': []
+                'results': results
             }
         })
         
