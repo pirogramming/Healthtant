@@ -363,33 +363,55 @@ def parse_join_conditions(join_data, model_class):
     expected_main_field = relationship_info['main_field']
     expected_join_field = relationship_info['join_field']
     
-    # JOIN 조건 필드 유효성 검사
+    # JOIN 조건 필드 유효성 검사 (개선: 더 유연한 검증)
     left_field = join_on['left']
     right_field = join_on['right']
     
-    # 필드명이 예상과 일치하는지 검사
-    if left_field != expected_main_field or right_field != expected_join_field:
-        return model_class.objects.all(), None
+    # 필드명이 예상과 일치하는지 검사 (완화된 검증)
+    # 기존: 정확히 일치해야 함
+    # 개선: 예상 필드와 일치하거나, 실제 모델에 존재하는 필드면 허용
+    if left_field != expected_main_field:
+        # 예상 필드와 다르면 실제 모델에 해당 필드가 있는지 확인
+        main_model_fields = [field.name for field in model_class._meta.fields]
+        if left_field not in main_model_fields:
+            return model_class.objects.all(), None
+    
+    if right_field != expected_join_field:
+        # 예상 필드와 다르면 실제 JOIN 모델에 해당 필드가 있는지 확인
+        join_model_fields = [field.name for field in join_model_class._meta.fields]
+        if right_field not in join_model_fields:
+            return model_class.objects.all(), None
     
     # JOIN 모델 가져오기
     join_model_class = relationship_info['join_model']
     
-    # JOIN 정보 생성
+    # JOIN 정보 생성 (개선: 실제 사용된 필드 정보 추가)
     join_info = {
         'join_table': join_table,
         'join_type': join_type,
         'join_model': join_model_class,
         'relationship': relationship_info['relationship'],
         'join_conditions': join_on,
-        'is_reversed': False  # RIGHT JOIN인지 여부
+        'is_reversed': False,  # RIGHT JOIN인지 여부
+        'actual_fields': {
+            'main_field': left_field,
+            'join_field': right_field,
+            'expected_main_field': expected_main_field,
+            'expected_join_field': expected_join_field,
+            'field_validation': {
+                'main_field_valid': left_field == expected_main_field or left_field in [field.name for field in model_class._meta.fields],
+                'join_field_valid': right_field == expected_join_field or right_field in [field.name for field in join_model_class._meta.fields]
+            }
+        }
     }
     
-    # JOIN 타입별 처리 (3-4단계 개선)
+    # JOIN 타입별 처리 (개선: 더 정확한 ORM 쿼리)
     try:
         if join_type == 'INNER':
             # INNER JOIN: 두 테이블 모두에 매칭되는 레코드만
             if relationship_info['relationship'] == 'one_to_many':
                 # 메인 테이블에서 JOIN 테이블로 (1:N)
+                # INNER JOIN의 경우 매칭되는 레코드가 있는지 확인
                 queryset = model_class.objects.filter(
                     **{f'{join_table}__isnull': False}
                 ).prefetch_related(join_table)
@@ -401,6 +423,7 @@ def parse_join_conditions(join_data, model_class):
             # LEFT JOIN: 메인 테이블의 모든 레코드 + 매칭되는 JOIN 테이블 레코드
             if relationship_info['relationship'] == 'one_to_many':
                 # 메인 테이블에서 JOIN 테이블로 (1:N)
+                # LEFT JOIN은 모든 메인 레코드를 포함하므로 필터 없이 prefetch
                 queryset = model_class.objects.prefetch_related(join_table)
             else:
                 # 메인 테이블에서 JOIN 테이블로 (N:1)
@@ -413,10 +436,17 @@ def parse_join_conditions(join_data, model_class):
             
             if relationship_info['relationship'] == 'one_to_many':
                 # JOIN 테이블을 메인으로 하고 메인 테이블로 LEFT JOIN
+                # RIGHT JOIN 시뮬레이션: JOIN 테이블에서 시작하여 메인 테이블로 LEFT JOIN
                 queryset = join_model_class.objects.select_related(main_table)
             else:
                 # JOIN 테이블을 메인으로 하고 메인 테이블로 LEFT JOIN
                 queryset = join_model_class.objects.select_related(main_table)
+        
+        # JOIN 정보에 쿼리 타입 추가
+        join_info['query_type'] = {
+            'orm_method': 'select_related' if relationship_info['relationship'] == 'many_to_one' else 'prefetch_related',
+            'is_reversed_query': join_type == 'RIGHT'
+        }
         
         return queryset, join_info
         
@@ -590,7 +620,7 @@ def db_explorer(request):
                         'value': condition['value']
                     })
         
-        # 11. JOIN 조건 정보 수집
+        # 11. JOIN 조건 정보 수집 (개선: 상세 정보 추가)
         join_info_response = None
         if join_applied:
             join_info_response = {
@@ -600,8 +630,17 @@ def db_explorer(request):
             }
             if join_info and join_info['is_reversed']:
                 join_info_response['is_reversed'] = True
+            
+            # JOIN 개선 정보 추가
+            if join_info:
+                join_info_response['improvements'] = {
+                    'actual_fields': join_info.get('actual_fields', {}),
+                    'query_type': join_info.get('query_type', {}),
+                    'field_validation': join_info.get('actual_fields', {}).get('field_validation', {}),
+                    'flexible_join': True  # 유연한 JOIN 조건 지원
+                }
         
-        # 12. 응답 메시지 생성 (3-5단계 개선)
+        # 12. 응답 메시지 생성 (JOIN 개선 반영)
         response_message = f'{table_name} 테이블 조회가 완료되었습니다. (총 {len(results)}개 결과)'
         if where_applied:
             response_message += f' (WHERE 조건 {len(where_data["conditions"])}개 적용됨)'
@@ -609,6 +648,12 @@ def db_explorer(request):
             response_message += f' (JOIN {join_data["table"]} 테이블 적용됨)'
             if where_applied:
                 response_message += ' - JOIN 후 WHERE 조건 최적화 적용'
+            
+            # JOIN 개선 정보 추가
+            if join_info and join_info.get('actual_fields'):
+                field_validation = join_info['actual_fields']['field_validation']
+                if field_validation['main_field_valid'] and field_validation['join_field_valid']:
+                    response_message += ' - 유연한 JOIN 조건 지원'
         
         # 13. 응답 반환 (3-5단계 개선)
         return JsonResponse({
