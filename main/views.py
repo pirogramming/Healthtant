@@ -15,22 +15,19 @@ def main_page(request):
     """메인 페이지 뷰(바꾸셔도 돼요요)"""
     return render(request, 'main/main_mainpage.html')
 
-def parse_where_conditions(where_data, model_class):
+def parse_where_conditions(where_data, queryset):
     """
     WHERE 조건을 Django ORM 쿼리로 변환하는 함수
     
     Args:
         where_data (dict): WHERE 조건 데이터
-        model_class: Django 모델 클래스
+        queryset: Django QuerySet
     
     Returns:
         QuerySet: 필터링된 QuerySet
     """
     if not where_data:
-        return model_class.objects.all()
-    
-    # 기본 QuerySet
-    queryset = model_class.objects.all()
+        return queryset
     
     # WHERE 조건 구조 검증
     if 'conditions' not in where_data:
@@ -64,7 +61,8 @@ def parse_where_conditions(where_data, model_class):
         operator = condition['operator']
         value = condition['value']
         
-        # 필드명 유효성 검사 강화
+        # 필드명 유효성 검사 강화 (모델 클래스 추출)
+        model_class = queryset.model
         available_fields = [field.name for field in model_class._meta.fields]
         if field_name not in available_fields:
             return queryset
@@ -115,7 +113,7 @@ def parse_where_conditions(where_data, model_class):
                 
         except Exception:
             # 조건 처리 중 오류가 발생하면 원본 QuerySet 반환
-            return model_class.objects.all()
+            return queryset
     
     # 복합 조건 처리 (2-3단계)
     elif len(conditions) > 1:
@@ -132,7 +130,8 @@ def parse_where_conditions(where_data, model_class):
                 operator = condition['operator']
                 value = condition['value']
                 
-                # 필드명 유효성 검사 강화
+                # 필드명 유효성 검사 강화 (모델 클래스 추출)
+                model_class = queryset.model
                 available_fields = [field.name for field in model_class._meta.fields]
                 if field_name not in available_fields:
                     continue
@@ -197,7 +196,7 @@ def parse_where_conditions(where_data, model_class):
                     
         except Exception:
             # 조건 처리 중 오류가 발생하면 원본 QuerySet 반환
-            return model_class.objects.all()
+            return queryset
     
     return queryset
 
@@ -245,6 +244,44 @@ def validate_condition_value(operator, value):
             return value is not None
     except Exception:
         return False
+
+def parse_join_conditions(join_data, model_class):
+    """
+    JOIN 조건을 Django ORM 쿼리로 변환하는 함수
+    
+    Args:
+        join_data (dict): JOIN 조건 데이터
+        model_class: 메인 Django 모델 클래스
+    
+    Returns:
+        QuerySet: JOIN된 QuerySet
+    """
+    if not join_data:
+        return model_class.objects.all()
+    
+    # JOIN 조건 구조 검증
+    if not all(key in join_data for key in ['table', 'type', 'on']):
+        return model_class.objects.all()
+    
+    join_table = join_data['table']
+    join_type = join_data['type'].upper()
+    join_on = join_data['on']
+    
+    # JOIN 타입 유효성 검사
+    if join_type not in ['INNER', 'LEFT', 'RIGHT']:
+        return model_class.objects.all()
+    
+    # JOIN 조건 구조 검증
+    if not all(key in join_on for key in ['left', 'right']):
+        return model_class.objects.all()
+    
+    # JOIN 가능한 테이블 조합 검증 (3-2단계에서 구현 예정)
+    # TODO: 테이블 관계 매핑 및 검증
+    
+    # 기본 QuerySet 반환 (아직 JOIN 처리 안함)
+    # TODO: 3-3단계에서 실제 JOIN 처리 구현
+    
+    return model_class.objects.all()
 
 @csrf_exempt
 @require_http_methods(["POST"])
@@ -306,7 +343,11 @@ def db_explorer(request):
         where_data = data.get('where', None)
         where_applied = where_data is not None and 'conditions' in where_data and len(where_data['conditions']) > 0
         
-        # 7. LIMIT 값 검증
+        # 7. JOIN 조건 처리 (3-1단계)
+        join_data = data.get('join', None)
+        join_applied = join_data is not None and all(key in join_data for key in ['table', 'type', 'on'])
+        
+        # 8. LIMIT 값 검증
         limit = data.get('limit', 100)
         if not isinstance(limit, int) or limit < 1:
             return JsonResponse({
@@ -318,20 +359,23 @@ def db_explorer(request):
         if limit > 1000:  # 최대 1000개로 제한
             limit = 1000
         
-        # 8. 쿼리 실행 (최적화된 순서)
+        # 9. 쿼리 실행 (최적화된 순서)
         start_time = time.time()
         
         try:
-            # 1단계: WHERE 조건 적용
-            queryset = parse_where_conditions(where_data, model_class)
+            # 1단계: JOIN 조건 적용 (기본 구조만)
+            queryset = parse_join_conditions(join_data, model_class)
             
-            # 2단계: SELECT 필드 적용
+            # 2단계: WHERE 조건 적용
+            queryset = parse_where_conditions(where_data, queryset)
+            
+            # 3단계: SELECT 필드 적용
             queryset = queryset.values(*select_fields)
             
-            # 3단계: LIMIT 적용
+            # 4단계: LIMIT 적용
             queryset = queryset[:limit]
             
-            # 4단계: 결과 변환
+            # 5단계: 결과 변환
             results = list(queryset)
             
         except Exception as query_error:
@@ -343,7 +387,7 @@ def db_explorer(request):
         
         execution_time = time.time() - start_time
         
-        # 9. WHERE 조건 정보 수집
+        # 10. WHERE 조건 정보 수집
         where_info = None
         if where_applied:
             conditions_count = len(where_data['conditions'])
@@ -363,12 +407,23 @@ def db_explorer(request):
                         'value': condition['value']
                     })
         
-        # 10. 응답 메시지 생성
+        # 11. JOIN 조건 정보 수집
+        join_info = None
+        if join_applied:
+            join_info = {
+                'join_table': join_data['table'],
+                'join_type': join_data['type'],
+                'join_conditions': join_data['on']
+            }
+        
+        # 12. 응답 메시지 생성
         response_message = f'{table_name} 테이블 조회가 완료되었습니다. (총 {len(results)}개 결과)'
         if where_applied:
             response_message += f' (WHERE 조건 {len(where_data["conditions"])}개 적용됨)'
+        if join_applied:
+            response_message += f' (JOIN {join_data["table"]} 테이블 적용됨)'
         
-        # 11. 응답 반환
+        # 13. 응답 반환
         return JsonResponse({
             'success': True,
             'message': response_message,
@@ -381,7 +436,9 @@ def db_explorer(request):
                     'selected_fields': select_fields,
                     'limit_applied': limit,
                     'where_applied': where_applied,
-                    'where_info': where_info
+                    'where_info': where_info,
+                    'join_applied': join_applied,
+                    'join_info': join_info
                 },
                 'results': results
             }
