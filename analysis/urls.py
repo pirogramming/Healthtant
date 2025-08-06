@@ -3,4 +3,5 @@ from django.urls import path, include
 from analysis import views
 
 urlpatterns = [
+    path('', views.analysis_main)
 ]
