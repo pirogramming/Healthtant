@@ -1,0 +1,21 @@
+{% extends 'main/main_base.html' %}
+{% load static %}
+
+{% block title %}HEALTHTANT{% endblock %}
+
+{% block extra_css %}
+{% comment %} <link rel="stylesheet" href="{% static 'main/main.css' %}"> {% endcomment %}
+{% endblock %}
+
+{% block content %}
+<!-- 추천 제품 영역 -->
+<section class="featured-container">
+    <div class="featured-product">
+        <img 
+            src="#" 
+            alt="제품 랜덤으로 바뀔부분" 
+            class="product-image"
+        >
+    </div>
+</section>
+{% endblock %}

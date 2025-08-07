@@ -1,41 +1,97 @@
 {% load static %}
-{% load account socialaccount %}  {# allauth 템플릿 태그 로드 #}
+{% load account socialaccount %}
 
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>로그인</title>
-    <link rel="stylesheet" href="{% static 'accounts/accounts_global.css' %}">
-    <link rel="stylesheet" href="{% static 'accounts/accounts_style.css' %}">
-    <link rel="stylesheet" href="{% static 'accounts/accounts_styleguide.css' %}">
-    <style>
-        body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
-        .login-container { display: inline-block; padding: 30px; border: 1px solid #ccc; border-radius: 10px; background: #fafafa; }
-        .social-btn { display: block; width: 250px; margin: 10px auto; padding: 10px; border-radius: 5px; text-decoration: none; font-weight: bold; }
-        .google-btn { background: white; border: 1px solid #ddd; color: #444; }
-        .kakao-btn { background: #FEE500; color: #3A1D1D; border: none; }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로그인페이지</title>
+    <link rel="stylesheet" href="{% static 'accounts/login.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Koulen&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="login-container">
-        <h2>로그인</h2>
+    <div class="container">
+        <div class="header">
+           
+        </div>
+        
+        <div class="content">
+            <div class="brand-logo">
+                <div class="brand-name">HEALTHTANT</div>
+            </div>
 
-        {% if form.errors %}
-            <p style="color:red;">아이디 또는 비밀번호가 올바르지 않습니다.</p>
-        {% endif %}
+            {% if form.errors %}
+                <div class="error-message">
+                    아이디 또는 비밀번호가 올바르지 않습니다.
+                </div>
+            {% endif %}
 
-        <form method="post" action="{% url 'account_login' %}">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit">로그인</button>
-        </form>
+            <form class="login-form" method="post" action="{% url 'account_login' %}">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <input 
+                        type="nickname" 
+                        class="input-field" 
+                        name="login" 
+                        placeholder="닉네임"
+                        required
+                    >
+                </div>
 
-        <hr>
-        <h3>소셜 로그인</h3>
-        {% providers_media_js %}
-        <a href="{% provider_login_url 'google' %}" class="social-btn google-btn">구글로 로그인</a>
-        <a href="{% provider_login_url 'kakao' %}" class="social-btn kakao-btn">카카오로 로그인</a>
+                <div class="form-group">
+                    <input 
+                        type="password" 
+                        class="input-field" 
+                        name="password" 
+                        placeholder="비밀번호"
+                        required
+                    >
+                </div>
+
+                <button type="submit" class="login-btn">로그인</button>
+            </form>
+
+            <div class="login-options">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="remember-email" name="remember_email">
+                    <label for="remember-email">이메일 저장</label>
+                </div>
+                
+                <div class="link-group">
+                    <a href="{% url 'account_reset_password' %}">비밀번호 재설정</a>
+                    <div class="divider"></div>
+                    <a href="{% url 'account_signup' %}">회원가입</a>
+                </div>
+                
+            </div>
+            <div class="section-divider"></div>
+            <div class="sns-section">
+                <div class="sns-title">SNS로 로그인</div>
+                
+                <div class="sns-buttons">
+                    <a href="{% provider_login_url 'kakao' %}" class="kakao-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="24" viewBox="0 0 25 24" fill="none">
+                            <path d="M12.3532 3C18.1532 3 22.8542 6.664 22.8542 11.185C22.8542 15.705 18.1532 19.369 12.3542 19.369C11.7769 19.368 11.2001 19.3312 10.6272 19.259L6.21925 22.142C5.71825 22.407 5.54125 22.378 5.74725 21.729L6.63925 18.051C3.75925 16.591 1.85425 14.061 1.85425 11.185C1.85425 6.665 6.55425 3 12.3542 3M18.2622 11.06L19.7322 9.636C19.8171 9.54791 19.8644 9.43033 19.8642 9.30804C19.8641 9.18575 19.8165 9.0683 19.7315 8.98041C19.6464 8.89252 19.5306 8.84107 19.4084 8.83689C19.2862 8.83271 19.1671 8.87613 19.0762 8.958L17.1482 10.824V9.282C17.1482 9.15682 17.0985 9.03676 17.01 8.94825C16.9215 8.85973 16.8014 8.81 16.6762 8.81C16.5511 8.81 16.431 8.85973 16.3425 8.94825C16.254 9.03676 16.2042 9.15682 16.2042 9.282V11.839C16.1876 11.9121 16.1876 11.9879 16.2042 12.061V13.5C16.2042 13.6252 16.254 13.7452 16.3425 13.8338C16.431 13.9223 16.5511 13.972 16.6762 13.972C16.8014 13.972 16.9215 13.9223 17.01 13.8338C17.0985 13.7452 17.1482 13.6252 17.1482 13.5V12.137L17.5752 11.724L19.0032 13.757C19.0389 13.8078 19.0842 13.851 19.1366 13.8842C19.1889 13.9175 19.2473 13.9401 19.3084 13.9508C19.3695 13.9615 19.4321 13.96 19.4927 13.9465C19.5532 13.933 19.6105 13.9077 19.6612 13.872C19.712 13.8363 19.7552 13.791 19.7885 13.7387C19.8217 13.6863 19.8443 13.6279 19.855 13.5668C19.8657 13.5057 19.8642 13.4431 19.8507 13.3826C19.8372 13.322 19.8119 13.2648 19.7762 13.214L18.2622 11.06ZM15.3042 12.984H13.8442V9.297C13.8387 9.17571 13.7865 9.06123 13.6987 8.97737C13.6109 8.89351 13.4942 8.84672 13.3727 8.84672C13.2513 8.84672 13.1346 8.89351 13.0468 8.97737C12.959 9.06123 12.9068 9.17571 12.9012 9.297V13.456C12.9012 13.716 13.1112 13.928 13.3722 13.928H15.3042C15.4294 13.928 15.5495 13.8783 15.638 13.7898C15.7265 13.7012 15.7762 13.5812 15.7762 13.456C15.7762 13.3308 15.7265 13.2108 15.638 13.1222C15.5495 13.0337 15.4294 12.984 15.3042 12.984ZM9.44725 11.893L10.1432 10.185L10.7812 11.892L9.44725 11.893ZM11.9702 12.38L11.9722 12.364C11.9719 12.2451 11.9265 12.1308 11.8452 12.044L10.7992 9.244C10.7554 9.11057 10.6719 8.99369 10.5598 8.90899C10.4478 8.8243 10.3126 8.7758 10.1722 8.77C10.031 8.76994 9.89307 8.81259 9.77652 8.89237C9.65998 8.97215 9.57029 9.08531 9.51925 9.217L7.85725 13.292C7.80991 13.4079 7.81055 13.5379 7.85902 13.6533C7.9075 13.7687 7.99985 13.8602 8.11575 13.9075C8.23165 13.9548 8.36161 13.9542 8.47704 13.9057C8.59246 13.8572 8.68391 13.7649 8.73125 13.649L9.06325 12.836H11.1332L11.4312 13.636C11.4516 13.6958 11.4837 13.7509 11.5257 13.7981C11.5677 13.8452 11.6188 13.8835 11.6758 13.9105C11.7329 13.9376 11.7948 13.9529 11.8579 13.9557C11.921 13.9584 11.984 13.9484 12.0432 13.9263C12.1024 13.9042 12.1565 13.8704 12.2024 13.8271C12.2483 13.7837 12.285 13.7315 12.3104 13.6737C12.3358 13.6158 12.3493 13.5535 12.3501 13.4903C12.3509 13.4272 12.3391 13.3645 12.3152 13.306L11.9702 12.38ZM8.64725 9.302C8.64751 9.24003 8.63552 9.17861 8.61195 9.12129C8.58839 9.06397 8.55372 9.01188 8.50994 8.96801C8.46617 8.92414 8.41415 8.88936 8.35688 8.86568C8.29961 8.84199 8.23822 8.82987 8.17625 8.83H4.93125C4.80607 8.83 4.68601 8.87973 4.59749 8.96825C4.50898 9.05676 4.45925 9.17682 4.45925 9.302C4.45925 9.42718 4.50898 9.54724 4.59749 9.63575C4.68601 9.72427 4.80607 9.774 4.93125 9.774H6.09125V13.51C6.09125 13.6352 6.14098 13.7552 6.22949 13.8438C6.31801 13.9323 6.43807 13.982 6.56325 13.982C6.68843 13.982 6.80849 13.9323 6.897 13.8438C6.98552 13.7552 7.03525 13.6352 7.03525 13.51V9.774H8.17525C8.23731 9.77426 8.2988 9.76224 8.35619 9.73861C8.41357 9.71498 8.46571 9.68023 8.50959 9.63634C8.55347 9.59246 8.58823 9.54032 8.61186 9.48294C8.63548 9.42555 8.64751 9.36406 8.64725 9.302Z" fill="black"/>
+                        </svg>
+                        카카오 로그인
+                    </a>
+                    
+                    <a href="{% provider_login_url 'google' %}" class="google-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="24" viewBox="0 0 25 24" fill="none">
+                            <path d="M22.1588 10.0415H21.3533V10H12.3533V14H18.0048C17.1803 16.3285 14.9648 18 12.3533 18C9.03977 18 6.35327 15.3135 6.35327 12C6.35327 8.6865 9.03977 6 12.3533 6C13.8828 6 15.2743 6.577 16.3338 7.5195L19.1623 4.691C17.3763 3.0265 14.9873 2 12.3533 2C6.83077 2 2.35327 6.4775 2.35327 12C2.35327 17.5225 6.83077 22 12.3533 22C17.8758 22 22.3533 17.5225 22.3533 12C22.3533 11.3295 22.2843 10.675 22.1588 10.0415Z" fill="#FFC107"/>
+                            <path d="M3.50635 7.3455L6.79185 9.755C7.68085 7.554 9.83385 6 12.3533 6C13.8828 6 15.2743 6.577 16.3338 7.5195L19.1623 4.691C17.3763 3.0265 14.9873 2 12.3533 2C8.51235 2 5.18135 4.1685 3.50635 7.3455Z" fill="#FF3D00"/>
+                            <path d="M12.3532 22C14.9362 22 17.2832 21.0115 19.0577 19.404L15.9627 16.785C14.9251 17.5745 13.657 18.0014 12.3532 18C9.75218 18 7.54368 16.3415 6.71168 14.027L3.45068 16.5395C5.10568 19.778 8.46668 22 12.3532 22Z" fill="#4CAF50"/>
+                            <path d="M22.1588 10.0415H21.3533V10H12.3533V14H18.0048C17.6104 15.1082 16.8999 16.0766 15.9613 16.7855L15.9628 16.7845L19.0578 19.4035C18.8388 19.6025 22.3533 17 22.3533 12C22.3533 11.3295 22.2843 10.675 22.1588 10.0415Z" fill="#1976D2"/>
+                        </svg>
+                        Google 계정으로 로그인
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
 </body>
 </html>
