@@ -4,14 +4,30 @@ from diets.models import Diet
 from datetime import datetime
 
 def calculate_recommendation(user):
-    gender = user.gender  # '남성' 또는 '여성'
-    age = user.age        # int
+    gender = user.gender
+    age = user.age
 
     ret = {
-        'calorie': 0,
-        'carbohydrate': 0,
-        'protein': 0,
-        'salt': 0
+        'recommend_calorie': 0, #user의 필요 에너지 추정량
+        'carbohydrate': {
+            'min': 0, #user의 적정 탄수화물 min 값
+            'max': 0, #user의 적정 탄수화물 max 값
+            'essential': 0 #user의 탄수화물 필수섭취량
+        },
+        'protein': {
+            'min': 0, #user의 적정 단백질 min 값
+            'max': 0, #user의 적정 단백질 max 값
+            'essential': 0 #user의 단백질 필수섭취량
+        },
+        'fat': {
+            'min': 0, #user의 적정 지방 min 값
+            'max': 0 #user의 적정 지방 max 값
+        },
+        'salt': {
+            'min': 0, #user의 적정 나트륨 min 값
+            'max': 0, #user의 적정 나트륨 max 값
+            'essential': 0 #user의 나트륨 필수섭취량
+        }
     }
 
     age_interval = [(1,2), (3,5), (6,8), (9,11), (12,14), (15,18), (19,29), (30,49), (50,64), (65,74), (75,150)]
@@ -21,54 +37,30 @@ def calculate_recommendation(user):
             idx = i
             break
     
-    # 에너지 필요추정량 표
-    eer_table = [
-        (900, 900),
-        (1400, 1400),
-        (1700, 1500),
-        (2000, 1800),
-        (2500, 2100),
-        (2700, 2000),
-        (2600, 2000),
-        (2600, 2000),
-        (2400, 1900),
-        (2200, 1800),
-        (2000, 1600)
-    ]
+    # 에너지 필요추정량 표 (kcal)
+    eer_table = [(900, 900), (1400, 1400), (1700, 1500), (2000, 1800), (2500, 2100), (2700, 2000), (2600, 2000), (2600, 2000), (2400, 1900), (2200, 1800), (2000, 1600)]
+    # 단백질 권장섭취량 (g)
+    protein_table = [(15, 15), (20, 20), (30, 25), (40, 35), (55, 45), (60, 50), (60, 50), (60, 50), (60, 50), (60, 50), (60, 50)]
+    # 나트륨 충분섭취량 (mg)
+    min_salt_table = [810, 1000, 1200, 1500, 1500, 1500, 1500, 1500, 1500, 1300, 1100]
+    # 나트륨 만성질환 위험감소 섭취량 (mg)
+    max_salt_table = [1200, 1600, 1900, 2300, 2300, 2300, 2300, 2300, 2300, 2300, 1700]
 
-    # 단백질 권장량 (g)
-    protein_table = [
-        (15, 15),
-        (20, 20),
-        (30, 25),
-        (40, 35),
-        (55, 45),
-        (60, 50),
-        (60, 50),
-        (60, 50),
-        (60, 50),
-        (60, 50),
-        (60, 50)
-    ]
+    ret['carbohydrate']['essential'] = 130 #필수 탄수화물 양은 성별과 나이에 관계없이 130g으로 동일함
+    ret['protein']['essential'] = protein_table[idx][0] if gender == "남성" else protein_table[idx][1] #필수 단백질 양
+    ret['salt']['essential'] = min_salt_table[idx] #필수 나트륨 양
 
-    salt_table = [
-        1200,
-        1600,
-        1900,
-        2300,
-        2300,
-        2300,
-        2300,
-        2300,
-        2300,
-        2300,
-        1700
-    ]
 
-    ret['calorie'] = eer_table[idx][0] if gender == "남성" else eer_table[idx][1]
-    ret['carbohydrate'] = 130 #탄수화물 권장섭취량 130g으로 고정됨
-    ret['protein'] = protein_table[idx][0] if gender == "남성" else protein_table[idx][1]
-    ret['salt'] = salt_table[idx] #만성질환 위험감소 섭취량은 남성과 여성이 동일
+    ret['recommend_calorie'] = eer_table[idx][0] if gender == "남성" else eer_table[idx][1] #유저의 필요 에너지 추정량
+    ret['carbohydrate']['min'] = ret['recommend_calorie']*0.55/4 #2020 한국인 영양소 섭취 기준 '적정 탄수화물 양'
+    ret['carbohydrate']['max'] = ret['recommend_calorie']*0.65/4 #2020 한국인 영양소 섭취 기준 '적정 탄수화물 양'
+    ret['protein']['min'] = ret['recommend_calorie']*0.07/4 #2020 한국인 영양소 섭취 기준 '적정 단백질 양'
+    ret['protein']['max'] = ret['max_protein']*0.2/4 #2020 한국인 영양소 섭취 기준 '적정 단백질 양'
+    ret['fat']['min'] = ret['recommend_calorie']*0.15/9 #2020 한국인 영양소 섭취 기준 '적정 지방 양'
+    ret['fat']['max'] = ret['recommend_calorie']*0.3/9 #2020 한국인 영양소 섭취 기준 '적정 지방 양'
+    #나트륨은 여성과 남성 기준이 동일함
+    ret['salt']['min'] = min_salt_table[idx] #2020 한국인 영양소 섭취 기준 '적정 나트륨 양'
+    ret['salt']['max'] = max_salt_table[idx] #2020 한국인 영양소 섭취 기준 '적정 나트륨 양'
 
     return ret
 
@@ -137,8 +129,7 @@ def analysis_main(request):
         nutrients_avg[nutrient] = round(sum/day_difference, 2)
 
     #--------------------------------------------------여기부터 recommend_nutrients 계산-----------------------------------------------------------
-
-
+    recommend_nutrients = calculate_recommendation(user)
 
     #--------------------------------------------------여기부터 context 반환-----------------------------------------------------------
     context = {
@@ -150,4 +141,9 @@ def analysis_main(request):
         "avg_protein_per_day" : nutrients_avg['protein'],
         "avg_fat_per_day" : nutrients_avg['fat'],
         "avg_salt_per_day" : nutrients_avg['salt'],
+        "recommend_calorie" : recommend_nutrients['recommend_calorie'],
+        "carbohydrate" : recommend_nutrients['carbohydrate'],
+        "protein" : recommend_nutrients['protein'],
+        "fat" : recommend_nutrients['fat'],
+        "salt" : recommend_nutrients['salt'],
     }
