@@ -2,11 +2,16 @@
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
-
+from dotenv import load_dotenv
 
 def main():
     """Run administrative tasks."""
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
+    # .env 파일 로드
+    load_dotenv()
+
+    # 환경 변수에서 DJANGO_SETTINGS_MODULE 읽기 (기본값은 config.settings.local)
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', os.getenv('DJANGO_SETTINGS_MODULE', 'config.settings.local'))
+
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
