@@ -13,6 +13,7 @@ body {
     align-items: center;
     width: 402px;
     height: 874px;
+    margin: 0 auto;
 }
 
 .nav-bar {
@@ -98,24 +99,34 @@ body {
     text-align: left;
 }
 
+
+
 .input-field {
-    padding: 14px 10px;
-    border: 1px solid var(--border-gary40, #C6C6C6);
-    border-radius: 8px;
-    font-size: 16px;
-    background-color: var(--neutralwhitepure-white);
-    transition: border-color 0.2s;
+    padding: 12px 0;
+    border: none;
+    border-bottom: 1px solid #E0E0E0;
+    background-color: transparent;
+    transition: border-bottom-color 0.2s;
     width: 100%;
+    outline: none;
+    color: #B7B5B5;
+
+    font-family: "SF Pro";
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 510;
+    line-height: 20px; /* 142.857% */
+    letter-spacing: -0.165px;
 }
 
 .input-field:focus {
-    outline: none;
-    border-color: var(--main);
+    border-bottom-color: var(--main);
 }
 
 .input-field::placeholder {
     color: var(--variable-collection-text-body-gray70);
 }
+
 
 .login-btn {
     width: 100%;

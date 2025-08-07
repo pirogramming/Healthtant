@@ -144,6 +144,7 @@
                 if (response.ok) {
                     alert('프로필이 성공적으로 업데이트되었습니다.');
                     // 성공 시 리다이렉트 또는 다른 처리
+                    window.location.href = '/';
                 } else {
                     alert(result.error || '오류가 발생했습니다.');
                 }
