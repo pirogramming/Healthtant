@@ -2,13 +2,19 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from diets.models import Diet
 from datetime import datetime
+from django.http import JsonResponse
 
+#user의 각 영양소별 필수섭취량, 적정량 범위를 구하는 메소드
 def calculate_recommendation(user):
     gender = user.gender
     age = user.age
 
     ret = {
-        'recommend_calorie': 0, #user의 필요 에너지 추정량
+        'calorie' : {
+            'min': 0, #user의 적정 에너지 min 값
+            'max': 0, #user의 적정 에너지 max 값
+            'essential': 0 #user의 에너지 필수섭취량
+        },
         'carbohydrate': {
             'min': 0, #user의 적정 탄수화물 min 값
             'max': 0, #user의 적정 탄수화물 max 값
@@ -50,20 +56,76 @@ def calculate_recommendation(user):
     ret['protein']['essential'] = protein_table[idx][0] if gender == "남성" else protein_table[idx][1] #필수 단백질 양
     ret['salt']['essential'] = min_salt_table[idx] #필수 나트륨 양
 
+    recommend_calorie = eer_table[idx][0] if gender == "남성" else eer_table[idx][1] #유저의 필요 에너지 추정량 계산
 
-    ret['recommend_calorie'] = eer_table[idx][0] if gender == "남성" else eer_table[idx][1] #유저의 필요 에너지 추정량
-    ret['carbohydrate']['min'] = ret['recommend_calorie']*0.55/4 #2020 한국인 영양소 섭취 기준 '적정 탄수화물 양'
-    ret['carbohydrate']['max'] = ret['recommend_calorie']*0.65/4 #2020 한국인 영양소 섭취 기준 '적정 탄수화물 양'
-    ret['protein']['min'] = ret['recommend_calorie']*0.07/4 #2020 한국인 영양소 섭취 기준 '적정 단백질 양'
-    ret['protein']['max'] = ret['max_protein']*0.2/4 #2020 한국인 영양소 섭취 기준 '적정 단백질 양'
-    ret['fat']['min'] = ret['recommend_calorie']*0.15/9 #2020 한국인 영양소 섭취 기준 '적정 지방 양'
-    ret['fat']['max'] = ret['recommend_calorie']*0.3/9 #2020 한국인 영양소 섭취 기준 '적정 지방 양'
+    ret['calorie']['essential'] = recommend_calorie*0.8 #필요 에너지 추정량의 80%를 필수 에너지로 잡음
+    ret['calorie']['min'] = recommend_calorie*0.9 #필요 에너지 추정량의 90%를 min으로 잡음
+    ret['calorie']['max'] = recommend_calorie*1.1 #필요 에너지 추정량의 110%를 max로 잡음
+
+    ret['carbohydrate']['min'] = recommend_calorie*0.55/4 #2020 한국인 영양소 섭취 기준 '적정 탄수화물 양'
+    ret['carbohydrate']['max'] = recommend_calorie*0.65/4 #2020 한국인 영양소 섭취 기준 '적정 탄수화물 양'
+
+    ret['protein']['min'] = recommend_calorie*0.07/4 #2020 한국인 영양소 섭취 기준 '적정 단백질 양'
+    ret['protein']['max'] = recommend_calorie*0.2/4 #2020 한국인 영양소 섭취 기준 '적정 단백질 양'
+
+    ret['fat']['min'] = recommend_calorie*0.15/9 #2020 한국인 영양소 섭취 기준 '적정 지방 양'
+    ret['fat']['max'] = recommend_calorie*0.3/9 #2020 한국인 영양소 섭취 기준 '적정 지방 양'
+
     #나트륨은 여성과 남성 기준이 동일함
     ret['salt']['min'] = min_salt_table[idx] #2020 한국인 영양소 섭취 기준 '적정 나트륨 양'
     ret['salt']['max'] = max_salt_table[idx] #2020 한국인 영양소 섭취 기준 '적정 나트륨 양'
 
     return ret
 
+# 사용자 섭취량(eat)과 적정 섭취 범위(min, max)와 필수섭취량(essential, 기본 0) 을 받아서 현재 섭취가 어느 수준인지 반환
+def get_level(eat, min, max, essential=0):
+    if eat < essential:
+        return "매우 부족"
+    elif eat < min:
+        return "부족"
+    elif eat <= max:
+        return "적정"
+    elif eat < max + (max-min):
+        return "과다"
+    else:
+        return "매우 과다"
+
+# 영양 섭취 수준을 입력 받아 프론트에서 출력해야 할 색을 반환하는 메소드
+def get_color(level):
+    if level == "매우 부족" or level == "매우 과다":
+        return "#ff3232"
+    elif level == "부족" or level == "과다":
+        return "#ffbb00"
+    else:
+        return "#56aab2"
+
+# 영양 섭취 수준을 입력 받아 프론트에서 출력해야 할 메세지를 반환하는 메소드
+def get_message(level):
+    if level == "매우 부족":
+        return "너무 조금 섭취 중입니다. 건강에 심각한 영향을 미칠 수 있어요!!"
+    elif level == "부족":
+        return "조금 부족하게 섭취 중입니다. 조금만 더 신경 써보는건 어떨까요?"
+    elif level == "적정":
+        return "아주 적절하게 섭취 중입니다. 이대로 꾸준히 드시면 될 것 같아요!"
+    elif level == "과다":
+        return "조금 과다하게 섭취 중입니다. 조금만 더 신경 써보는건 어떨까요?"
+    else:
+        return "너무 과하게 섭취 중입니다. 건강에 심각한 영향을 미칠 수 있어요!!"
+
+# 영양소 이름, 평균섭취량, 최소적정량, 최대적정량, 필수섭취량을 입력 받아서 evaluation을 만들어주는 함수
+def make_evaluation(name, avg, min, max, essential=0):
+    nutrition_percentage = round(avg/max * 100, 2)
+    nutrition_level = get_level(avg, min, max, essential)
+    nutrition_color = get_color(nutrition_level)
+    nutrition_message = get_message(nutrition_level)
+
+    return {
+        "name": name,
+        "percentage": nutrition_percentage,
+        "level": nutrition_level,
+        "color": nutrition_color,
+        "message": nutrition_message
+    }
 
 @login_required
 def analysis_main(request):
@@ -131,6 +193,63 @@ def analysis_main(request):
     #--------------------------------------------------여기부터 recommend_nutrients 계산-----------------------------------------------------------
     recommend_nutrients = calculate_recommendation(user)
 
+    #--------------------------------------------------여기부터 nutrients_evaluation 계산-----------------------------------------------------------
+    nutrient_evaluation = []
+    
+    #칼로리 계산 시작
+    nutrient_evaluation.append(
+        make_evaluation(
+            "에너지",
+            nutrients_avg['calorie'],
+            recommend_nutrients['calorie']['min'],
+            recommend_nutrients['calorie']['max'],
+            recommend_nutrients['calorie']['essential']
+        )
+    )
+
+    #탄수화물 계산 시작
+    nutrient_evaluation.append(
+        make_evaluation(
+            "탄수화물",
+            nutrients_avg['carbohydrate'],
+            recommend_nutrients['carbohydrate']['min'],
+            recommend_nutrients['carbohydrate']['max'],
+            recommend_nutrients['carbohydrate']['essential']
+        )
+    )
+
+    #단백질 계산 시작
+    nutrient_evaluation.append(
+        make_evaluation(
+            "단백질",
+            nutrients_avg['protein'],
+            recommend_nutrients['protein']['min'],
+            recommend_nutrients['protein']['max'],
+            recommend_nutrients['protein']['essential']
+        )
+    )
+
+    #지방 계산 시작
+    nutrient_evaluation.append(
+        make_evaluation(
+            "지방",
+            nutrients_avg['fat'],
+            recommend_nutrients['fat']['min'],
+            recommend_nutrients['fat']['max']
+        )
+    )
+
+    #나트륨 계산 시작
+    nutrient_evaluation.append(
+        make_evaluation(
+            "나트륨",
+            nutrients_avg['salt'],
+            recommend_nutrients['salt']['min'],
+            recommend_nutrients['salt']['max'],
+            recommend_nutrients['salt']['essential']
+        )
+    )
+
     #--------------------------------------------------여기부터 context 반환-----------------------------------------------------------
     context = {
         "meal_number" : meal_number,
@@ -141,9 +260,14 @@ def analysis_main(request):
         "avg_protein_per_day" : nutrients_avg['protein'],
         "avg_fat_per_day" : nutrients_avg['fat'],
         "avg_salt_per_day" : nutrients_avg['salt'],
-        "recommend_calorie" : recommend_nutrients['recommend_calorie'],
+        "calorie" : recommend_nutrients['calorie'],
         "carbohydrate" : recommend_nutrients['carbohydrate'],
         "protein" : recommend_nutrients['protein'],
         "fat" : recommend_nutrients['fat'],
         "salt" : recommend_nutrients['salt'],
+        "nutrients_evaluation": nutrient_evaluation
     }
+
+    #나중에 프론트에서 main.html 같은 템플릿 만들고 나면 아래 주석처리 해놓은 render 함수로 바꿔 사용해주세요!
+    #return render(request, "analysis/analysis_main.html", context)
+    return JsonResponse(context, json_dumps_params={'ensure_ascii': False})
