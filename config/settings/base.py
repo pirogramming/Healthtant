@@ -139,4 +139,4 @@ CSRF_TRUSTED_ORIGINS = [
     'https://healthtant.com',
 ]
 
-SECURE_SSL_REDIRECT = True
+SECURE_SSL_REDIRECT = False
