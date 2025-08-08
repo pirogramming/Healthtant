@@ -138,3 +138,5 @@ SESSION_COOKIE_SAMESITE = 'Lax'
 CSRF_TRUSTED_ORIGINS = [
     'https://healthtant.com',
 ]
+
+SECURE_SSL_REDIRECT = True
