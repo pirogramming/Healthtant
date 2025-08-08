@@ -127,3 +127,14 @@ SOCIALACCOUNT_PROVIDERS = {
         'AUTH_PARAMS': {'access_type': 'online'}
     },
 }
+
+# CSRF 보안 설정
+CSRF_COOKIE_SECURE = True  # HTTPS에서만 쿠키 전송
+CSRF_COOKIE_SAMESITE = 'Lax'  # 또는 'None' (CORS가 필요하면 'None' + HTTPS 필수)
+SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_SAMESITE = 'Lax'
+
+# CSRF 신뢰 도메인 등록 (반드시 도메인 프로토콜 포함!)
+CSRF_TRUSTED_ORIGINS = [
+    'https://healthtant.com',
+]
