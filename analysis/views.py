@@ -136,12 +136,6 @@ def analysis_main(request):
     end_date = datetime.strptime(request.GET.get('end_date'), '%Y-%m-%d').date()
     day_difference = (end_date - start_date).days + 1 #몇 일 차이인지 계산(양 끝 날짜 포함)
 
-    # 아직 PostgreSQL을 쓰고 있지 않아서 이 부분은 주석처리 했습니다. (PostgreSQL 에서만 distinct를 지원한다고 합니다!)
-    # meal_number = Diet.objects.filter(
-    #     user=request.user,
-    #     date__range=(start_date, end_date)
-    # ).values('date', 'meal').distinct().count()
-
     #자주 쓰게 될 쿼리셋을 미리 조회해서 저장해둠
     diet_query_set = Diet.objects.select_related('food').filter(
         user=request.user,
