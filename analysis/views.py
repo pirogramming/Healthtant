@@ -6,8 +6,8 @@ from django.http import JsonResponse
 
 #user의 각 영양소별 필수섭취량, 적정량 범위를 구하는 메소드
 def calculate_recommendation(user):
-    gender = user.gender
-    age = user.age
+    gender = user.profile.user_gender
+    age = user.profile.user_age
 
     ret = {
         'calorie' : {
