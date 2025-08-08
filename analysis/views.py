@@ -181,11 +181,11 @@ def analysis_main(request):
 
     for diet in diet_query_set:
         food = diet.food
-        nutrients_avg['calorie'] += food.calorie
-        nutrients_avg['carbohydrate'] += food.carbohydrate
-        nutrients_avg['protein'] += food.protein
-        nutrients_avg['fat'] += food.fat
-        nutrients_avg['salt'] += food.salt
+        nutrients_avg['calorie'] += food.calorie / food.nutritional_value_standard_amount * food.serving_size
+        nutrients_avg['carbohydrate'] += food.carbohydrate / food.nutritional_value_standard_amount * food.serving_size
+        nutrients_avg['protein'] += food.protein / food.nutritional_value_standard_amount * food.serving_size
+        nutrients_avg['fat'] += food.fat / food.nutritional_value_standard_amount * food.serving_size
+        nutrients_avg['salt'] += food.salt / food.nutritional_value_standard_amount * food.serving_size
 
     for nutrient, sum in nutrients_avg.items():
         nutrients_avg[nutrient] = round(sum/day_difference, 2)
