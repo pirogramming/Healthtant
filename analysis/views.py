@@ -322,11 +322,21 @@ def stdev_summary(stdev):
     else:
         return "일일 섭취량 변동 폭이 큽니다. 특정 날에 폭식하거나 지나치게 제한하는 식습관일 가능성이 있습니다."
 
+# 자세한 식사 분석 뷰
 @login_required
 def analysis_diet(request):
-
-    start_date = datetime.strptime(request.GET.get('start_date'), '%Y-%m-%d').date()
-    end_date = datetime.strptime(request.GET.get('end_date'), '%Y-%m-%d').date()
+    try:
+        #url에서 쿼리로 주어진 start_date, end_date
+        start_date = datetime.strptime(request.GET.get('start_date'), '%Y-%m-%d').date()
+        end_date = datetime.strptime(request.GET.get('end_date'), '%Y-%m-%d').date()
+    # 쿼리가 제대로 된 형식으로 주어지지 않았을 경우 예외처리
+    except Exception:
+        return HttpResponseBadRequest("날짜 형식이 잘못 되었습니다.. YYYY-MM-DD 형식을 사용해 주세요.")
+    
+    # 분석 시작 날짜가 끝 날짜보다 뒤인 경우 예외처리
+    if start_date > end_date:
+        return HttpResponseBadRequest("분석 시작 날짜는 끝 날짜보다 이전이어야 합니다.")
+    
     day_difference = (end_date - start_date).days + 1 #몇 일 차이인지 계산(양 끝 날짜 포함)
 
     diet_query_set = Diet.objects.select_related('food').filter(
