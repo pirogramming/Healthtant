@@ -5,6 +5,7 @@ from datetime import datetime
 from django.http import JsonResponse
 from django.db.models import Sum, F
 from django.db.models.functions import Coalesce
+from django.http import HttpResponseBadRequest
 
 #user의 각 영양소별 필수섭취량, 적정량 범위를 구하는 메소드
 def calculate_recommendation(user):
@@ -129,13 +130,23 @@ def make_evaluation(name, avg, min, max, essential=0):
         "message": nutrition_message
     }
 
+#메인 분석 페이지 뷰
 @login_required
 def analysis_main(request):
     user = request.user
 
-    #url에서 쿼리로 주어진 start_date, end_date
-    start_date = datetime.strptime(request.GET.get('start_date'), '%Y-%m-%d').date()
-    end_date = datetime.strptime(request.GET.get('end_date'), '%Y-%m-%d').date()
+    try:
+        #url에서 쿼리로 주어진 start_date, end_date
+        start_date = datetime.strptime(request.GET.get('start_date'), '%Y-%m-%d').date()
+        end_date = datetime.strptime(request.GET.get('end_date'), '%Y-%m-%d').date()
+    # 쿼리가 제대로 된 형식으로 주어지지 않았을 경우 예외처리
+    except Exception:
+        return HttpResponseBadRequest("Invalid date format. Use YYYY-MM-DD.")
+    
+    # 분석 시작 날짜가 끝 날짜보다 뒤인 경우 예외처리
+    if start_date > end_date:
+        return HttpResponseBadRequest("start_date must be <= end_date.")
+    
     day_difference = (end_date - start_date).days + 1 #몇 일 차이인지 계산(양 끝 날짜 포함)
 
     #자주 쓰게 될 쿼리셋을 미리 조회해서 저장해둠
