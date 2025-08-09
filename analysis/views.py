@@ -456,9 +456,18 @@ def analysis_nutrients(request):
 
     user = request.user
 
-    #url에서 쿼리로 주어진 start_date, end_date
-    start_date = datetime.strptime(request.GET.get('start_date'), '%Y-%m-%d').date()
-    end_date = datetime.strptime(request.GET.get('end_date'), '%Y-%m-%d').date()
+    try:
+        #url에서 쿼리로 주어진 start_date, end_date
+        start_date = datetime.strptime(request.GET.get('start_date'), '%Y-%m-%d').date()
+        end_date = datetime.strptime(request.GET.get('end_date'), '%Y-%m-%d').date()
+    # 쿼리가 제대로 된 형식으로 주어지지 않았을 경우 예외처리
+    except Exception:
+        return HttpResponseBadRequest("날짜 형식이 잘못 되었습니다. YYYY-MM-DD 형식을 사용해 주세요.")
+    
+    # 분석 시작 날짜가 끝 날짜보다 뒤인 경우 예외처리
+    if start_date > end_date:
+        return HttpResponseBadRequest("분석 시작 날짜는 끝 날짜보다 이전이어야 합니다.")
+    
     day_difference = (end_date - start_date).days + 1 #몇 일 차이인지 계산(양 끝 날짜 포함)
 
     #평균을 구할 영양소들 쿼리문 저장
