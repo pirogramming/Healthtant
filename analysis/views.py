@@ -159,10 +159,11 @@ def analysis_main(request):
         category_count_dict[category] = value+1 #1회 추가(카운팅)
     
     #api 명세에 기록한 형태로 데이터 가공
+    #나중에 프론트랑 상의해서 상위 몇개의 데이터를 전달할 지 정해지면 정렬이랑 슬라이싱도 구현할게요!
     category_status = []
     for category, count in category_count_dict.items():
         category_status.append({'food_category': category, 'count': count})
-
+    
     #--------------------------------------------------여기부터 nutrients_avg 계산-----------------------------------------------------------
     # 섭취한 영양소의 평균을 저장할 딕셔너리
     nutrients_avg = {
