@@ -349,7 +349,7 @@ def analysis_diet(request):
     meal_number = day_difference*3 #전체 끼니 수 계산
     product_number = diet_query_set.count() #start_date ~ end_date 까지 먹은 가공식품의 수
     meals_with_product_count = diet_query_set.values('date', 'meal').distinct().count() #가공식품을 먹은 끼니 수
-    meals_with_product_ratio = meals_with_product_count/meal_number * 100 #가공식품을 먹은 끼니 비율(%)
+    meals_with_product_ratio = round(meals_with_product_count/meal_number * 100, 2) #가공식품을 먹은 끼니 비율(%)
     
     if meals_with_product_ratio < 20:
         meals_with_product_message = "가공식품을 매우 조금만 드시는군요! 아주 좋은 식습관이에요!"
