@@ -17,7 +17,7 @@ def calculate_recommendation(user):
         age = 20
     elif age <= 0:
         age = 1
-    elif age >= 15:
+    elif age >= 150:
         age = 150
 
     #성별이 OTHER 혹은 그 외의 이상한 값인 경우 남자로 기본 설정
@@ -174,11 +174,11 @@ def analysis_main(request):
         end_date = datetime.strptime(request.GET.get('end_date'), '%Y-%m-%d').date()
     # 쿼리가 제대로 된 형식으로 주어지지 않았을 경우 예외처리
     except Exception:
-        return HttpResponseBadRequest("Invalid date format. Use YYYY-MM-DD.")
+        return HttpResponseBadRequest("날짜 형식이 잘못 되었습니다.. YYYY-MM-DD 형식을 사용해 주세요.")
     
     # 분석 시작 날짜가 끝 날짜보다 뒤인 경우 예외처리
     if start_date > end_date:
-        return HttpResponseBadRequest("start_date must be <= end_date.")
+        return HttpResponseBadRequest("분석 시작 날짜는 끝 날짜보다 이전이어야 합니다.")
     
     day_difference = (end_date - start_date).days + 1 #몇 일 차이인지 계산(양 끝 날짜 포함)
 
@@ -204,16 +204,12 @@ def analysis_main(request):
         .order_by('-count')
     )
 
+    # #나중에 프론트랑 상의해서 상위 몇개의 데이터를 전달할 지 정해지면 정렬이랑 슬라이싱도 구현할게요!
     category_status = [
         {'food_category': r['food__food_category'], 'count': r['count']}
         for r in category_rows
     ]
 
-    # #나중에 프론트랑 상의해서 상위 몇개의 데이터를 전달할 지 정해지면 정렬이랑 슬라이싱도 구현할게요!
-    # category_status = []
-    # for category, count in category_count_dict.items():
-    #     category_status.append({'food_category': category, 'count': count})
-    
     #--------------------------------------------------여기부터 nutrients_avg 계산-----------------------------------------------------------
     # 섭취한 영양소의 평균을 저장할 딕셔너리
     nutrients_avg = {
