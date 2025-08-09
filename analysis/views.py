@@ -159,18 +159,11 @@ def analysis_main(request):
     meal_number = diet_query_set.values('date', 'meal').distinct().count() #끼니 수 계산
 
     #--------------------------------------------------여기부터 product_number 계산-----------------------------------------------------------
-    #start_date - end_date 동안 먹은 가공식품의 수 계산
+    #start_date ~ end_date 동안 먹은 가공식품의 수 계산
     product_number = diet_query_set.count()
 
     #--------------------------------------------------여기부터 category_status 계산-----------------------------------------------------------
-    # #식품분류 : 섭취횟수 로 매핑할 딕셔너리
-    # category_count_dict = dict()
-    # for diet in diet_query_set:
-    #     food = diet.food #현재 보고 있는 diet의 식품
-    #     category = food.food_category #식품의 식품분류명
-    #     value = category_count_dict.get(category, 0) #지금까지 카운팅 된 값(default:0)을 가져옴
-    #     category_count_dict[category] = value+1 #1회 추가(카운팅)
-    
+
     category_rows = (
         diet_query_set
         .values('food__food_category')
@@ -182,7 +175,7 @@ def analysis_main(request):
         {'food_category': r['food__food_category'], 'count': r['count']}
         for r in category_rows
     ]
-    # #api 명세에 기록한 형태로 데이터 가공
+
     # #나중에 프론트랑 상의해서 상위 몇개의 데이터를 전달할 지 정해지면 정렬이랑 슬라이싱도 구현할게요!
     # category_status = []
     # for category, count in category_count_dict.items():
