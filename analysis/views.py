@@ -1,11 +1,12 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from diets.models import Diet
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.http import JsonResponse
 from django.db.models import Sum, F, Count, Q
 from django.db.models.functions import Coalesce
 from django.http import HttpResponseBadRequest
+from statistics import pstdev
 
 #user의 각 영양소별 필수섭취량, 적정량 범위를 구하는 메소드
 def calculate_recommendation(user):
@@ -174,7 +175,7 @@ def analysis_main(request):
         end_date = datetime.strptime(request.GET.get('end_date'), '%Y-%m-%d').date()
     # 쿼리가 제대로 된 형식으로 주어지지 않았을 경우 예외처리
     except Exception:
-        return HttpResponseBadRequest("날짜 형식이 잘못 되었습니다.. YYYY-MM-DD 형식을 사용해 주세요.")
+        return HttpResponseBadRequest("날짜 형식이 잘못 되었습니다. YYYY-MM-DD 형식을 사용해 주세요.")
     
     # 분석 시작 날짜가 끝 날짜보다 뒤인 경우 예외처리
     if start_date > end_date:
@@ -331,7 +332,7 @@ def analysis_diet(request):
         end_date = datetime.strptime(request.GET.get('end_date'), '%Y-%m-%d').date()
     # 쿼리가 제대로 된 형식으로 주어지지 않았을 경우 예외처리
     except Exception:
-        return HttpResponseBadRequest("날짜 형식이 잘못 되었습니다.. YYYY-MM-DD 형식을 사용해 주세요.")
+        return HttpResponseBadRequest("날짜 형식이 잘못 되었습니다. YYYY-MM-DD 형식을 사용해 주세요.")
     
     # 분석 시작 날짜가 끝 날짜보다 뒤인 경우 예외처리
     if start_date > end_date:
@@ -376,57 +377,30 @@ def analysis_diet(request):
     ]
 
     #--------------------------------------------------여기부터 나머지 값들 한번에 계산-----------------------------------------------------------
-    daily_data = []
-    data = {"date": start_date, "calorie": 0} #각 날짜의 섭취 칼로리를 저장할 data 변수 (시계열 데이터의 각 항목이 될 것임)
-    max_data = {"date": None, "calorie": 0} #가장 많은 칼로리를 섭취한 data를 저장할 변수
-    min_data = {"date": None, "calorie": 9999999999} #가장 적은 칼로리를 섭추한 data를 저장할 변수
-    avg_calorie = 0 #평균 섭취 칼로리 (kcal/day)
     meal_time_stats = {"breakfast_count": 0, "lunch_count": 0, "dinner_count": 0} #아침, 점심, 저녁에 총 몇개의 가공식품을 먹었는지 저장
     weekday_stats = {"Sunday": 0, "Monday": 0, "Tuesday": 0, "Wednesday": 0, "Thursday": 0, "Friday": 0, "Saturday": 0} #월~일 별로 몇개의 가공식품을 먹었는지 저장
 
-    #식사 하나씩 순회
-    for diet in list(diet_query_set):
-        # 최대 칼로리, 최소 칼로리 섭취일 구하는 부분
-        if diet.date != data["date"]:
-            if max_data["calorie"] < data["calorie"]:
-                max_data = data
-            if min_data["calorie"] > data["calorie"]:
-                min_data = data
-            
-            #일당 평균 섭취 칼로리 계산하는 부분
-            avg_calorie += data["calorie"]
-            
-            # 시계열 데이터 추가하는 부분
-            daily_data.append(data)
-            data = {"date": diet.date, "calorie": 0}
+    # 날짜 범위 초기화
+    calorie_by_date = {}
+    cur_date = start_date
+    while cur_date <= end_date:
+        calorie_by_date[cur_date] = 0.0
+        cur_date += timedelta(days=1)
 
-        # 요일 별 가공식품 섭취 수 계산하는 부분
+    # 칼로리 누적
+    for diet in diet_query_set:
+        food = diet.food
+        calorie_by_date[diet.date] += get_real_nutrient(food, "calorie")
         weekday_stats[diet.date.strftime("%A")] += 1
 
-        #현재 data에 칼로리 누적
-        food = diet.food
-        data["calorie"] += get_real_nutrient(food, "calorie")
+    # daily_data 생성
+    daily_data = [{"date": d, "calorie": c} for d, c in sorted(calorie_by_date.items())]
 
-    #마지막 날짜의 데이터는 daily_data에 append 되지 않았으므로 따로 한 번 더 계산해줘야 한다.
-    daily_data.append(data)
-    if max_data["calorie"] < data["calorie"]:
-        max_data = data
-    if min_data["calorie"] > data["calorie"]:
-        min_data = data
-    avg_calorie += data["calorie"]
-    avg_calorie = avg_calorie/day_difference #평균 일일 에너지 섭취량 계산 완료
+    # 최대/최소/표준편차
+    max_data = max(daily_data, key=lambda x: x["calorie"]) if daily_data else {"date": None, "calorie": 0}
+    min_data = min(daily_data, key=lambda x: x["calorie"]) if daily_data else {"date": None, "calorie": 0}
+    stdev = round(pstdev(d["calorie"] for d in daily_data) if daily_data else 0.0, 2)
 
-    variance = 0 #분산을 저장할 변수
-    for day_data in daily_data:
-        variance += abs(day_data["calorie"] - avg_calorie)**2 #편차의 제곱을 variance에 계속 더함
-    stdev = (variance/day_difference)**0.5 #표준편차 계산
-
-    #API 명세 response에 명시해 둔 meal_pattern_analysis 구현 완료
-    meal_pattern_analysis = {
-        "meal_time_stats" : meal_time_stats,
-        "weekday_stats": weekday_stats
-    }
-    
     meal_counts = diet_query_set.aggregate(
         breakfast_count=Count('diet_id', filter=Q(meal='아침')),
         lunch_count=Count('diet_id',    filter=Q(meal='점심')),
@@ -436,6 +410,12 @@ def analysis_diet(request):
         "breakfast_count": meal_counts["breakfast_count"] or 0,
         "lunch_count": meal_counts["lunch_count"] or 0,
         "dinner_count": meal_counts["dinner_count"] or 0,
+    }
+
+    #API 명세 response에 명시해 둔 meal_pattern_analysis 구현 완료
+    meal_pattern_analysis = {
+        "meal_time_stats" : meal_time_stats,
+        "weekday_stats": weekday_stats
     }
     #--------------------------------------------------여기부터 context 반환-----------------------------------------------------------
     context = {
