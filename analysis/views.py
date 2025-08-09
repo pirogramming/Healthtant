@@ -156,7 +156,7 @@ def analysis_main(request):
     )
 
     #--------------------------------------------------여기부터 meal_number 계산-----------------------------------------------------------
-    meal_number = len(set(diet_query_set.values_list('date', 'meal'))) #끼니 수 계산
+    meal_number = diet_query_set.values('date', 'meal').distinct().count() #끼니 수 계산
 
     #--------------------------------------------------여기부터 product_number 계산-----------------------------------------------------------
     #start_date - end_date 동안 먹은 가공식품의 수 계산
