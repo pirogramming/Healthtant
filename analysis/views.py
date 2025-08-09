@@ -130,6 +130,23 @@ def make_evaluation(name, avg, min, max, essential=0):
         "message": nutrition_message
     }
 
+# 실제로 food를 1회 섭취했을 때 얻을 수 있는 영양소의 양을 반환하는 함수
+def get_real_nutrient(food, nutrient_name):
+    serving_size = getattr(food, "serving_size", 0)  # null 일수도 있음
+    nutritional_value_standard_amount = getattr(food, "nutritional_value_standard_amount") #model 설계 시 null=False 로 설정
+    nutrient = getattr(food, nutrient_name, 0) #null인 영양소 필드도 존재함
+    weight = getattr(food, "weight") #model 설계시 null=False 로 설정
+    
+    if nutrient == 0:
+        return 0
+    
+    # 1회제공량이 명시되지 않은 경우 식품 중량 전체를 섭취한 것으로 계산
+    if serving_size == 0:
+        return nutrient / nutritional_value_standard_amount * weight
+    
+    # 1회제공량이 존재하는 경우 1회제공량에 담긴 영양소만큼 반환
+    return nutrient / nutritional_value_standard_amount * serving_size
+
 #메인 분석 페이지 뷰
 @login_required
 def analysis_main(request):
@@ -193,11 +210,11 @@ def analysis_main(request):
 
     for diet in diet_query_set:
         food = diet.food
-        nutrients_avg['calorie'] += food.calorie / food.nutritional_value_standard_amount * food.serving_size
-        nutrients_avg['carbohydrate'] += food.carbohydrate / food.nutritional_value_standard_amount * food.serving_size
-        nutrients_avg['protein'] += food.protein / food.nutritional_value_standard_amount * food.serving_size
-        nutrients_avg['fat'] += food.fat / food.nutritional_value_standard_amount * food.serving_size
-        nutrients_avg['salt'] += food.salt / food.nutritional_value_standard_amount * food.serving_size
+        nutrients_avg['calorie'] += get_real_nutrient(food, "calorie")
+        nutrients_avg['carbohydrate'] += get_real_nutrient(food, "carbohydrate")
+        nutrients_avg['protein'] += get_real_nutrient(food, "protein")
+        nutrients_avg['fat'] += get_real_nutrient(food, "fat")
+        nutrients_avg['salt'] += get_real_nutrient(food, "salt")
 
     for nutrient, sum in nutrients_avg.items():
         nutrients_avg[nutrient] = round(sum/day_difference, 2)
