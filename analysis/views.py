@@ -12,9 +12,13 @@ def calculate_recommendation(user):
     gender = user.profile.user_gender
     age = user.profile.user_age
 
-    #나이가 제대로 입력되지 않은 경우 20살로 설정
-    if age == 0 or age == None:
+    #나이가 제대로 입력되지 않은 경우 기본값 설정
+    if age == None:
         age = 20
+    elif age <= 0:
+        age = 1
+    elif age >= 15:
+        age = 150
 
     #성별이 OTHER 혹은 그 외의 이상한 값인 경우 남자로 기본 설정
     if not (gender == "M" or gender == "F"):
