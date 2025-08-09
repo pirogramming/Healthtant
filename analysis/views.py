@@ -466,17 +466,20 @@ def analysis_nutrients(request):
     end_date = datetime.strptime(request.GET.get('end_date'), '%Y-%m-%d').date()
     day_difference = (end_date - start_date).days + 1 #몇 일 차이인지 계산(양 끝 날짜 포함)
 
+    #평균을 구할 영양소들 쿼리문 저장
     aggregates_kwargs = {
         f"total_{n}": Coalesce(Sum(F(f"food__{n}")), 0.00)
         for n in NUTRIENTS
     }
 
+    #실제 평균을 구하는 쿼리
     aggregates = (
         Diet.objects
         .filter(user=user, date__range=(start_date, end_date))
         .aggregate(**aggregates_kwargs)
         )
     
+    #aggregates로부터 값들 뽑아내서 context로 반환
     context = {
         f"avg_{n}_per_day": (
             float(aggregates[f"total_{n}"]) / day_difference if day_difference else 0.00
