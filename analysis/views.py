@@ -144,6 +144,10 @@ def get_real_nutrient(food, nutrient_name):
     if serving_size == 0:
         return nutrient / nutritional_value_standard_amount * weight
     
+    # 그럴 일은 없겠지만 영양성분함량기준이 0이라면 0 반환 (ZeroDivisionError 방지)
+    if nutritional_value_standard_amount == 0:
+        return 0
+    
     # 1회제공량이 존재하는 경우 1회제공량에 담긴 영양소만큼 반환
     return nutrient / nutritional_value_standard_amount * serving_size
 
