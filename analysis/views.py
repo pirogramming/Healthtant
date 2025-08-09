@@ -3,6 +3,8 @@ from django.contrib.auth.decorators import login_required
 from diets.models import Diet
 from datetime import datetime
 from django.http import JsonResponse
+from django.db.models import Sum, F
+from django.db.models.functions import Coalesce
 
 #user의 각 영양소별 필수섭취량, 적정량 범위를 구하는 메소드
 def calculate_recommendation(user):
@@ -402,5 +404,42 @@ def analysis_diet(request):
     #return render(request, "analysis/diet_analysis.html", context)
     return JsonResponse(context, json_dumps_params={'ensure_ascii': False})
 
+
+NUTRIENTS = [
+    "calorie","protein","fat","carbohydrate","sugar","dietary_fiber",
+    "calcium","iron_content","phosphorus","potassium","salt",
+    "VitaminA","VitaminB","VitaminC","VitaminD","VitaminE",
+    "cholesterol","saturated_fatty_acids","trans_fatty_acids",
+]
+
+#더 다양한 영양소에 대한 통계치 분석
 def analysis_nutrients(request):
-    return
+
+    user = request.user
+
+    #url에서 쿼리로 주어진 start_date, end_date
+    start_date = datetime.strptime(request.GET.get('start_date'), '%Y-%m-%d').date()
+    end_date = datetime.strptime(request.GET.get('end_date'), '%Y-%m-%d').date()
+    day_difference = (end_date - start_date).days + 1 #몇 일 차이인지 계산(양 끝 날짜 포함)
+
+    aggregates_kwargs = {
+        f"total_{n}": Coalesce(Sum(F(f"food__{n}")), 0.00)
+        for n in NUTRIENTS
+    }
+
+    aggregates = (
+        Diet.objects
+        .filter(user=user, date__range=(start_date, end_date))
+        .aggregate(**aggregates_kwargs)
+        )
+    
+    context = {
+        f"avg_{n}_per_day": (
+            float(aggregates[f"total_{n}"]) / day_difference if day_difference else 0.00
+        )
+        for n in NUTRIENTS
+    }
+
+    #나중에 프론트에서 diet_analysis.html 같은 템플릿 만들고 나면 아래 주석처리 해놓은 render 함수로 바꿔 사용해주세요!
+    #return render(request, "analysis/nutrients_analysis.html", context)
+    return JsonResponse(context, json_dumps_params={'ensure_ascii': False})
