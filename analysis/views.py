@@ -265,3 +265,138 @@ def analysis_main(request):
     #나중에 프론트에서 main.html 같은 템플릿 만들고 나면 아래 주석처리 해놓은 render 함수로 바꿔 사용해주세요!
     #return render(request, "analysis/analysis_main.html", context)
     return JsonResponse(context, json_dumps_params={'ensure_ascii': False})
+
+
+def stdev_summary(stdev):
+    if stdev <= 100:
+        return "비교적 꾸준히 가공식품을 섭취하고 있어요. 대체로 안정적인 식사 형태를 보이는 것 같습니다!"
+    elif stdev <= 300:
+        return "가공식품 섭취의 일관성이 부족하며, 이는 영양 불균형 및 소화 불량으로 이어질 수 있습니다."
+    else:
+        return "일일 섭취량 변동 폭이 큽니다. 특정 날에 폭식하거나 지나치게 제한하는 식습관일 가능성이 있습니다."
+
+@login_required
+def analysis_diet(request):
+
+    start_date = datetime.strptime(request.GET.get('start_date'), '%Y-%m-%d').date()
+    end_date = datetime.strptime(request.GET.get('end_date'), '%Y-%m-%d').date()
+    day_difference = (end_date - start_date).days + 1 #몇 일 차이인지 계산(양 끝 날짜 포함)
+
+    diet_query_set = Diet.objects.select_related('food').filter(
+        user=request.user,
+        date__range=(start_date, end_date)
+    ).order_by('date')
+
+    #--------------------------------------------------여기부터 가공식품과 끼니 관계 계산-----------------------------------------------------------
+    meal_number = day_difference*3 #전체 끼니 수 계산
+    product_number = diet_query_set.count() #start_date ~ end_date 까지 먹은 가공식품의 수
+    meals_with_product_count = len(set(diet_query_set.values_list('date', 'meal'))) #가공식품을 먹은 끼니 수
+    meals_with_product_ratio = meals_with_product_count/meal_number * 100 #가공식품을 먹은 끼니 비율(%)
+    
+    if meals_with_product_ratio < 20:
+        meals_with_product_message = "가공식품을 매우 조금만 드시는군요! 아주 좋은 식습관이에요!"
+    elif meals_with_product_ratio < 40:
+        meals_with_product_message = "가공식품을 조절하는게 느껴지네요! 꾸준히 신선식품도 먹어주도록 해요!"
+    elif meals_with_product_ratio < 60:
+        meals_with_product_message = "가공식품을 꽤 드시는 편이네요. 신경 쓰기 어렵지만 그래도 노력해봐요!"
+    elif meals_with_product_ratio < 80:
+        meals_with_product_message = "가공식품을 많이 드시는 편이네요. 과한 가공식품 섭취는 건강에 문제가 될 수 있어요."
+    else:
+        meals_with_product_message = "가공식품을 매우 많이 드시는 편이에요. 조금이라도 신선식품을 챙겨 먹을 필요가 있어요."
+
+    #--------------------------------------------------여기부터 category_status 계산-----------------------------------------------------------
+    #식품분류 : 섭취횟수 로 매핑할 딕셔너리
+    category_count_dict = dict()
+    for diet in diet_query_set:
+        food = diet.food #현재 보고 있는 diet의 식품
+        category = food.food_category #식품의 식품분류명
+        value = category_count_dict.get(category, 0) #지금까지 카운팅 된 값(default:0)을 가져옴
+        category_count_dict[category] = value+1 #1회 추가(카운팅)
+    
+    #api 명세에 기록한 형태로 데이터 가공
+    category_status = []
+    for category, count in category_count_dict.items():
+        category_status.append({'food_category': category, 'count': count})
+
+    #--------------------------------------------------여기부터 나머지 값들 한번에 계산-----------------------------------------------------------
+    daily_data = []
+    data = {"date": start_date, "calorie": 0} #각 날짜의 섭취 칼로리를 저장할 data 변수 (시계열 데이터의 각 항목이 될 것임)
+    max_data = {"date": None, "calorie": 0} #가장 많은 칼로리를 섭취한 data를 저장할 변수
+    min_data = {"date": None, "calorie": 9999999999} #가장 적은 칼로리를 섭추한 data를 저장할 변수
+    avg_calorie = 0 #평균 섭취 칼로리 (kcal/day)
+    meal_time_stats = {"breakfast_count": 0, "lunch_count": 0, "dinner_count": 0} #아침, 점심, 저녁에 총 몇개의 가공식품을 먹었는지 저장
+    weekday_stats = {"Sunday": 0, "Monday": 0, "Tuesday": 0, "Wednesday": 0, "Thursday": 0, "Friday": 0, "Saturday": 0} #월~일 별로 몇개의 가공식품을 먹었는지 저장
+
+    #식사 하나씩 순회
+    for diet in list(diet_query_set):
+        # 최대 칼로리, 최소 칼로리 섭취일 구하는 부분
+        if diet.date != data["date"]:
+            if max_data["calorie"] < data["calorie"]:
+                max_data = data
+            if min_data["calorie"] > data["calorie"]:
+                min_data = data
+            
+            #일당 평균 섭취 칼로리 계산하는 부분
+            avg_calorie += data["calorie"]
+            
+            # 시계열 데이터 추가하는 부분
+            daily_data.append(data)
+            data = {"date": diet.date, "calorie": 0}
+        
+        #아침, 점심, 저녁 중 어떤 끼니에 먹었는지 저장하는 부분
+        if diet.meal == "아침": meal_time_stats["breakfast_count"] += 1
+        elif diet.meal == "점심": meal_time_stats["lunch_count"] += 1
+        else: meal_time_stats["dinner_count"] += 1
+
+        # 요일 별 가공식품 섭취 수 계산하는 부분
+        weekday_stats[diet.date.strftime("%A")] += 1
+
+        #현재 data에 칼로리 누적
+        food = diet.food
+        data["calorie"] += food.calorie / food.nutritional_value_standard_amount * food.serving_size
+
+    #마지막 날짜의 데이터는 daily_data에 append 되지 않았으므로 따로 한 번 더 계산해줘야 한다.
+    daily_data.append(data)
+    if max_data["calorie"] < data["calorie"]:
+        max_data = data
+    if min_data["calorie"] > data["calorie"]:
+        min_data = data
+    avg_calorie += data["calorie"]
+    avg_calorie = avg_calorie/day_difference #평균 일일 에너지 섭취량 계산 완료
+
+    variance = 0 #분산을 저장할 변수
+    for day_data in daily_data:
+        variance += abs(day_data["calorie"] - avg_calorie)**2 #편차의 제곱을 variance에 계속 더함
+    stdev = (variance/day_difference)**0.5 #표준편차 계산
+
+    #API 명세 response에 명시해 둔 meal_pattern_analysis 구현 완료
+    meal_pattern_analysis = {
+        "meal_time_stats" : meal_time_stats,
+        "weekday_stats": weekday_stats
+    }
+    
+    #--------------------------------------------------여기부터 context 반환-----------------------------------------------------------
+    context = {
+        "meal_product_analysis": {
+            "meal_number": meal_number,
+            "product_number": product_number,
+            "meals_with_product_count": meals_with_product_count,
+            "meals_with_product_ratio": meals_with_product_ratio,
+            "meals_with_product_message": meals_with_product_message,
+            "category_status": category_status
+        },
+        "calorie_trend": {
+            "start_date": start_date,
+            "end_date": end_date,
+            "daily_data": daily_data,
+            "max_data": max_data,
+            "min_data": min_data,
+            "std_dev": stdev,
+            "summary_message": stdev_summary(stdev)
+        },
+        "meal_pattern_analysis": meal_pattern_analysis
+    }
+
+    #나중에 프론트에서 diet_analysis.html 같은 템플릿 만들고 나면 아래 주석처리 해놓은 render 함수로 바꿔 사용해주세요!
+    #return render(request, "analysis/diet_analysis.html", context)
+    return JsonResponse(context, json_dumps_params={'ensure_ascii': False})
