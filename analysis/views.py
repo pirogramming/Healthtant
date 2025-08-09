@@ -12,6 +12,14 @@ def calculate_recommendation(user):
     gender = user.profile.user_gender
     age = user.profile.user_age
 
+    #나이가 제대로 입력되지 않은 경우 20살로 설정
+    if age == 0 or age == None:
+        age = 20
+
+    #성별이 OTHER 혹은 그 외의 이상한 값인 경우 남자로 기본 설정
+    if not (gender == "M" or gender == "F"):
+        gender = "M"
+
     ret = {
         'calorie' : {
             'min': 0, #user의 적정 에너지 min 값
@@ -56,10 +64,10 @@ def calculate_recommendation(user):
     max_salt_table = [1200, 1600, 1900, 2300, 2300, 2300, 2300, 2300, 2300, 2300, 1700]
 
     ret['carbohydrate']['essential'] = 130 #필수 탄수화물 양은 성별과 나이에 관계없이 130g으로 동일함
-    ret['protein']['essential'] = protein_table[idx][0] if gender == "남성" else protein_table[idx][1] #필수 단백질 양
+    ret['protein']['essential'] = protein_table[idx][0] if gender == "M" else protein_table[idx][1] #필수 단백질 양
     ret['salt']['essential'] = min_salt_table[idx] #필수 나트륨 양
 
-    recommend_calorie = eer_table[idx][0] if gender == "남성" else eer_table[idx][1] #유저의 필요 에너지 추정량 계산
+    recommend_calorie = eer_table[idx][0] if gender == "M" else eer_table[idx][1] #유저의 필요 에너지 추정량 계산
 
     ret['calorie']['essential'] = recommend_calorie*0.8 #필요 에너지 추정량의 80%를 필수 에너지로 잡음
     ret['calorie']['min'] = recommend_calorie*0.9 #필요 에너지 추정량의 90%를 min으로 잡음
