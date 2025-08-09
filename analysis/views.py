@@ -401,3 +401,6 @@ def analysis_diet(request):
     #나중에 프론트에서 diet_analysis.html 같은 템플릿 만들고 나면 아래 주석처리 해놓은 render 함수로 바꿔 사용해주세요!
     #return render(request, "analysis/diet_analysis.html", context)
     return JsonResponse(context, json_dumps_params={'ensure_ascii': False})
+
+def analysis_nutrients(request):
+    return
