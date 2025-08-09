@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from diets.models import Diet
 from datetime import datetime
 from django.http import JsonResponse
-from django.db.models import Sum, F, Count
+from django.db.models import Sum, F, Count, Q
 from django.db.models.functions import Coalesce
 from django.http import HttpResponseBadRequest
 
@@ -399,18 +399,13 @@ def analysis_diet(request):
             # 시계열 데이터 추가하는 부분
             daily_data.append(data)
             data = {"date": diet.date, "calorie": 0}
-        
-        #아침, 점심, 저녁 중 어떤 끼니에 먹었는지 저장하는 부분
-        if diet.meal == "아침": meal_time_stats["breakfast_count"] += 1
-        elif diet.meal == "점심": meal_time_stats["lunch_count"] += 1
-        else: meal_time_stats["dinner_count"] += 1
 
         # 요일 별 가공식품 섭취 수 계산하는 부분
         weekday_stats[diet.date.strftime("%A")] += 1
 
         #현재 data에 칼로리 누적
         food = diet.food
-        data["calorie"] += food.calorie / food.nutritional_value_standard_amount * food.serving_size
+        data["calorie"] += get_real_nutrient(food, "calorie")
 
     #마지막 날짜의 데이터는 daily_data에 append 되지 않았으므로 따로 한 번 더 계산해줘야 한다.
     daily_data.append(data)
@@ -432,6 +427,16 @@ def analysis_diet(request):
         "weekday_stats": weekday_stats
     }
     
+    meal_counts = diet_query_set.aggregate(
+        breakfast_count=Count('diet_id', filter=Q(meal='아침')),
+        lunch_count=Count('diet_id',    filter=Q(meal='점심')),
+        dinner_count=Count('diet_id',   filter=Q(meal='저녁')),
+    )
+    meal_time_stats = {
+        "breakfast_count": meal_counts["breakfast_count"] or 0,
+        "lunch_count": meal_counts["lunch_count"] or 0,
+        "dinner_count": meal_counts["dinner_count"] or 0,
+    }
     #--------------------------------------------------여기부터 context 반환-----------------------------------------------------------
     context = {
         "meal_product_analysis": {
