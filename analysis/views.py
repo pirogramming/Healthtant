@@ -1,15 +1,29 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from diets.models import Diet
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.http import JsonResponse
-from django.db.models import Sum, F
+from django.db.models import Sum, F, Count, Q
 from django.db.models.functions import Coalesce
+from django.http import HttpResponseBadRequest
+from statistics import pstdev
 
 #user의 각 영양소별 필수섭취량, 적정량 범위를 구하는 메소드
 def calculate_recommendation(user):
     gender = user.profile.user_gender
     age = user.profile.user_age
+
+    #나이가 제대로 입력되지 않은 경우 기본값 설정
+    if age == None:
+        age = 20
+    elif age <= 0:
+        age = 1
+    elif age >= 150:
+        age = 150
+
+    #성별이 OTHER 혹은 그 외의 이상한 값인 경우 남자로 기본 설정
+    if not (gender == "M" or gender == "F"):
+        gender = "M"
 
     ret = {
         'calorie' : {
@@ -55,10 +69,10 @@ def calculate_recommendation(user):
     max_salt_table = [1200, 1600, 1900, 2300, 2300, 2300, 2300, 2300, 2300, 2300, 1700]
 
     ret['carbohydrate']['essential'] = 130 #필수 탄수화물 양은 성별과 나이에 관계없이 130g으로 동일함
-    ret['protein']['essential'] = protein_table[idx][0] if gender == "남성" else protein_table[idx][1] #필수 단백질 양
+    ret['protein']['essential'] = protein_table[idx][0] if gender == "M" else protein_table[idx][1] #필수 단백질 양
     ret['salt']['essential'] = min_salt_table[idx] #필수 나트륨 양
 
-    recommend_calorie = eer_table[idx][0] if gender == "남성" else eer_table[idx][1] #유저의 필요 에너지 추정량 계산
+    recommend_calorie = eer_table[idx][0] if gender == "M" else eer_table[idx][1] #유저의 필요 에너지 추정량 계산
 
     ret['calorie']['essential'] = recommend_calorie*0.8 #필요 에너지 추정량의 80%를 필수 에너지로 잡음
     ret['calorie']['min'] = recommend_calorie*0.9 #필요 에너지 추정량의 90%를 min으로 잡음
@@ -129,13 +143,44 @@ def make_evaluation(name, avg, min, max, essential=0):
         "message": nutrition_message
     }
 
+# 실제로 food를 1회 섭취했을 때 얻을 수 있는 영양소의 양을 반환하는 함수
+def get_real_nutrient(food, nutrient_name):
+    serving_size = getattr(food, "serving_size", 0)  # null 일수도 있음
+    nutritional_value_standard_amount = getattr(food, "nutritional_value_standard_amount") #model 설계 시 null=False 로 설정
+    nutrient = getattr(food, nutrient_name, 0) #null인 영양소 필드도 존재함
+    weight = getattr(food, "weight") #model 설계시 null=False 로 설정
+    
+    if nutrient == 0:
+        return 0
+    
+    # 그럴 일은 없겠지만 영양성분함량기준이 0이라면 0 반환 (ZeroDivisionError 방지)
+    if nutritional_value_standard_amount == 0:
+        return 0
+    
+    # 1회제공량이 명시되지 않은 경우 식품 중량 전체를 섭취한 것으로 계산
+    if serving_size == 0:
+        return nutrient / nutritional_value_standard_amount * weight
+    
+    # 1회제공량이 존재하는 경우 1회제공량에 담긴 영양소만큼 반환
+    return nutrient / nutritional_value_standard_amount * serving_size
+
+#메인 분석 페이지 뷰
 @login_required
 def analysis_main(request):
     user = request.user
 
-    #url에서 쿼리로 주어진 start_date, end_date
-    start_date = datetime.strptime(request.GET.get('start_date'), '%Y-%m-%d').date()
-    end_date = datetime.strptime(request.GET.get('end_date'), '%Y-%m-%d').date()
+    try:
+        #url에서 쿼리로 주어진 start_date, end_date
+        start_date = datetime.strptime(request.GET.get('start_date'), '%Y-%m-%d').date()
+        end_date = datetime.strptime(request.GET.get('end_date'), '%Y-%m-%d').date()
+    # 쿼리가 제대로 된 형식으로 주어지지 않았을 경우 예외처리
+    except Exception:
+        return HttpResponseBadRequest("날짜 형식이 잘못 되었습니다. YYYY-MM-DD 형식을 사용해 주세요.")
+    
+    # 분석 시작 날짜가 끝 날짜보다 뒤인 경우 예외처리
+    if start_date > end_date:
+        return HttpResponseBadRequest("분석 시작 날짜는 끝 날짜보다 이전이어야 합니다.")
+    
     day_difference = (end_date - start_date).days + 1 #몇 일 차이인지 계산(양 끝 날짜 포함)
 
     #자주 쓰게 될 쿼리셋을 미리 조회해서 저장해둠
@@ -145,27 +190,27 @@ def analysis_main(request):
     )
 
     #--------------------------------------------------여기부터 meal_number 계산-----------------------------------------------------------
-    meal_number = len(set(diet_query_set.values_list('date', 'meal'))) #끼니 수 계산
+    meal_number = day_difference*3 #전체 끼니 수 계산
 
     #--------------------------------------------------여기부터 product_number 계산-----------------------------------------------------------
-    #start_date - end_date 동안 먹은 가공식품의 수 계산
+    #start_date ~ end_date 동안 먹은 가공식품의 수 계산
     product_number = diet_query_set.count()
 
     #--------------------------------------------------여기부터 category_status 계산-----------------------------------------------------------
-    #식품분류 : 섭취횟수 로 매핑할 딕셔너리
-    category_count_dict = dict()
-    for diet in diet_query_set:
-        food = diet.food #현재 보고 있는 diet의 식품
-        category = food.food_category #식품의 식품분류명
-        value = category_count_dict.get(category, 0) #지금까지 카운팅 된 값(default:0)을 가져옴
-        category_count_dict[category] = value+1 #1회 추가(카운팅)
-    
-    #api 명세에 기록한 형태로 데이터 가공
-    #나중에 프론트랑 상의해서 상위 몇개의 데이터를 전달할 지 정해지면 정렬이랑 슬라이싱도 구현할게요!
-    category_status = []
-    for category, count in category_count_dict.items():
-        category_status.append({'food_category': category, 'count': count})
-    
+
+    category_rows = (
+        diet_query_set
+        .values('food__food_category')
+        .annotate(count=Count('diet_id'))
+        .order_by('-count')
+    )
+
+    # #나중에 프론트랑 상의해서 상위 몇개의 데이터를 전달할 지 정해지면 정렬이랑 슬라이싱도 구현할게요!
+    category_status = [
+        {'food_category': r['food__food_category'], 'count': r['count']}
+        for r in category_rows
+    ]
+
     #--------------------------------------------------여기부터 nutrients_avg 계산-----------------------------------------------------------
     # 섭취한 영양소의 평균을 저장할 딕셔너리
     nutrients_avg = {
@@ -178,11 +223,11 @@ def analysis_main(request):
 
     for diet in diet_query_set:
         food = diet.food
-        nutrients_avg['calorie'] += food.calorie / food.nutritional_value_standard_amount * food.serving_size
-        nutrients_avg['carbohydrate'] += food.carbohydrate / food.nutritional_value_standard_amount * food.serving_size
-        nutrients_avg['protein'] += food.protein / food.nutritional_value_standard_amount * food.serving_size
-        nutrients_avg['fat'] += food.fat / food.nutritional_value_standard_amount * food.serving_size
-        nutrients_avg['salt'] += food.salt / food.nutritional_value_standard_amount * food.serving_size
+        nutrients_avg['calorie'] += get_real_nutrient(food, "calorie")
+        nutrients_avg['carbohydrate'] += get_real_nutrient(food, "carbohydrate")
+        nutrients_avg['protein'] += get_real_nutrient(food, "protein")
+        nutrients_avg['fat'] += get_real_nutrient(food, "fat")
+        nutrients_avg['salt'] += get_real_nutrient(food, "salt")
 
     for nutrient, sum in nutrients_avg.items():
         nutrients_avg[nutrient] = round(sum/day_difference, 2)
@@ -278,11 +323,21 @@ def stdev_summary(stdev):
     else:
         return "일일 섭취량 변동 폭이 큽니다. 특정 날에 폭식하거나 지나치게 제한하는 식습관일 가능성이 있습니다."
 
+# 자세한 식사 분석 뷰
 @login_required
 def analysis_diet(request):
-
-    start_date = datetime.strptime(request.GET.get('start_date'), '%Y-%m-%d').date()
-    end_date = datetime.strptime(request.GET.get('end_date'), '%Y-%m-%d').date()
+    try:
+        #url에서 쿼리로 주어진 start_date, end_date
+        start_date = datetime.strptime(request.GET.get('start_date'), '%Y-%m-%d').date()
+        end_date = datetime.strptime(request.GET.get('end_date'), '%Y-%m-%d').date()
+    # 쿼리가 제대로 된 형식으로 주어지지 않았을 경우 예외처리
+    except Exception:
+        return HttpResponseBadRequest("날짜 형식이 잘못 되었습니다. YYYY-MM-DD 형식을 사용해 주세요.")
+    
+    # 분석 시작 날짜가 끝 날짜보다 뒤인 경우 예외처리
+    if start_date > end_date:
+        return HttpResponseBadRequest("분석 시작 날짜는 끝 날짜보다 이전이어야 합니다.")
+    
     day_difference = (end_date - start_date).days + 1 #몇 일 차이인지 계산(양 끝 날짜 포함)
 
     diet_query_set = Diet.objects.select_related('food').filter(
@@ -293,8 +348,8 @@ def analysis_diet(request):
     #--------------------------------------------------여기부터 가공식품과 끼니 관계 계산-----------------------------------------------------------
     meal_number = day_difference*3 #전체 끼니 수 계산
     product_number = diet_query_set.count() #start_date ~ end_date 까지 먹은 가공식품의 수
-    meals_with_product_count = len(set(diet_query_set.values_list('date', 'meal'))) #가공식품을 먹은 끼니 수
-    meals_with_product_ratio = meals_with_product_count/meal_number * 100 #가공식품을 먹은 끼니 비율(%)
+    meals_with_product_count = diet_query_set.values('date', 'meal').distinct().count() #가공식품을 먹은 끼니 수
+    meals_with_product_ratio = round(meals_with_product_count/meal_number * 100, 2) #가공식품을 먹은 끼니 비율(%)
     
     if meals_with_product_ratio < 20:
         meals_with_product_message = "가공식품을 매우 조금만 드시는군요! 아주 좋은 식습관이에요!"
@@ -308,76 +363,60 @@ def analysis_diet(request):
         meals_with_product_message = "가공식품을 매우 많이 드시는 편이에요. 조금이라도 신선식품을 챙겨 먹을 필요가 있어요."
 
     #--------------------------------------------------여기부터 category_status 계산-----------------------------------------------------------
-    #식품분류 : 섭취횟수 로 매핑할 딕셔너리
-    category_count_dict = dict()
-    for diet in diet_query_set:
-        food = diet.food #현재 보고 있는 diet의 식품
-        category = food.food_category #식품의 식품분류명
-        value = category_count_dict.get(category, 0) #지금까지 카운팅 된 값(default:0)을 가져옴
-        category_count_dict[category] = value+1 #1회 추가(카운팅)
-    
-    #api 명세에 기록한 형태로 데이터 가공
-    category_status = []
-    for category, count in category_count_dict.items():
-        category_status.append({'food_category': category, 'count': count})
+    category_rows = (
+        diet_query_set
+        .values('food__food_category')
+        .annotate(count=Count('diet_id'))
+        .order_by('-count')
+    )
+
+    # #나중에 프론트랑 상의해서 상위 몇개의 데이터를 전달할 지 정해지면 정렬이랑 슬라이싱도 구현할게요!
+    category_status = [
+        {'food_category': r['food__food_category'], 'count': r['count']}
+        for r in category_rows
+    ]
 
     #--------------------------------------------------여기부터 나머지 값들 한번에 계산-----------------------------------------------------------
-    daily_data = []
-    data = {"date": start_date, "calorie": 0} #각 날짜의 섭취 칼로리를 저장할 data 변수 (시계열 데이터의 각 항목이 될 것임)
-    max_data = {"date": None, "calorie": 0} #가장 많은 칼로리를 섭취한 data를 저장할 변수
-    min_data = {"date": None, "calorie": 9999999999} #가장 적은 칼로리를 섭추한 data를 저장할 변수
-    avg_calorie = 0 #평균 섭취 칼로리 (kcal/day)
     meal_time_stats = {"breakfast_count": 0, "lunch_count": 0, "dinner_count": 0} #아침, 점심, 저녁에 총 몇개의 가공식품을 먹었는지 저장
     weekday_stats = {"Sunday": 0, "Monday": 0, "Tuesday": 0, "Wednesday": 0, "Thursday": 0, "Friday": 0, "Saturday": 0} #월~일 별로 몇개의 가공식품을 먹었는지 저장
 
-    #식사 하나씩 순회
-    for diet in list(diet_query_set):
-        # 최대 칼로리, 최소 칼로리 섭취일 구하는 부분
-        if diet.date != data["date"]:
-            if max_data["calorie"] < data["calorie"]:
-                max_data = data
-            if min_data["calorie"] > data["calorie"]:
-                min_data = data
-            
-            #일당 평균 섭취 칼로리 계산하는 부분
-            avg_calorie += data["calorie"]
-            
-            # 시계열 데이터 추가하는 부분
-            daily_data.append(data)
-            data = {"date": diet.date, "calorie": 0}
-        
-        #아침, 점심, 저녁 중 어떤 끼니에 먹었는지 저장하는 부분
-        if diet.meal == "아침": meal_time_stats["breakfast_count"] += 1
-        elif diet.meal == "점심": meal_time_stats["lunch_count"] += 1
-        else: meal_time_stats["dinner_count"] += 1
+    # 날짜 범위 초기화
+    calorie_by_date = {}
+    cur_date = start_date
+    while cur_date <= end_date:
+        calorie_by_date[cur_date] = 0.0
+        cur_date += timedelta(days=1)
 
-        # 요일 별 가공식품 섭취 수 계산하는 부분
+    # 칼로리 누적
+    for diet in diet_query_set:
+        food = diet.food
+        calorie_by_date[diet.date] += get_real_nutrient(food, "calorie")
         weekday_stats[diet.date.strftime("%A")] += 1
 
-        #현재 data에 칼로리 누적
-        food = diet.food
-        data["calorie"] += food.calorie / food.nutritional_value_standard_amount * food.serving_size
+    # daily_data 생성
+    daily_data = [{"date": d, "calorie": c} for d, c in sorted(calorie_by_date.items())]
 
-    #마지막 날짜의 데이터는 daily_data에 append 되지 않았으므로 따로 한 번 더 계산해줘야 한다.
-    daily_data.append(data)
-    if max_data["calorie"] < data["calorie"]:
-        max_data = data
-    if min_data["calorie"] > data["calorie"]:
-        min_data = data
-    avg_calorie += data["calorie"]
-    avg_calorie = avg_calorie/day_difference #평균 일일 에너지 섭취량 계산 완료
+    # 최대/최소/표준편차
+    max_data = max(daily_data, key=lambda x: x["calorie"]) if daily_data else {"date": None, "calorie": 0}
+    min_data = min(daily_data, key=lambda x: x["calorie"]) if daily_data else {"date": None, "calorie": 0}
+    stdev = round(pstdev(d["calorie"] for d in daily_data) if daily_data else 0.0, 2)
 
-    variance = 0 #분산을 저장할 변수
-    for day_data in daily_data:
-        variance += abs(day_data["calorie"] - avg_calorie)**2 #편차의 제곱을 variance에 계속 더함
-    stdev = (variance/day_difference)**0.5 #표준편차 계산
+    meal_counts = diet_query_set.aggregate(
+        breakfast_count=Count('diet_id', filter=Q(meal='아침')),
+        lunch_count=Count('diet_id',    filter=Q(meal='점심')),
+        dinner_count=Count('diet_id',   filter=Q(meal='저녁')),
+    )
+    meal_time_stats = {
+        "breakfast_count": meal_counts["breakfast_count"] or 0,
+        "lunch_count": meal_counts["lunch_count"] or 0,
+        "dinner_count": meal_counts["dinner_count"] or 0,
+    }
 
     #API 명세 response에 명시해 둔 meal_pattern_analysis 구현 완료
     meal_pattern_analysis = {
         "meal_time_stats" : meal_time_stats,
         "weekday_stats": weekday_stats
     }
-    
     #--------------------------------------------------여기부터 context 반환-----------------------------------------------------------
     context = {
         "meal_product_analysis": {
@@ -417,22 +456,34 @@ def analysis_nutrients(request):
 
     user = request.user
 
-    #url에서 쿼리로 주어진 start_date, end_date
-    start_date = datetime.strptime(request.GET.get('start_date'), '%Y-%m-%d').date()
-    end_date = datetime.strptime(request.GET.get('end_date'), '%Y-%m-%d').date()
+    try:
+        #url에서 쿼리로 주어진 start_date, end_date
+        start_date = datetime.strptime(request.GET.get('start_date'), '%Y-%m-%d').date()
+        end_date = datetime.strptime(request.GET.get('end_date'), '%Y-%m-%d').date()
+    # 쿼리가 제대로 된 형식으로 주어지지 않았을 경우 예외처리
+    except Exception:
+        return HttpResponseBadRequest("날짜 형식이 잘못 되었습니다. YYYY-MM-DD 형식을 사용해 주세요.")
+    
+    # 분석 시작 날짜가 끝 날짜보다 뒤인 경우 예외처리
+    if start_date > end_date:
+        return HttpResponseBadRequest("분석 시작 날짜는 끝 날짜보다 이전이어야 합니다.")
+    
     day_difference = (end_date - start_date).days + 1 #몇 일 차이인지 계산(양 끝 날짜 포함)
 
+    #평균을 구할 영양소들 쿼리문 저장
     aggregates_kwargs = {
         f"total_{n}": Coalesce(Sum(F(f"food__{n}")), 0.00)
         for n in NUTRIENTS
     }
 
+    #실제 평균을 구하는 쿼리
     aggregates = (
         Diet.objects
         .filter(user=user, date__range=(start_date, end_date))
         .aggregate(**aggregates_kwargs)
         )
     
+    #aggregates로부터 값들 뽑아내서 context로 반환
     context = {
         f"avg_{n}_per_day": (
             float(aggregates[f"total_{n}"]) / day_difference if day_difference else 0.00
