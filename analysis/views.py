@@ -8,6 +8,11 @@ from django.db.models.functions import Coalesce
 from django.http import HttpResponseBadRequest
 from statistics import pstdev
 
+# 임시 날짜 선택 페이지 뷰 (확인용)
+@login_required
+def analysis_date(request):
+    return render(request, 'analysis/analysis_date.html')
+
 #user의 각 영양소별 필수섭취량, 적정량 범위를 구하는 메소드
 def calculate_recommendation(user):
     gender = user.profile.user_gender
@@ -494,3 +499,4 @@ def analysis_nutrients(request):
     #나중에 프론트에서 diet_analysis.html 같은 템플릿 만들고 나면 아래 주석처리 해놓은 render 함수로 바꿔 사용해주세요!
     #return render(request, "analysis/nutrients_analysis.html", context)
     return JsonResponse(context, json_dumps_params={'ensure_ascii': False})
+    

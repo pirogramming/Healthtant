@@ -1,161 +1,283 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     {% load static %}
-    <link rel="stylesheet" href="{% static 'diets/diets_main.css' %}">
-</head>
-<body>
+    <link rel="stylesheet" href="{% static 'diets/diets_main.css' %}" />
+    {% csrf_token %}
+  </head>
+  <body>
     <div class="page-title"></div>
-    
-    <div class="meal-record-container">
 
-        <div class="nav-bar">
-            <div class="nav-left">
-               
-            </div>
-            <div class="nav-right">
-                {% comment %} <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M9 3L7.17 5H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2h-3.17L15 3H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/>
-                </svg> {% endcomment %}
-            </div>
+    <div class="meal-record-container">
+      <div class="nav-bar">
+        <div class="nav-left"></div>
+        <div class="nav-right"></div>
+      </div>
+      <!-- 월 네비게이션 -->
+      <div class="month-navigation">< 2025년 8월 ></div>
+      <!-- 헤더 섹션 -->
+      <div class="header-section">
+        <div class="section-title">
+          <span class="cutlery-icon">🍴</span>
+          식사기록
         </div>
-        <!-- 월 네비게이션 -->
-        <div class="month-navigation">
-            < 2025년 8월 >
+        <button class="add-meal-btn">
+          <span class="plus-icon">+</span>
+          새 식사
+        </button>
+      </div>
+      <!-- 오늘의 식사 추가하기 -->
+      <div class="add-today-meal">
+        <div class="add-today-content">
+          <span class="plus-icon-large">+</span>
+          <span class="add-today-text">오늘의 식사 추가하기</span>
         </div>
-        <!-- 헤더 섹션 -->
-        <div class="header-section">
-            <div class="section-title">
-                <span class="cutlery-icon">🍴</span>
-                식사기록
+      </div>
+
+      <!-- 일별 식사 기록 -->
+      <div class="daily-meals">
+        {% for date in data %}
+        <div class="day-card">
+          <div class="day-header">{{ date.date }}</div>
+
+          <!-- 아침 -->
+          {% if date.diets.breakfast %} {% for diet in date.diets.breakfast %}
+          <div class="meal-item">
+            <span class="meal-type">아침</span>
+            <span class="meal-content"> {{ diet.food_name }} </span>
+            <div class="meal-actions">
+              <button
+                class="edit-btn"
+                type="button"
+                data-diet-id="{{ diet.diet_id }}"
+                data-food-id="{{ diet.food_id }}"
+                data-food-name="{{ diet.food_name }}"
+                data-date="{{ date.date }}"
+                data-meal="아침"
+                onclick="editMeal(this)"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="15"
+                  height="15"
+                  viewBox="0 0 15 15"
+                  fill="none"
+                >
+                  <path
+                    d="M1 14.1993H3.82833L14.1993 3.82833L11.3707 1L1 11.371V14.1993Z"
+                    stroke="#B7B5B5"
+                    stroke-width="1.5"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </button>
+              <a
+                class="delete-btn"
+                data-diet-id="{{ diet.diet_id }}"
+                data-food-name="{{ diet.food_name }}"
+                onclick="deleteMeal(this)"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="14"
+                  height="16"
+                  viewBox="0 0 14 16"
+                  fill="none"
+                >
+                  <path
+                    d="M1 4.11111H12.9255M5.47205 7.22222V11.8889M8.45342 7.22222V11.8889M1.74534 4.11111L2.49068 13.4444C2.49068 13.857 2.64774 14.2527 2.92729 14.5444C3.20685 14.8361 3.58601 15 3.98137 15H9.9441C10.3395 15 10.7186 14.8361 10.9982 14.5444C11.2777 14.2527 11.4348 13.857 11.4348 13.4444L12.1801 4.11111M4.72671 4.11111V1.77778C4.72671 1.5715 4.80524 1.37367 4.94501 1.22781C5.08479 1.08194 5.27437 1 5.47205 1H8.45342C8.65109 1 8.84067 1.08194 8.98045 1.22781C9.12023 1.37367 9.19876 1.5715 9.19876 1.77778V4.11111"
+                    stroke="#B7B5B5"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </a>
             </div>
-            <button class="add-meal-btn">
-                <span class="plus-icon">+</span>
-                새 식사
-            </button>
-        </div>
-        <!-- 오늘의 식사 추가하기 -->
-        <div class="add-today-meal">
-            <div class="add-today-content">
-                <span class="plus-icon-large">+</span>
-                <span class="add-today-text">오늘의 식사 추가하기</span>
+          </div>
+          {% endfor %} {% endif %}
+
+          <!-- 점심 -->
+          {% if date.diets.lunch %} {% for diet in date.diets.lunch %}
+          <div class="meal-item">
+            <span class="meal-type">점심</span>
+            <span class="meal-content"> {{ diet.food_name }} </span>
+            <div class="meal-actions">
+              <button
+                class="edit-btn"
+                type="button"
+                data-diet-id="{{ diet.diet_id }}"
+                data-food-id="{{ diet.food_id }}"
+                data-food-name="{{ diet.food_name }}"
+                data-date="{{ date.date }}"
+                data-meal="점심"
+                onclick="editMeal(this)"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="15"
+                  height="15"
+                  viewBox="0 0 15 15"
+                  fill="none"
+                >
+                  <path
+                    d="M1 14.1993H3.82833L14.1993 3.82833L11.3707 1L1 11.371V14.1993Z"
+                    stroke="#B7B5B5"
+                    stroke-width="1.5"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </button>
+              <a
+                class="delete-btn"
+                data-diet-id="{{ diet.diet_id }}"
+                data-food-name="{{ diet.food_name }}"
+                onclick="deleteMeal(this)"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="14"
+                  height="16"
+                  viewBox="0 0 14 16"
+                  fill="none"
+                >
+                  <path
+                    d="M1 4.11111H12.9255M5.47205 7.22222V11.8889M8.45342 7.22222V11.8889M1.74534 4.11111L2.49068 13.4444C2.49068 13.857 2.64774 14.2527 2.92729 14.5444C3.20685 14.8361 3.58601 15 3.98137 15H9.9441C10.3395 15 10.7186 14.8361 10.9982 14.5444C11.2777 14.2527 11.4348 13.857 11.4348 13.4444L12.1801 4.11111M4.72671 4.11111V1.77778C4.72671 1.5715 4.80524 1.37367 4.94501 1.22781C5.08479 1.08194 5.27437 1 5.47205 1H8.45342C8.65109 1 8.84067 1.08194 8.98045 1.22781C9.12023 1.37367 9.19876 1.5715 9.19876 1.77778V4.11111"
+                    stroke="#B7B5B5"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </a>
             </div>
-        </div>
-        
-        <!-- 일별 식사 기록 -->
-        <div class="daily-meals">
-            {% for date in data %}
-            <div class="day-card">
-                <div class="day-header">{{ date.date }}</div>
-                
-                <!-- 아침 -->
-                {% if date.diets %}
-                <div class="meal-item">
-                    <span class="meal-type">아침</span>
-                    <span class="meal-content">
-                        {% for food in date.diets.breakfast %}
-                            {{ food.food_name }}{% if not forloop.last %}, {% endif %}
-                        {% endfor %}
-                    </span>
-                    <div class="meal-actions">
-                        <button class="edit-btn" type="button" onclick="editMeal('{{ date.date }}', 'breakfast')">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15" fill="none">
-                            <path d="M1 14.1993H3.82833L14.1993 3.82833L11.3707 1L1 11.371V14.1993Z" stroke="#B7B5B5" stroke-width="1.5" stroke-linejoin="round"/>
-                          </svg>
-                        </button>
-                        <button class="delete-btn" type="button" onclick="deleteMeal('{{ date.date }}', 'breakfast')">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="16" viewBox="0 0 14 16" fill="none">
-                            <path d="M1 4.11111H12.9255M5.47205 7.22222V11.8889M8.45342 7.22222V11.8889M1.74534 4.11111L2.49068 13.4444C2.49068 13.857 2.64774 14.2527 2.92729 14.5444C3.20685 14.8361 3.58601 15 3.98137 15H9.9441C10.3395 15 10.7186 14.8361 10.9982 14.5444C11.2777 14.2527 11.4348 13.857 11.4348 13.4444L12.1801 4.11111M4.72671 4.11111V1.77778C4.72671 1.5715 4.80524 1.37367 4.94501 1.22781C5.08479 1.08194 5.27437 1 5.47205 1H8.45342C8.65109 1 8.84067 1.08194 8.98045 1.22781C9.12023 1.37367 9.19876 1.5715 9.19876 1.77778V4.11111" stroke="#B7B5B5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                          </svg>
-                        </button>
-                    </div>
-                </div>
-                {% endif %}
-                
-                <!-- 점심 -->
-                {% if date.diets.lunch %}
-                <div class="meal-item">
-                    <span class="meal-type">점심</span>
-                    <span class="meal-content">
-                        {% for food in date.diets.lunch %}
-                            {{ food.food_name }}{% if not forloop.last %}, {% endif %}
-                        {% endfor %}
-                    </span>
-                    <div class="meal-actions">
-                        <button class="edit-btn" type="button" onclick="editMeal('{{ date.date }}', 'lunch')">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15" fill="none">
-                            <path d="M1 14.1993H3.82833L14.1993 3.82833L11.3707 1L1 11.371V14.1993Z" stroke="#B7B5B5" stroke-width="1.5" stroke-linejoin="round"/>
-                          </svg>
-                        </button>
-                        <button class="delete-btn" type="button" onclick="deleteMeal('{{ date.date }}', 'lunch')">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="16" viewBox="0 0 14 16" fill="none">
-                            <path d="M1 4.11111H12.9255M5.47205 7.22222V11.8889M8.45342 7.22222V11.8889M1.74534 4.11111L2.49068 13.4444C2.49068 13.857 2.64774 14.2527 2.92729 14.5444C3.20685 14.8361 3.58601 15 3.98137 15H9.9441C10.3395 15 10.7186 14.8361 10.9982 14.5444C11.2777 14.2527 11.4348 13.857 11.4348 13.4444L12.1801 4.11111M4.72671 4.11111V1.77778C4.72671 1.5715 4.80524 1.37367 4.94501 1.22781C5.08479 1.08194 5.27437 1 5.47205 1H8.45342C8.65109 1 8.84067 1.08194 8.98045 1.22781C9.12023 1.37367 9.19876 1.5715 9.19876 1.77778V4.11111" stroke="#B7B5B5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                          </svg>
-                        </button>
-                    </div>
-                </div>
-                {% endif %}
-                
-                <!-- 저녁 -->
-                {% if date.diets.dinner %}
-                <div class="meal-item">
-                    <span class="meal-type">저녁</span>
-                    <span class="meal-content">
-                        {% for food in date.diets.dinner %}
-                            {{ food.food_name }}{% if not forloop.last %}, {% endif %}
-                        {% endfor %}
-                    </span>
-                    <div class="meal-actions">
-                        <button class="edit-btn" type="button" onclick="editMeal('{{ day_data.date }}', 'dinner')">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15" fill="none">
-                            <path d="M1 14.1993H3.82833L14.1993 3.82833L11.3707 1L1 11.371V14.1993Z" stroke="#B7B5B5" stroke-width="1.5" stroke-linejoin="round"/>
-                          </svg>
-                        </button>
-                        <button class="delete-btn" type="button" onclick="deleteMeal('{{ date.date }}', 'dinner')">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="16" viewBox="0 0 14 16" fill="none">
-                            <path d="M1 4.11111H12.9255M5.47205 7.22222V11.8889M8.45342 7.22222V11.8889M1.74534 4.11111L2.49068 13.4444C2.49068 13.857 2.64774 14.2527 2.92729 14.5444C3.20685 14.8361 3.58601 15 3.98137 15H9.9441C10.3395 15 10.7186 14.8361 10.9982 14.5444C11.2777 14.2527 11.4348 13.857 11.4348 13.4444L12.1801 4.11111M4.72671 4.11111V1.77778C4.72671 1.5715 4.80524 1.37367 4.94501 1.22781C5.08479 1.08194 5.27437 1 5.47205 1H8.45342C8.65109 1 8.84067 1.08194 8.98045 1.22781C9.12023 1.37367 9.19876 1.5715 9.19876 1.77778V4.11111" stroke="#B7B5B5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                          </svg>
-                        </button>
-                    </div>
-                </div>
-                {% endif %}
+          </div>
+          {% endfor %}{% endif %}
+
+          <!-- 저녁 -->
+          {% if date.diets.dinner %} {% for diet in date.diets.dinner %}
+          <div class="meal-item">
+            <span class="meal-type">저녁</span>
+            <span class="meal-content"> {{ diet.food_name }} </span>
+            <div class="meal-actions">
+              <button
+                class="edit-btn"
+                type="button"
+                data-diet-id="{{ diet.diet_id }}"
+                data-food-id="{{ diet.food_id }}"
+                data-food-name="{{ diet.food_name }}"
+                data-date="{{ date.date }}"
+                data-meal="저녁"
+                onclick="editMeal(this)"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="15"
+                  height="15"
+                  viewBox="0 0 15 15"
+                  fill="none"
+                >
+                  <path
+                    d="M1 14.1993H3.82833L14.1993 3.82833L11.3707 1L1 11.371V14.1993Z"
+                    stroke="#B7B5B5"
+                    stroke-width="1.5"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </button>
+              <a
+                class="delete-btn"
+                data-diet-id="{{ diet.diet_id }}"
+                data-food-name="{{ diet.food_name }}"
+                onclick="deleteMeal(this)"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="14"
+                  height="16"
+                  viewBox="0 0 14 16"
+                  fill="none"
+                >
+                  <path
+                    d="M1 4.11111H12.9255M5.47205 7.22222V11.8889M8.45342 7.22222V11.8889M1.74534 4.11111L2.49068 13.4444C2.49068 13.857 2.64774 14.2527 2.92729 14.5444C3.20685 14.8361 3.58601 15 3.98137 15H9.9441C10.3395 15 10.7186 14.8361 10.9982 14.5444C11.2777 14.2527 11.4348 13.857 11.4348 13.4444L12.1801 4.11111M4.72671 4.11111V1.77778C4.72671 1.5715 4.80524 1.37367 4.94501 1.22781C5.08479 1.08194 5.27437 1 5.47205 1H8.45342C8.65109 1 8.84067 1.08194 8.98045 1.22781C9.12023 1.37367 9.19876 1.5715 9.19876 1.77778V4.11111"
+                    stroke="#B7B5B5"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </a>
             </div>
-            {% endfor %}
+          </div>
+          {% endfor %} {% endif %}
         </div>
+        {% endfor %}
+      </div>
     </div>
-    
     <script>
-        // 수정 기능
-        function editMeal(date, mealType) {
-            console.log('수정:', date, mealType);
-            // 수정 페이지로 이동하는 로직
-            // 예: window.location.href = `/diets/edit/${date}/${mealType}/`;
-        }
-        
-        // 삭제 기능
-        function deleteMeal(date, mealType) {
-            if (confirm('정말로 이 식사를 삭제하시겠습니까?')) {
-                console.log('삭제:', date, mealType);
-                // 삭제 API 호출 로직
-                // 예: fetch(`/diets/delete/${date}/${mealType}/`, {method: 'DELETE'})
-            }
-        }
-        
-        // 새 식사 추가 기능
-        document.querySelector('.add-meal-btn').addEventListener('click', function() {
-            console.log('새 식사 추가');
-            // 새 식사 추가 페이지로 이동
-            // 예: window.location.href = '/diets/add/';
+      function getCookie(name) {
+        const v = `; ${document.cookie}`;
+        const p = v.split(`; ${name}=`);
+        if (p.length === 2) return p.pop().split(";").shift();
+      }
+
+      async function deleteMeal(el) {
+        const id = el.dataset.dietId;
+        console.log(id);
+        const res = await fetch(`/diets/${id}/`, {
+          method: "DELETE",
+          headers: { "X-CSRFToken": getCookie("csrftoken") },
         });
-        
-        // 오늘의 식사 추가하기 기능
-        document.querySelector('.add-today-meal').addEventListener('click', function() {
-            console.log('오늘의 식사 추가하기');
-            // 오늘 날짜의 식사 추가 페이지로 이동
-            // 예: window.location.href = '/diets/add/today/';
+        if (res.status === 204) {
+          el.closest(".meal-item")?.remove(); // 또는: location.reload();
+        } else {
+          alert(`삭제 실패 (${res.status})`);
+        }
+      }
+
+      async function editMeal(el) {
+        const dietId = el.dataset.dietId;
+        const curFood = el.dataset.foodId; // 문자열 (uuid 또는 int)
+        const curDate = el.dataset.date; // 'YYYY-MM-DD'
+        const curMeal = el.dataset.meal; // 'breakfast' | 'lunch' | 'dinner'
+
+        // 프롬프트로 새 값 입력(엔터 치면 기존값 유지)
+        const newFood =
+          prompt("food_id를 입력하세요 (생략=현재값 유지)", curFood) || curFood;
+        const newDate =
+          prompt(
+            "날짜를 YYYY-MM-DD로 입력하세요 (생략=현재값 유지)",
+            curDate
+          ) || curDate;
+        const newMeal =
+          prompt(
+            "끼니를 아침/점심/저녁 중 하나로 입력 (생략=현재값 유지)",
+            curMeal
+          ) || curMeal;
+
+        // PATCH 호출
+        const res = await fetch(`/diets/${dietId}/`, {
+          method: "PATCH",
+          headers: {
+            "X-CSRFToken": getCookie("csrftoken"),
+            "X-Requested-With": "XMLHttpRequest",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            food: newFood, // ✅ 뷰에서 Food.objects.get(food_id=data['food'])로 사용
+            date: newDate, // 'YYYY-MM-DD'
+            meal: newMeal, // 'breakfast'|'lunch'|'dinner'
+          }),
         });
+
+        if (res.ok) {
+          location.reload(); // 간단히 새로고침
+        } else {
+          alert(`수정 실패 (${res.status})`);
+        }
+      }
     </script>
-</body>
-</html> 
+  </body>
+</html>
