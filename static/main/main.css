@@ -43,7 +43,7 @@
 
 .app-title {
     font-family: "Koulen", Helvetica, Arial, sans-serif;
-    font-size: 28px;
+    font-size: 50px;
     color: var(--main);
     text-align: center;
     font-weight: 400;
@@ -143,12 +143,12 @@
 
 .nav-list {
     display: flex;
+    height: 75px;
     justify-content: space-around;
     align-items: center;
     padding: 10px 0;
     list-style: none;
     margin: 0;
-    height: 62px;
     position: relative;
 }
 
@@ -225,8 +225,8 @@
 
 .home-circle {
     position: relative;
-    width: 54px;
-    height: 54px;
+    width: 74px;
+    height: 74px;
     background-color: #ffffff;
     border-radius: 50%;
     border: 1px solid #f8f8f8;
@@ -250,8 +250,8 @@
 }
 
 .home-icon {
-    width: 27px;
-    height: 28px;
+    width: 37px;
+    height: 38px;
     fill: #56AAB2;
 }
 

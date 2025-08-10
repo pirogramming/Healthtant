@@ -10,78 +10,295 @@
 {% endblock %}
 
 {% block content %}
-<div class="meal-detail-container">
-  <!-- 뒤로가기 버튼 -->
-  <div class="back-button-container">
-    <a href="/analysis/result/?start_date={{ start_date }}&end_date={{ end_date }}" class="back-button">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-    </a>
-    <h1 class="page-title">상세 식사 분석</h1>
-  </div>
+<div class="analysis-container">
 
-  <!-- 기간 표시 카드 -->
-  <div class="period-card">
-    <div class="period-header">
-      <span class="period-icon">📊</span>
-      <h2 class="period-title">{{ username }} 님의 식품분류 종합</h2>
+  <!-- 스크롤 섹션 1: 식품분류 종합 -->
+  <div class="scroll-section">
+    <div class="section-header">
+      <div class="section-header-up">
+
+        <span class="section-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M3 2V9C3 10.1 3.9 11 5 11H9C9.53043 11 10.0391 10.7893 10.4142 10.4142C10.7893 10.0391 11 9.53043 11 9V2M7 2V22M21 15V2C19.6739 2 18.4021 2.52678 17.4645 3.46447C16.5268 4.40215 16 5.67392 16 7V13C16 14.1 16.9 15 18 15H21ZM21 15V22" stroke="#7C78F5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        <h2>{{ request.user.username }} 님의 식품분류 종합</h2>
+      </div>
+      <p class="section-date">{{ calorie_trend.start_date|date:'Y년 m월 d일' }} - {{ calorie_trend.end_date|date:'m월 d일' }}</p>
     </div>
-    <p class="period-subtitle">{{ start_date }} - {{ end_date }}</p>
+
+    <div class="stats-overview">
+      <p class="stats-text">
+        {{ request.user.username }}님은 총 <span class="highlight-green">{{ meal_product_analysis.meal_number }}회</span>의 끼니에서
+        <span class="highlight-red">{{ meal_product_analysis.product_number }}개</span>의 가공식품을 드셨어요.
+      </p>
+      <p class="stats-note">사용자가 등록한 식사 내역 기준</p>
+      
+      <div class="progress-bar-wrapper">
+        <div class="progress-header">
+          <span>가공식품 포함 끼니</span>
+          <span class="progress-count">{{ meal_product_analysis.meals_with_product_count }}/{{ meal_product_analysis.meal_number }}회</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: {{ meal_product_analysis.meals_with_product_ratio }}%;"></div>
+        </div>
+        <span class="progress-percentage">{{ meal_product_analysis.meals_with_product_ratio|floatformat:0 }}%</span>
+        <p class="percentage-description">의 끼니에 가공식품 포함</p>
+      </div>
+
+      <div class="message-box">
+        <p>{{ meal_product_analysis.meals_with_product_message }}💪🏻</p>
+      </div>
+    </div>
   </div>
 
-  <!-- 메인 통계 카드 -->
-  <div class="main-stats-card">
-    <div class="stats-content">
-      <p class="stats-description">
-        {{ username }} 님은 총 <span class="highlight-green">{{ total_meals }}회</span>의 끼니에서
-        <span class="highlight-red">{{ total_products }}개</span>의 가공식품을 드셨어요.
-      </p>
-      
-      <div class="stats-detail">
-        <p class="stats-note">사용자가 등록한 식사 내역 기준</p>
+  <!-- 스크롤 섹션 2: 열량 추이 -->
+  <div class="scroll-section">
+    <div class="section-header">
+      <div class="section-header-up">
+        <span class="section-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M20 13.75C20 13.5511 19.921 13.3603 19.7803 13.2197C19.6397 13.079 19.4489 13 19.25 13H16.25C16.0511 13 15.8603 13.079 15.7197 13.2197C15.579 13.3603 15.5 13.5511 15.5 13.75V20.5H14V4.25C14 3.522 13.998 3.05 13.952 2.704C13.908 2.379 13.837 2.277 13.78 2.22C13.723 2.163 13.621 2.092 13.296 2.048C12.949 2.002 12.478 2 11.75 2C11.022 2 10.55 2.002 10.204 2.048C9.879 2.092 9.777 2.163 9.72 2.22C9.663 2.277 9.592 2.379 9.548 2.704C9.502 3.051 9.5 3.522 9.5 4.25V20.5H8V8.75C8 8.55109 7.92098 8.36032 7.78033 8.21967C7.63968 8.07902 7.44891 8 7.25 8H4.25C4.05109 8 3.86032 8.07902 3.71967 8.21967C3.57902 8.36032 3.5 8.55109 3.5 8.75V20.5H1.75C1.55109 20.5 1.36032 20.579 1.21967 20.7197C1.07902 20.8603 1 21.0511 1 21.25C1 21.4489 1.07902 21.6397 1.21967 21.7803C1.36032 21.921 1.55109 22 1.75 22H21.75C21.9489 22 22.1397 21.921 22.2803 21.7803C22.421 21.6397 22.5 21.4489 22.5 21.25C22.5 21.0511 22.421 20.8603 22.2803 20.7197C22.1397 20.579 21.9489 20.5 21.75 20.5H20V13.75Z" fill="#7C78F5"/>
+          </svg>
+        </span>
+        <h2>{{ request.user.username }} 님의 열량 추이</h2>
+      </div>
+      <p class="section-date">{{ calorie_trend.start_date|date:'Y년 m월 d일' }} - {{ calorie_trend.end_date|date:'m월 d일' }}</p>
+    </div>
+
+    <div class="calorie-trend">
+      <div class="trend-graph">
+        <!-- SVG 그래프 영역 -->
+        <div class="chart-container">
+          <canvas id="calorieChart" width="576" height="560" style="display: block;box-sizing: border-box;height: 300px;width: 335px;"></canvas>
+        </div>
+      </div>
+
+      <div class="trend-stats-cards">
+        <div class="stat-card min-card">
+          <div class="stat-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="21" height="20" viewBox="0 0 21 20" fill="none">
+              <path d="M1 10L10.5 19L20 10H14V1H7V10H1Z" fill="#5B56B2" stroke="#5B56B2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="stat-content">
+            <div class="stat-title">최소 섭취일</div>
+            <div class="stat-date">{{ calorie_trend.min_data.date|date:'m월 d일' }}</div>
+            <div class="stat-value">{{ calorie_trend.min_data.calorie|floatformat:0 }}kcal</div>
+          </div>
+        </div>
         
-        <!-- 진행률 바 -->
-        <div class="progress-container">
-          <div class="progress-label">
-            <span class="progress-text">가공식품 포함 끼니</span>
-            <span class="progress-fraction">{{ processed_meals }}/{{ total_meals }} 회</span>
+        <div class="stat-card max-card">
+          <div class="stat-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="24" viewBox="0 0 25 24" fill="none">
+              <path d="M3 12L12.5 3L22 12H16V21H9V12H3Z" fill="#B25656" stroke="#B25656" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
           </div>
-          <div class="progress-bar">
-            <div class="progress-fill" style="width: {{ progress_percentage }}%;"></div>
+          <div class="stat-content">
+            <div class="stat-title">최대 섭취일</div>
+            <div class="stat-date">{{ calorie_trend.max_data.date|date:'m월 d일' }}</div>
+            <div class="stat-value">{{ calorie_trend.max_data.calorie|floatformat:0 }}kcal</div>
           </div>
-          <div class="progress-percentage">{{ progress_percentage|floatformat:0 }}%</div>
+        </div>
+      </div>
+
+      <div class="trend-message">
+        <p>{{ calorie_trend.summary_message }} ✨</p>
+        <div class="trend-details">
+          <p>표준편차 : {{ calorie_trend.std_dev|floatformat:0 }}</p>
+          <p>신선식품으로 열량을 섭취하는 게 더 좋답니다</p>
         </div>
       </div>
     </div>
-    
-    <!-- 권장사항 박스 -->
-    <div class="recommendation-box">
-      <p class="recommendation-text">
-        가공식품을 조금 줄이는 것<br/>
-        좋을 것 같아요! 💪
-      </p>
-    </div>
   </div>
 
-  <!-- 상세 분석 카드 -->
-  <div class="detail-analysis-card">
-    <div class="detail-header">
-      <span class="detail-icon">📊</span>
-      <h2 class="detail-title">{{ username }} 님이 섭취한 영양 추이</h2>
+  <!-- 스크롤 섹션 3: 시간대별 분석 -->
+  <div class="scroll-section">
+    <div class="section-header">
+      <div class="section-header-up">
+        <span class="section-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M15.5 14H14.71L14.43 13.73C15.444 12.5541 16.0012 11.0527 16 9.5C16 8.21442 15.6188 6.95772 14.9046 5.8888C14.1903 4.81988 13.1752 3.98676 11.9874 3.49479C10.7997 3.00282 9.49279 2.87409 8.23192 3.1249C6.97104 3.3757 5.81285 3.99477 4.90381 4.90381C3.99477 5.81285 3.3757 6.97104 3.1249 8.23192C2.87409 9.49279 3.00282 10.7997 3.49479 11.9874C3.98676 13.1752 4.81988 14.1903 5.8888 14.9046C6.95772 15.6188 8.21442 16 9.5 16C11.11 16 12.59 15.41 13.73 14.43L14 14.71V15.5L19 20.49L20.49 19L15.5 14ZM9.5 14C7.01 14 5 11.99 5 9.5C5 7.01 7.01 5 9.5 5C11.99 5 14 7.01 14 9.5C14 11.99 11.99 14 9.5 14Z" fill="#7C78F5"/>
+          </svg>
+        </span>
+        <h2>{{ request.user.username }} 님의 식단 분석</h2>
+      </div>
+      <p class="section-date">{{ calorie_trend.start_date|date:'Y년 m월 d일' }} - {{ calorie_trend.end_date|date:'m월 d일' }}</p>
     </div>
-    <p class="detail-subtitle">{{ start_date }} - {{ end_date }}</p>
+
+    <div class="time-analysis">
+      <!-- 시간대별 가공식품 섭취 -->
+      <div class="meal-time-section">
+        <div class="section-title">
+          <span class="title-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 22 22" fill="none">
+              <path d="M11 20C15.9706 20 20 15.9706 20 11C20 6.02944 15.9706 2 11 2C6.02944 2 2 6.02944 2 11C2 15.9706 6.02944 20 11 20Z" stroke="#7C78F5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M10 7V12H15" stroke="#7C78F5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          <h3>시간대별 가공식품 섭취</h3>
+        </div>
+        
+        <div class="meal-stats-grid">
+          <div class="meal-stat-card">
+            <div class="meal-number">{{ meal_pattern_analysis.meal_time_stats.breakfast_count }}</div>
+            <div class="meal-label">아침</div>
+          </div>
+          <div class="divider"></div>
+          <div class="meal-stat-card">
+            <div class="meal-number">{{ meal_pattern_analysis.meal_time_stats.lunch_count }}</div>
+            <div class="meal-label">점심</div>
+          </div>
+          <div class="divider"></div>
+          <div class="meal-stat-card">
+            <div class="meal-number">{{ meal_pattern_analysis.meal_time_stats.dinner_count }}</div>
+            <div class="meal-label">저녁</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 요일별 분석 -->
+      <div class="weekday-section">
+        <div class="section-title">
+          <span class="title-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M19 4H17V3C17 2.73478 16.8946 2.48043 16.7071 2.29289C16.5196 2.10536 16.2652 2 16 2C15.7348 2 15.4804 2.10536 15.2929 2.29289C15.1054 2.48043 15 2.73478 15 3V4H9V3C9 2.73478 8.89464 2.48043 8.70711 2.29289C8.51957 2.10536 8.26522 2 8 2C7.73478 2 7.48043 2.10536 7.29289 2.29289C7.10536 2.48043 7 2.73478 7 3V4H5C4.20435 4 3.44129 4.31607 2.87868 4.87868C2.31607 5.44129 2 6.20435 2 7V19C2 19.7956 2.31607 20.5587 2.87868 21.1213C3.44129 21.6839 4.20435 22 5 22H19C19.7956 22 20.5587 21.6839 21.1213 21.1213C21.6839 20.5587 22 19.7956 22 19V7C22 6.20435 21.6839 5.44129 21.1213 4.87868C20.5587 4.31607 19.7956 4 19 4ZM20 19C20 19.2652 19.8946 19.5196 19.7071 19.7071C19.5196 19.8946 19.2652 20 19 20H5C4.73478 20 4.48043 19.8946 4.29289 19.7071C4.10536 19.5196 4 19.2652 4 19V12H20V19ZM20 10H4V7C4 6.73478 4.10536 6.48043 4.29289 6.29289C4.48043 6.10536 4.73478 6 5 6H7V7C7 7.26522 7.10536 7.51957 7.29289 7.70711C7.48043 7.89464 7.73478 8 8 8C8.26522 8 8.51957 7.89464 8.70711 7.70711C8.89464 7.51957 9 7.26522 9 7V6H15V7C15 7.26522 15.1054 7.51957 15.2929 7.70711C15.4804 7.89464 15.7348 8 16 8C16.2652 8 16.5196 7.89464 16.7071 7.70711C16.8946 7.51957 17 7.26522 17 7V6H19C19.2652 6 19.5196 6.10536 19.7071 6.29289C19.8946 6.48043 20 6.73478 20 7V10Z" fill="#7C78F5"/>
+            </svg>
+          </span>
+          <h3>요일별 분석</h3>
+        </div>
+        
+        <div class="weekday-stats-grid">
+          {% for day, count in meal_pattern_analysis.weekday_stats.items %}
+          <div class="weekday-stat-card">
+            <div class="stat-value">{{ count }}</div>
+            <div class="stat-title">
+              {% if day == "Sunday" %}일
+              {% elif day == "Monday" %}월
+              {% elif day == "Tuesday" %}화
+              {% elif day == "Wednesday" %}수
+              {% elif day == "Thursday" %}목
+              {% elif day == "Friday" %}금
+              {% elif day == "Saturday" %}토
+              {% endif %}
+            </div>
+          </div>
+          {% comment %} {% if not forloop.last %}<div class="weekday-mini-divider"></div>{% endif %} {% endcomment %}
+          {% endfor %}
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 {% endblock %}
 
-{% block navigation %}
-<!-- 네비게이션 제거 -->
-{% endblock %}
-
 {% block extra_js %}
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-// 필요한 JavaScript 로직 추가
-console.log('Meal detail page loaded');
+document.addEventListener('DOMContentLoaded', function() {
+  const ctx = document.getElementById('calorieChart').getContext('2d');
+  
+  // 그라디언트 생성
+  const gradient = ctx.createLinearGradient(0, 0, 0, 280);
+  gradient.addColorStop(0, '#56AAB2');
+  gradient.addColorStop(1, 'rgba(217, 217, 217, 0)');
+  
+  // Django 템플릿에서 데이터 가져오기
+  const chartData = {
+    labels: [
+      {% for data in calorie_trend.daily_data|slice:":8" %}
+        '{{ data.date|date:"m/d" }}'{% if not forloop.last %},{% endif %}
+      {% endfor %}
+    ],
+    datasets: [{
+      label: '칼로리 섭취량',
+      data: [
+        {% for data in calorie_trend.daily_data|slice:":8" %}
+          {{ data.calorie|floatformat:0 }}{% if not forloop.last %},{% endif %}
+        {% endfor %}
+      ],
+      borderColor: '#56AAB2',
+      backgroundColor: gradient,
+      borderWidth: 3,
+      fill: true,
+      tension: 0.4,
+      pointBackgroundColor: function(context) {
+        const value = context.parsed.y;
+        const minValue = {{ calorie_trend.min_data.calorie|floatformat:0 }};
+        const maxValue = {{ calorie_trend.max_data.calorie|floatformat:0 }};
+        
+        if (value === minValue) return '#56AAB2';
+        if (value === maxValue) return '#EF4444';
+        return '#56AAB2';
+      },
+      pointBorderColor: '#ffffff',
+      pointBorderWidth: 2,
+      pointRadius: 6,
+      pointHoverRadius: 8
+    }]
+  };
+
+  const config = {
+    type: 'line',
+    data: chartData,
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: false
+        },
+        tooltip: {
+          backgroundColor: 'rgba(0, 0, 0, 0.8)',
+          titleColor: '#ffffff',
+          bodyColor: '#ffffff',
+          borderColor: '#7CC7C2',
+          borderWidth: 1,
+          callbacks: {
+            label: function(context) {
+              return context.parsed.y + ' kcal';
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: {
+            color: '#f0f0f0',
+            drawBorder: false
+          },
+          ticks: {
+            font: {
+              size: 12
+            },
+            color: '#666'
+          }
+        },
+        y: {
+          grid: {
+            color: '#f0f0f0',
+            drawBorder: false
+          },
+          ticks: {
+            font: {
+              size: 12
+            },
+            color: '#666',
+            callback: function(value) {
+              return value + ' kcal';
+            }
+          }
+        }
+      },
+      interaction: {
+        intersect: false,
+        mode: 'index'
+      }
+    }
+  };
+
+  new Chart(ctx, config);
+});
 </script>
 {% endblock %}

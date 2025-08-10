@@ -1,272 +1,451 @@
-/* ====== 개별 식사 분석 페이지 전용 스타일 ====== */
-
-.meal-detail-container {
-    padding: 0;
-    margin: 0;
-    background-color: #f8f9fa;
-    min-height: 100vh;
+/* 전체 컨테이너 */
+.analysis-container {
+  width: 100%;
+  height: 100vh;
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
 }
 
-/* 뒤로가기 버튼 영역 */
-.back-button-container {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 20px;
-    background: linear-gradient(180deg, #7C78F5 0%, #7C78F5 100%);
-    color: white;
-    position: relative;
+
+/* 스크롤 섹션 공통 스타일 */
+.scroll-section {
+  background-color: white;
+  margin-bottom: 20px;
+  /* padding: 0 20px; */
 }
 
-.back-button {
+/* 섹션 헤더 */
+.section-header {
+  margin-bottom: 24px;
+}
+
+.section-header-up{
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 12px;
-    color: white;
-    text-decoration: none;
-    transition: background-color 0.2s;
+    gap: 5px;
 }
 
-.back-button:hover {
-    background: rgba(255, 255, 255, 0.3);
-    color: white;
-    text-decoration: none;
+
+.section-icon svg {
+  width: 24px;
+  height: 24px;
 }
 
-.page-title {
-    font-family: 'Inter', sans-serif;
-    font-size: 20px;
+.section-header h2 {
+    color: #000;
+    text-align: center;
+    font-family: Roboto;
+    font-size: 24px;
+    font-style: normal;
     font-weight: 600;
-    margin: 0;
-    color: white;
+    line-height: 32px; /* 160% */
 }
 
-/* 기간 표시 카드 */
-.period-card {
-    background: white;
-    margin: 20px;
-    padding: 24px;
-    border-radius: 16px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-    border: 1px solid #f0f0f0;
-}
-
-.period-header {
+.section-date {
     display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 8px;
-}
-
-.period-icon {
-    font-size: 20px;
-}
-
-.period-title {
-    font-family: 'Inter', sans-serif;
-    font-size: 18px;
-    font-weight: 600;
-    color: #7C78F5;
-    margin: 0;
-}
-
-.period-subtitle {
-    font-family: 'Inter', sans-serif;
-    font-size: 14px;
+    justify-content: center;
+    color: #444;
+    text-align: center;
+    font-size: 17px;
     font-weight: 500;
+    line-height: 32px; /* 213.333% */
+}
+
+/* 섹션 1: 식품분류 종합 */
+.stats-overview {
+    padding: 30px 20px 40px 20px;
+    margin-bottom: 25px;
+  border-radius: 10px;
+  border: 1px solid #E8E8E8;
+  background: #FFF;
+  box-shadow: 0 2px 0 0 rgba(142, 142, 142, 0.25);
+}
+
+.stats-text {
     color: #666;
-    margin: 0;
-    margin-left: 32px; /* 아이콘 + gap 만큼 들여쓰기 */
-}
-
-/* 메인 통계 카드 */
-.main-stats-card {
-    background: white;
-    margin: 0 20px 20px;
-    border-radius: 16px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-    border: 1px solid #f0f0f0;
-    overflow: hidden;
-}
-
-.stats-content {
-    padding: 24px;
-}
-
-.stats-description {
-    font-family: 'Inter', sans-serif;
-    font-size: 16px;
-    font-weight: 500;
-    color: #333;
-    margin: 0 0 20px 0;
-    line-height: 1.5;
-}
-
-.highlight-green {
-    color: #4CAF50;
-    font-weight: 700;
-}
-
-.highlight-red {
-    color: #F44336;
-    font-weight: 700;
-}
-
-.stats-detail {
-    margin-top: 20px;
+    text-align: center;
+    font-family: Inter;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 30px; /* 150% */
+    letter-spacing: 0.2px;
+    margin-bottom: 15px;
 }
 
 .stats-note {
-    font-family: 'Inter', sans-serif;
-    font-size: 12px;
-    color: #999;
-    margin: 0 0 16px 0;
-}
-
-/* 진행률 바 */
-.progress-container {
-    margin-top: 16px;
-}
-
-.progress-label {
+    width: 234px;
+    height: 32.895px;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-    margin-bottom: 8px;
-}
-
-.progress-text {
-    font-family: 'Inter', sans-serif;
-    font-size: 14px;
+    margin: 0 auto;
+    margin-bottom: 30px;
+    color: #B7B5B5;
+    text-align: center;
+    font-family: Inter;
+    font-size: 13px;
+    font-style: normal;
     font-weight: 500;
-    color: #333;
+    line-height: normal;
+    letter-spacing: 0.26px;
+    border-radius: 5px;
+    background: rgba(226, 226, 226, 0.25);
 }
 
-.progress-fraction {
-    font-family: 'Inter', sans-serif;
-    font-size: 14px;
-    font-weight: 600;
-    color: #7C78F5;
+.highlight-green {
+  color: #2F9E44;
+  font-weight: 600;
+}
+
+.highlight-red {
+  color: #E03131;
+  font-weight: 600;
+}
+
+.progress-bar-wrapper {
+  margin-bottom: 24px;
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #495057;
 }
 
 .progress-bar {
-    width: 100%;
-    height: 8px;
-    background-color: #f0f0f0;
-    border-radius: 4px;
-    overflow: hidden;
-    margin-bottom: 8px;
+  height: 15px;
+  background-color: #e9ecef;
+  border-radius: 4px;
+  overflow: hidden;
 }
 
 .progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #333 0%, #666 100%);
-    border-radius: 4px;
-    transition: width 0.3s ease;
+  height: 100%;
+  border-radius: 2px;
+    background: #000;
+  transition: width 0.3s ease;
 }
 
 .progress-percentage {
-    text-align: center;
-    font-family: 'Inter', sans-serif;
-    font-size: 24px;
-    font-weight: 700;
-    color: #333;
-    margin-top: 8px;
-}
+  display: block;
+  text-align: center;
+  margin-top: 20px;
 
-/* 권장사항 박스 */
-.recommendation-box {
-    background: linear-gradient(135deg, #E3F2FD 0%, #F3E5F5 100%);
-    padding: 20px;
-    text-align: center;
-    margin-top: 0;
-}
+  color: #000;
 
-.recommendation-text {
-    font-family: 'Inter', sans-serif;
-    font-size: 16px;
-    font-weight: 600;
-    color: #333;
-    margin: 0;
-    line-height: 1.4;
-}
-
-/* 상세 분석 카드 */
-.detail-analysis-card {
-    background: white;
-    margin: 0 20px 20px;
-    padding: 24px;
-    border-radius: 16px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-    border: 1px solid #f0f0f0;
-}
-
-.detail-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 8px;
-}
-
-.detail-icon {
-    font-size: 20px;
-}
-
-.detail-title {
-    font-family: 'Inter', sans-serif;
-    font-size: 18px;
-    font-weight: 600;
-    color: #7C78F5;
-    margin: 0;
-}
-
-.detail-subtitle {
-    font-family: 'Inter', sans-serif;
-    font-size: 14px;
+    font-family: Inter;
+    font-size: 35px;
+    font-style: normal;
     font-weight: 500;
-    color: #666;
-    margin: 0;
-    margin-left: 32px; /* 아이콘 + gap 만큼 들여쓰기 */
+    line-height: normal;
+    letter-spacing: 0.7px;
 }
 
-/* 반응형 디자인 */
-@media (max-width: 480px) {
-    .meal-detail-container {
-        padding: 0;
-    }
-    
-    .back-button-container {
-        padding: 16px;
-    }
-    
-    .page-title {
-        font-size: 18px;
-    }
-    
-    .period-card,
-    .main-stats-card,
-    .detail-analysis-card {
-        margin: 16px;
-    }
-    
-    .stats-content {
-        padding: 20px;
-    }
-    
-    .stats-description {
-        font-size: 15px;
-    }
-    
-    .period-title,
-    .detail-title {
-        font-size: 16px;
-    }
-    
-    .recommendation-text {
-        font-size: 15px;
-    }
+.percentage-description {
+  color: #999;
+  text-align: center;
+  font-family: Inter;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  margin: 0;
+  margin-bottom: 45px;
+}
+
+.message-box {
+    border-radius: 6px;
+    /* border: 1px solid #B7B5B5; */
+    padding: 20px;
+    background: rgba(226, 226, 226, 0.25);
+
+}
+
+.message-box p {
+    color: #000;
+    text-align: center;
+    font-family: Inter;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    letter-spacing: 0.2px;
+}
+
+/* 섹션 2: 열량 추이 */
+.calorie-trend {
+  padding: 30px 20px 45px 20px;
+  margin-bottom: 25px;
+  border-radius: 10px;
+  border: 1px solid #E8E8E8;
+  background: #FFF;
+  box-shadow: 0 2px 0 0 rgba(142, 142, 142, 0.25);
+}
+
+.trend-graph {
+  margin-bottom: 24px;
+}
+
+.chart-container {
+  background: white;
+  border-radius: 12px;
+  
+  margin-bottom: 70px;
+  height: 280px;
+  width: 100%;
+  position: relative;
+}
+
+.date-labels {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 20px;
+  margin-bottom: 24px;
+}
+
+.date-label {
+  font-size: 12px;
+  color: #666;
+  font-family: Inter;
+}
+
+.trend-stats-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 35px;
+}
+
+.stat-card {
+    border-radius: 20px;
+    border: 1px solid #5B56B2;
+    background: #FFF;
+    padding: 9px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.min-card {
+  border-color: #5f5fd3;
+}
+
+.max-card {
+  border-color: #d35f5f;
+}
+
+.stat-icon {
+  margin-bottom: 8px;
+}
+
+.stat-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-title {
+    color: #000;
+    text-align: center;
+    font-family: Inter;
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    letter-spacing: 0.3px;
+    margin-bottom: 4px;
+}
+
+.stat-date {
+  color: #000;
+  text-align: center;
+  font-family: Inter;
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  letter-spacing: 0.3px;
+  margin-bottom: 4px;
+}
+
+.stat-value {
+  color: #000;
+  text-align: center;
+  font-family: Inter;
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  letter-spacing: 0.3px;
+  margin-bottom: 4px;
+}
+
+.trend-message {
+  border-radius: 6px;
+  padding: 20px 10px;
+  background: rgba(226, 226, 226, 0.25);
+  text-align: center;
+}
+
+.trend-message > p {
+  color: #000;
+  font-family: Inter;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: normal;
+  letter-spacing: 0.2px;
+  margin: 0 0 12px 0;
+}
+
+.trend-details {
+  margin-top: 12px;
+}
+
+.trend-details p {
+  color: #666;
+  font-family: Inter;
+  font-size: 14px;
+  font-weight: 500;
+  margin: 4px 0;
+}
+
+/* 섹션 3: 시간대별 분석 */
+.time-analysis {
+  padding: 30px 20px 40px 20px;
+  margin-bottom: 25px;
+  border-radius: 10px;
+  border: 1px solid #E8E8E8;
+  background: #FFF;
+  box-shadow: 0 2px 0 0 rgba(142, 142, 142, 0.25);
+  border-radius: 10px;
+}
+
+/* 섹션 제목 공통 스타일 */
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.title-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.title-icon svg {
+  display: block;
+  vertical-align: middle;
+}
+
+.section-title h3 {
+  color: #000;
+  font-family: Inter;
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
+  line-height: 24px;
+  display: flex;
+  align-items: center;
+}
+
+/* 시간대별 가공식품 섭취 섹션 */
+.meal-time-section {
+  margin-bottom: 40px;
+}
+
+.meal-stats-grid {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.meal-stat-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.meal-number {
+  color: #000;
+  text-align: center;
+  font-family: Inter;
+  font-size: 32px;
+  font-weight: 600;
+  line-height: normal;
+  margin-bottom: 8px;
+}
+
+.meal-label {
+  color: #7CC7C2;
+  text-align: center;
+  font-family: Inter;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: normal;
+}
+
+.divider {
+  width: 1px;
+  height: 60px;
+  background: #D9D9D9;
+  margin: 0 20px;
+}
+
+/* 요일별 분석 섹션 */
+.weekday-section {
+  margin-top: 40px;
+}
+
+.weekday-stats-grid {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  
+}
+
+.weekday-stat-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.weekday-stat-card .stat-value {
+  color: #000;
+  text-align: center;
+  font-family: Inter;
+  font-size: 24px;
+  font-weight: 600;
+  line-height: normal;
+  margin-bottom: 4px;
+}
+
+.weekday-stat-card .stat-title {
+  color: #7CC7C2;
+  text-align: center;
+  font-family: Inter;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.weekday-mini-divider {
+  width: 1px;
+  height: 40px;
+  background: #D9D9D9;
+  margin: 0 8px;
 }
