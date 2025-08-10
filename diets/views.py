@@ -96,11 +96,11 @@ def diet_list(request):
     #유저가 등록한 식단이 없을 경우 예외처리
     if not diets:
         #To FE: 템플릿 작업 시작하면 지금 return문 지우고 바로 아래에 주석처리 해둔 return문 채워서 사용해주세요!!!
-        #return render(request, '템플릿 이름.html', {"user_id": user.id, "recent_foods": []})
-        return JsonResponse({
-            "user_id": user.id,
-            "recent_foods": []
-        })
+        return render(request, 'diets_main.html', {"user_id": user.id, "recent_foods": []})
+        # return JsonResponse({
+        #     "user_id": user.id,
+        #     "recent_foods": []
+        # })
     
     idx = len(diets)-1 #가장 최근의 식사부터 시작
     cnt = 0 #몇개의 제품이 append 되었는지 추적
