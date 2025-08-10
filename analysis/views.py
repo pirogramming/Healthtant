@@ -494,3 +494,22 @@ def analysis_nutrients(request):
     #나중에 프론트에서 diet_analysis.html 같은 템플릿 만들고 나면 아래 주석처리 해놓은 render 함수로 바꿔 사용해주세요!
     #return render(request, "analysis/nutrients_analysis.html", context)
     return JsonResponse(context, json_dumps_params={'ensure_ascii': False})
+
+
+#WHO 기준과 비교하기 뷰
+def analysis_WHO(request):
+    try:
+        #url에서 쿼리로 주어진 start_date, end_date
+        start_date = datetime.strptime(request.GET.get('start_date'), '%Y-%m-%d').date()
+        end_date = datetime.strptime(request.GET.get('end_date'), '%Y-%m-%d').date()
+    # 쿼리가 제대로 된 형식으로 주어지지 않았을 경우 예외처리
+    except Exception:
+        return HttpResponseBadRequest("날짜 형식이 잘못 되었습니다. YYYY-MM-DD 형식을 사용해 주세요.")
+    
+    # 분석 시작 날짜가 끝 날짜보다 뒤인 경우 예외처리
+    if start_date > end_date:
+        return HttpResponseBadRequest("분석 시작 날짜는 끝 날짜보다 이전이어야 합니다.")
+    
+    day_difference = (end_date - start_date).days + 1 #몇 일 차이인지 계산(양 끝 날짜 포함)
+
+    
