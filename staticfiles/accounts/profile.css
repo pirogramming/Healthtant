@@ -1,0 +1,230 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "inter", Helvetica, Arial, sans-serif;
+    background-color: #ffffff;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width : 402px;
+    height : 874px;
+    margin: auto;
+}
+
+.container {
+    background-color: var(--neutralwhitepure-white);
+    width: 100%;
+    max-width: 375px;
+    min-height: 100vh;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.nav-bar {
+    
+    height: 62px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.nav-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.nav-icon {
+    width: 20px;
+    height: 20px;
+    color: white;
+}
+
+.header {
+    text-align: center;
+    padding: 20px 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--variable-collection-text-tittle);
+    border-bottom: 1px solid var(--variable-collection-border-gary40);
+}
+
+.content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+.instruction {
+    
+    width: 399px;
+    padding: 10px 16px;
+    align-items: center;
+    color: #1D1D1D;
+    font-family: Inter;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+}
+
+.profile-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 7.5px;
+    margin-top: 20px;
+}
+
+.profile-picture {
+    width: 94px;
+    height: 94px;
+    border-radius: 50%;
+    background-color: var(--neutralslate-blackslate-black-50);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 2px solid var(--variable-collection-border-gary40);
+}
+
+.profile-picture:hover {
+    background-color: var(--neutralslate-blackslate-black-100);
+}
+
+.profile-icon {
+    width: 40px;
+    height: 40px;
+    color: var(--variable-collection-text-body-gray70);
+}
+
+.change-picture {
+    font-size: 12px;
+    color: var(--variable-collection-text-body-gray70);
+    cursor: pointer;
+    background: var(--neutralslate-blackslate-black-50);
+    padding: 8px 16px;
+    border-radius: 4px;
+    border: none;
+    transition: all 0.2s;
+}
+
+.change-picture:hover {
+    border-radius: 5px;
+    background: rgba(183, 181, 181, 0.57);
+}
+
+.form-section {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    margin-top: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.form-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--variable-collection-text-tittle);
+}
+
+.input-field {
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    background-color: var(--neutralwhitepure-white);
+    transition: border-color 0.2s;
+    border-radius: 4px;
+    border: 1px solid var(--border-gary40, #C6C6C6);
+    background: #FFF;
+}
+
+.input-field:focus {
+    outline: none;
+    border-color: var(--main);
+}
+
+.input-field::placeholder {
+    color: var(--variable-collection-text-body-gray70);
+}
+
+.gender-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.gender-btn {
+    flex: 1;
+    padding: 12px;
+    border: 1px solid var(--variable-collection-border-gary40);
+    background-color: var(--neutralwhitepure-white);
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 4px;
+    border: 1px solid var(--border-gary40, #C6C6C6);
+    background: #FFF;
+}
+
+.gender-btn:hover {
+    border-color: var(--main);
+}
+
+.gender-btn.selected {
+    border-radius: 4px;
+    border: 3px solid var(--main, #56AAB2);
+    background: linear-gradient(0deg, #FFF 0%, #FFF 100%), #FFF;
+    box-shadow: 0 2px 11px 0 rgba(95, 183, 191, 0.27);
+}
+
+.complete-btn {
+    margin-top: 40px;
+    padding: 16px;
+    background-color: var(--neutralwhitepure-white);
+    border: 1px solid var(--variable-collection-border-gary40);
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--variable-collection-text-body-gray50);
+    cursor: pointer;
+    transition: all 0.2s;
+    width: 100%;
+    border-radius: 8px;
+    border: 1px solid var(--border-gary40, #C6C6C6);
+    background: #FFF;
+}
+
+.complete-btn:hover {
+    border-radius: 8px;
+    border: 3px solid var(--main, #56AAB2);
+    background: linear-gradient(0deg, #FFF 0%, #FFF 100%), #FFF;
+    box-shadow: 0 1px 6px 0 rgba(86, 170, 178, 0.50);
+}
+
+.complete-btn:active {
+    transform: scale(0.98);
+}
+
+.hidden {
+    display: none;
+} 
