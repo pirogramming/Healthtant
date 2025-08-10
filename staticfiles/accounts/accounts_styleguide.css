@@ -1,0 +1,35 @@
+:root {
+  --neutralslate-blackslate-black-100: rgba(185, 186, 189, 1);
+  --neutralwhitepure-white: rgba(255, 255, 255, 1);
+  --neutralslate-blackslate-black-50: rgba(232, 233, 234, 1);
+  --body-base-regular-font-family: "Satoshi", Helvetica;
+  --body-base-regular-font-weight: 400;
+  --body-base-regular-font-size: 16px;
+  --body-base-regular-letter-spacing: -0.18000000715255737px;
+  --body-base-regular-line-height: 22px;
+  --body-base-regular-font-style: normal;
+  --main: rgba(86, 170, 178, 1);
+  --: rgba(144, 144, 144, 1);
+  --good: rgba(210, 255, 212, 1);
+  --normal: rgba(255, 238, 210, 1);
+  --bad: rgba(255, 210, 210, 1);
+  --normal-icon: rgba(178, 120, 86, 1);
+  --bad-icon: rgba(178, 86, 88, 1);
+  --colors-labels-primary: rgba(0, 0, 0, 1);
+}
+
+[data-colors-mode="light"] {
+  --colors-labels-primary: rgba(0, 0, 0, 1);
+}
+
+[data-colors-mode="dark"] {
+  --colors-labels-primary: rgba(255, 255, 255, 1);
+}
+
+[data-colors-mode="[C-light]"] {
+  --colors-labels-primary: rgba(0, 0, 0, 1);
+}
+
+[data-colors-mode="[C-dark]"] {
+  --colors-labels-primary: rgba(255, 255, 255, 1);
+}

@@ -16,6 +16,17 @@ jobs:
         uses: webfactory/ssh-agent@v0.8.0
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          
+      # USERNAME과 HOST 확인용 디버그 스텝
+      - name: Debug Secrets
+        run: |
+          echo "USERNAME is set to: ${{ secrets.USERNAME }}"
+          echo "HOST is set to: ${{ secrets.HOST }}"
+
+      # SSH 접속 테스트 (-vvv 옵션으로 디버깅)
+      - name: Test SSH Connection
+        run: |
+          ssh -vvv -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.HOST }} exit
 
       - name: Deploy to server
         run: |
@@ -25,4 +36,5 @@ jobs:
             docker-compose down
             docker-compose up -d --build
             docker-compose exec -T web python manage.py migrate
+            docker-compose exec -T web python manage.py collectstatic --noinput
           EOF
