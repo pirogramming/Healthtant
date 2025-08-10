@@ -1,0 +1,412 @@
+/* 기본 스타일 리셋 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 0;
+}
+
+/* 식사등록페이지 전체 컨테이너 */
+.meal-register-container {
+    background-color: #f5f5f5;
+    min-height: 100vh;
+    padding: 0;
+    font-family: 'Noto Sans KR', sans-serif;
+}
+
+/* 상단 헤더 */
+.top-header {
+    background-color: white;
+    padding: 15px 20px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.top-header h1 {
+    font-size: 16px;
+    font-weight: 500;
+    color: #333;
+    margin: 0;
+    text-align: left;
+}
+
+/* 메인 헤더 영역 */
+.register-header {
+    background-color: white;
+    padding: 20px 0;
+    text-align: center;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.register-header h2 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+    padding: 0 20px;
+}
+
+/* 검색 섹션 */
+.search-section {
+    background-color: white;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.search-container {
+    flex: 1;
+    position: relative;
+    max-width: 300px;
+}
+
+.search-input {
+    width: 100%;
+    padding: 12px 45px 12px 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #333;
+    background-color: white;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.search-input::placeholder {
+    color: #999;
+    font-size: 14px;
+}
+
+.search-input:focus {
+    border-color: #4285f4;
+}
+
+.search-icon {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.search-icon svg path {
+    stroke: #4285f4;
+}
+
+.cancel-btn {
+    background: none;
+    border: none;
+    color: #666;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 6px;
+    transition: background-color 0.2s;
+}
+
+.cancel-btn:hover {
+    background-color: #f5f5f5;
+}
+
+/* 과거 섭취 제품 목록 섹션 */
+.recent-foods-section {
+    background-color: white;
+    padding: 20px;
+    flex: 1;
+}
+
+.recent-foods-section h2 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 20px 0;
+    padding: 0;
+}
+
+.recent-foods-list {
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+}
+
+/* 제품 카드 */
+.food-card {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    background-color: white;
+    border-bottom: 1px solid #e0e0e0;
+    transition: all 0.2s ease;
+}
+
+.food-card:last-child {
+    border-bottom: none;
+}
+
+/* 제품 이미지 */
+.food-image {
+    flex-shrink: 0;
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.food-image-placeholder {
+    font-size: 10px;
+    font-weight: 500;
+    color: #666;
+    text-align: center;
+    line-height: 1.2;
+    padding: 4px;
+}
+
+/* 제품 정보 */
+.food-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.food-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 4px 0;
+    line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.food-company {
+    font-size: 12px;
+    color: #666;
+    margin: 0;
+    line-height: 1.2;
+}
+
+/* 등록 버튼 */
+.register-btn {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 12px;
+    background: none;
+    border: 1px solid #4285f4;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.register-btn:hover {
+    background-color: #4285f4;
+    color: white;
+}
+
+.register-btn:hover .plus-icon {
+    color: white;
+}
+
+.register-btn:hover .register-text {
+    color: white;
+}
+
+.plus-icon {
+    font-size: 16px;
+    font-weight: 600;
+    color: #4285f4;
+    transition: color 0.2s;
+}
+
+.register-text {
+    font-size: 12px;
+    font-weight: 500;
+    color: #4285f4;
+    transition: color 0.2s;
+}
+
+/* 스크롤바 스타일링 */
+.recent-foods-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.recent-foods-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.recent-foods-list::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+
+.recent-foods-list::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .search-section {
+        padding: 15px;
+        gap: 10px;
+    }
+    
+    .search-container {
+        max-width: none;
+    }
+    
+    .search-input {
+        padding: 10px 40px 10px 12px;
+        font-size: 13px;
+    }
+    
+    .cancel-btn {
+        font-size: 13px;
+        padding: 6px 10px;
+    }
+    
+    .recent-foods-section {
+        padding: 15px;
+    }
+    
+    .recent-foods-section h2 {
+        font-size: 15px;
+        margin-bottom: 15px;
+    }
+    
+    .food-card {
+        padding: 12px;
+        gap: 12px;
+    }
+    
+    .food-image {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .food-name {
+        font-size: 13px;
+    }
+    
+    .food-company {
+        font-size: 11px;
+    }
+    
+    .register-btn {
+        padding: 6px 10px;
+    }
+    
+    .plus-icon {
+        font-size: 14px;
+    }
+    
+    .register-text {
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 480px) {
+    .top-header {
+        padding: 12px 15px;
+    }
+    
+    .top-header h1 {
+        font-size: 14px;
+    }
+    
+    .register-header {
+        padding: 15px 0;
+    }
+    
+    .register-header h2 {
+        font-size: 16px;
+        padding: 0 15px;
+    }
+    
+    .search-section {
+        padding: 12px;
+        gap: 8px;
+    }
+    
+    .search-input {
+        padding: 8px 35px 8px 10px;
+        font-size: 12px;
+    }
+    
+    .cancel-btn {
+        font-size: 12px;
+        padding: 5px 8px;
+    }
+    
+    .recent-foods-section {
+        padding: 12px;
+    }
+    
+    .recent-foods-section h2 {
+        font-size: 14px;
+        margin-bottom: 12px;
+    }
+    
+    .food-card {
+        padding: 10px;
+        gap: 10px;
+    }
+    
+    .food-image {
+        width: 45px;
+        height: 45px;
+    }
+    
+    .food-name {
+        font-size: 12px;
+    }
+    
+    .food-company {
+        font-size: 10px;
+    }
+    
+    .register-btn {
+        padding: 5px 8px;
+    }
+    
+    .plus-icon {
+        font-size: 12px;
+    }
+    
+    .register-text {
+        font-size: 10px;
+    }
+}
+
+/* 접근성 개선 */
+.food-card:focus-within {
+    outline: 2px solid #4285f4;
+    outline-offset: 2px;
+}
+
+.register-btn:focus {
+    outline: 2px solid #4285f4;
+    outline-offset: 2px;
+}
+
+.search-input:focus {
+    outline: 2px solid #4285f4;
+    outline-offset: 2px;
+}

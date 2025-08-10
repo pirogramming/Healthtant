@@ -1,0 +1,320 @@
+/* ====== 분석 페이지 공통 스타일 ====== */
+
+/* 분석 날짜 선택 페이지 스타일 */
+.analysis-date-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    padding: var(--spacing-lg);
+    text-align: center;
+}
+
+.analysis-title {
+    color: var(--main, #56AAB2);
+    font-family: Koulen;
+    font-size: 40px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;    
+}
+
+.analysis-subtitle {
+    text-align: center;
+    font-family: Inter;
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 800;
+    line-height: 20px;
+    color: var(--main, #56AAB2);
+    margin-bottom: 45px;
+}
+
+.date-selection-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-lg);
+    width: 100%;
+    max-width: 320px;
+}
+
+.date-range-container {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    width: 100%;
+}
+
+.date-input-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.date-label {
+    font-size: 14px;
+    color: var(--gray-100);
+    text-align: left;
+}
+
+.date-input {
+    padding: 14px var(--spacing-md);
+    border: 1px solid var(--gray-50);
+    border-radius: var(--border-radius-sm);
+    font-size: 16px;
+    font-family: var(--font-primary);
+    background-color: var(--white);
+    color: var(--black);
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.date-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(86, 170, 178, 0.1);
+}
+
+.date-separator {
+    font-size: 20px;
+    color: var(--gray-100);
+    margin-top: 20px;
+}
+
+.analyze-button {
+    width: 100%;
+    padding: 18px var(--spacing-lg);
+    background-color: var(--primary-color);
+    color: var(--white);
+    border: none;
+    border-radius: var(--border-radius-sm);
+    font-size: 16px;
+    font-weight: 600;
+    font-family: var(--font-primary);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: var(--spacing-lg);
+}
+
+.analyze-button:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(86, 170, 178, 0.3);
+}
+
+.analyze-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(86, 170, 178, 0.3);
+}
+
+.analyze-button:disabled {
+    background-color: var(--gray-100);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* 날짜 입력 placeholder 스타일 */
+.date-input::-webkit-calendar-picker-indicator {
+    color: #56AAB2;
+    cursor: pointer;
+}
+
+/* ====== 분석 결과 페이지 공통 스타일 ====== */
+
+.analysis-result-container {
+    padding: var(--spacing-md);
+    max-width: 100%;
+}
+
+.result-header {
+    text-align: center;
+    margin-bottom: var(--spacing-lg);
+}
+
+.result-title {
+    font-family: var(--font-title);
+    font-size: 24px;
+    color: var(--primary-color);
+    margin-bottom: var(--spacing-sm);
+}
+
+.result-subtitle {
+    font-size: 14px;
+    color: var(--gray-100);
+}
+
+/* 분석 카드 스타일 */
+.analysis-card {
+    background-color: var(--white);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
+    box-shadow: var(--shadow-light);
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-md);
+}
+
+.card-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--black);
+}
+
+.card-icon {
+    width: 24px;
+    height: 24px;
+    fill: var(--primary-color);
+}
+
+/* 영양소 분석 스타일 */
+.nutrient-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-sm) 0;
+    border-bottom: 1px solid var(--gray-border);
+}
+
+.nutrient-item:last-child {
+    border-bottom: none;
+}
+
+.nutrient-name {
+    font-weight: 500;
+    color: var(--black);
+}
+
+.nutrient-value {
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+/* 진행 바 스타일 */
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background-color: var(--gray-50);
+    border-radius: 4px;
+    overflow: hidden;
+    margin: var(--spacing-sm) 0;
+}
+
+.progress-fill {
+    height: 100%;
+    background-color: var(--primary-color);
+    transition: width 0.3s ease;
+}
+
+/* 상태 배지 스타일 */
+.status-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--white);
+}
+
+.status-good {
+    background-color: var(--good-color);
+    color: var(--black);
+}
+
+.status-normal {
+    background-color: var(--normal-color);
+    color: var(--black);
+}
+
+.status-bad {
+    background-color: var(--bad-color);
+    color: var(--black);
+}
+
+/* ====== 모바일 최적화 ====== */
+@media (max-width: 480px) {
+    .analysis-title {
+        font-size: 36px;
+    }
+    
+    .date-range-container {
+        flex-direction: row;
+        gap: var(--spacing-md);
+    }
+    
+    .date-separator {
+        margin: 0;
+    }
+    
+    .analysis-card {
+        padding: var(--spacing-md);
+    }
+    
+    .result-title {
+        font-size: 20px;
+    }
+}
+
+/* ====== 차트 컨테이너 스타일 ====== */
+.chart-container {
+    width: 100%;
+    height: 300px;
+    margin: var(--spacing-md) 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--gray-50);
+    border-radius: var(--border-radius-sm);
+}
+
+.chart-placeholder {
+    color: var(--gray-100);
+    font-size: 14px;
+}
+
+/* ====== 버튼 그룹 스타일 ====== */
+.button-group {
+    display: flex;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-lg);
+}
+
+.btn-secondary {
+    padding: 12px var(--spacing-md);
+    background-color: transparent;
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+    border-radius: var(--border-radius-sm);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex: 1;
+}
+
+.btn-secondary:hover {
+    background-color: var(--primary-color);
+    color: var(--white);
+}
+
+/* ====== 로딩 스타일 ====== */
+.loading-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--gray-50);
+    border-radius: 50%;
+    border-top-color: var(--primary-color);
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}

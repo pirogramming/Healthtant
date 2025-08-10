@@ -1,0 +1,135 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>식사등록페이지 - Healthtant</title>
+    <link rel="stylesheet" href="{% static 'diets/diets_register.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="meal-register-container">
+    <!-- 상단 헤더 -->
+    <div class="top-header">
+        <h1>식사등록페이지 - Healthtant</h1>
+    </div>
+    
+    <!-- 메인 헤더 -->
+    <div class="register-header">
+        <h2>식사등록페이지</h2>
+    </div>
+
+    <!-- 검색 섹션 -->
+    <div class="search-section">
+        <div class="search-container">
+            <input type="text" class="search-input" placeholder="새제품을 검색해서 찾아보세요">
+            <div class="search-icon">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9.16667 15.8333C12.8486 15.8333 15.8333 12.8486 15.8333 9.16667C15.8333 5.48477 12.8486 2.5 9.16667 2.5C5.48477 2.5 2.5 5.48477 2.5 9.16667C2.5 12.8486 5.48477 15.8333 9.16667 15.8333Z" stroke="#56AAB2" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M17.5 17.5L13.875 13.875" stroke="#56AAB2" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+        </div>
+        <button class="cancel-btn">취소</button>
+    </div>
+
+    <!-- 과거 섭취 제품 목록 -->
+    <div class="recent-foods-section">
+        <h2>과거에 섭취한 제품목록</h2>
+        <div class="recent-foods-list">
+            {% for food in recent_foods %}
+            <div class="food-card" data-food-id="{{ food.food_id }}">
+                <div class="food-image">
+                    {% if food.food_img %}
+                        <img src="{{ food.food_img }}" alt="{{ food.food_name }}">
+                    {% else %}
+                        <img src="{% static 'diets/images/default-food.jpg' %}" alt="{{ food.food_name }}">
+                    {% endif %}
+                </div>
+                <div class="food-info">
+                    <h3 class="food-name">{{ food.food_name }}</h3>
+                    <p class="food-company">제조사: {{ food.company_name }}</p>
+                </div>
+                <button class="register-btn">
+                    <span class="plus-icon">+</span>
+                    <span class="register-text">등록하기</span>
+                </button>
+            </div>
+            {% empty %}
+            <!-- Mock 데이터 (실제 데이터가 없을 때) -->
+            <div class="food-card" data-food-id="food001">
+                <div class="food-image">
+                    <div class="food-image-placeholder">하림 닭가슴살<br>블랙페퍼</div>
+                </div>
+                <div class="food-info">
+                    <h3 class="food-name">하림 닭가슴살 블랙페퍼, 800g, 1개</h3>
+                    <p class="food-company">제조사: CJ제일제당</p>
+                </div>
+                <button class="register-btn">
+                    <span class="plus-icon">+</span>
+                    <span class="register-text">등록하기</span>
+                </button>
+            </div>
+
+            <div class="food-card" data-food-id="food002">
+                <div class="food-image">
+                    <div class="food-image-placeholder">득근 파티<br>통 닭가슴살</div>
+                </div>
+                <div class="food-info">
+                    <h3 class="food-name">득근파티 통 닭가슴살 6종 혼합, 100g</h3>
+                    <p class="food-company">제조사: CJ대원푸드</p>
+                </div>
+                <button class="register-btn">
+                    <span class="plus-icon">+</span>
+                    <span class="register-text">등록하기</span>
+                </button>
+            </div>
+
+            <div class="food-card" data-food-id="food003">
+                <div class="food-image">
+                    <div class="food-image-placeholder">하림 닭가슴살<br>블랙페퍼</div>
+                </div>
+                <div class="food-info">
+                    <h3 class="food-name">하림 닭가슴살 블랙페퍼, 800g, 1개</h3>
+                    <p class="food-company">제조사: CJ제일제당</p>
+                </div>
+                <button class="register-btn">
+                    <span class="plus-icon">+</span>
+                    <span class="register-text">등록하기</span>
+                </button>
+            </div>
+
+            <div class="food-card" data-food-id="food004">
+                <div class="food-image">
+                    <div class="food-image-placeholder">하림 닭가슴살<br>블랙페퍼</div>
+                </div>
+                <div class="food-info">
+                    <h3 class="food-name">하림 닭가슴살 블랙페퍼, 800g, 1개</h3>
+                    <p class="food-company">제조사: CJ제일제당</p>
+                </div>
+                <button class="register-btn">
+                    <span class="plus-icon">+</span>
+                    <span class="register-text">등록하기</span>
+                </button>
+            </div>
+
+            <div class="food-card" data-food-id="food005">
+                <div class="food-image">
+                    <div class="food-image-placeholder">하림 닭가슴살<br>블랙페퍼</div>
+                </div>
+                <div class="food-info">
+                    <h3 class="food-name">하림 닭가슴살 블랙페퍼, 800g, 1개</h3>
+                    <p class="food-company">제조사: CJ제일제당</p>
+                </div>
+                <button class="register-btn">
+                    <span class="plus-icon">+</span>
+                    <span class="register-text">등록하기</span>
+                </button>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+</body>
+</html>
