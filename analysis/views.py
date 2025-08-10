@@ -116,9 +116,9 @@ def get_color(level):
     if level == "매우 부족" or level == "매우 과다":
         return "#ff3232"
     elif level == "부족" or level == "과다":
-        return "#ffbb00"
+        return "#FF9021"
     else:
-        return "#56aab2"
+        return "#56AAB2"
 
 # 영양 섭취 수준을 입력 받아 프론트에서 출력해야 할 메세지를 반환하는 메소드
 def get_message(level):
@@ -317,7 +317,7 @@ def analysis_main(request):
 
     #나중에 프론트에서 main.html 같은 템플릿 만들고 나면 아래 주석처리 해놓은 render 함수로 바꿔 사용해주세요!
     return render(request, "analysis/analysis_main.html", context)
-    return JsonResponse(context, json_dumps_params={'ensure_ascii': False})
+    # return JsonResponse(context, json_dumps_params={'ensure_ascii': False})
 
 
 def stdev_summary(stdev):
