@@ -254,14 +254,14 @@
             return `${d.getFullYear()}-${m}-${day}`;
         }
 
-        // "새 식사" / "오늘의 식사 추가하기" → 등록 폼 이동
+        // "새 식사" / "오늘의 식사 추가하기" → register 페이지로 이동
         document.querySelector(".add-meal-btn")?.addEventListener("click", () => {
-            // 기본: 오늘 날짜만 세팅. 음식/끼니는 폼에서 선택.
-            window.location.href = `/diets/upload/?date=${todayYMD()}`;
+            // 기본: 오늘 날짜만 세팅. 음식/끼니는 register 페이지에서 선택.
+            window.location.href = `/diets/list/?date=${todayYMD()}`;
         });
 
         document.querySelector(".add-today-meal")?.addEventListener("click", () => {
-            window.location.href = `/diets/upload/?date=${todayYMD()}`;
+            window.location.href = `/diets/list/?date=${todayYMD()}`;
         });
     </script>
 

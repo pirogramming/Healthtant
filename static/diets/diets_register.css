@@ -12,9 +12,14 @@ body {
     padding: 0;
 }
 
+.status-bar {
+    height: 61px;
+    background-color: var(--white);
+    width: 100%;
+}
 /* 식사등록페이지 전체 컨테이너 */
 .meal-register-container {
-    background-color: #f5f5f5;
+    background-color: white;
     min-height: 100vh;
     padding: 0;
     font-family: 'Noto Sans KR', sans-serif;
@@ -30,8 +35,7 @@ body {
     align-items: center;
     gap: 15px;
     border-bottom: 1px solid #e0e0e0;
-    margin: 0 20px;
-    margin-top: 20px;
+    margin: 20px 20px 0 20px; /* 상단 여백 추가 */
 }
 
 .search-container {
@@ -41,12 +45,10 @@ body {
 
 .search-input {
     width: 100%;
-    padding: 12px 45px 12px 15px;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    font-size: 14px;
+    height: 50px;
+    padding: 0 46px 0 20px;
+    line-height: 50px;
     color: #333;
-    background-color: white;
     outline: none;
     transition: border-color 0.2s;
     cursor: pointer;
@@ -54,6 +56,10 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    border-radius: 100px;
+    border: 1px solid var(--neutral-slate-black-slate-black-50, #E8E9EA);
+    background: var(--neutral-white-pure-white, #FFF);
+    box-shadow: 0 6px 40px -10px rgba(64, 72, 82, 0.15);
 }
 
 .search-input:hover {
@@ -77,9 +83,6 @@ body {
     justify-content: center;
 }
 
-.search-icon svg path {
-    stroke: #4285f4;
-}
 
 .cancel-btn {
     background: none;
@@ -99,7 +102,7 @@ body {
 
 /* 과거 섭취 제품 목록 섹션 */
 .recent-foods-section {
-    background-color: white;
+    background-color: white; /* 배경을 회색으로 변경 */
     padding: 20px;
     flex: 1;
     margin: 0 20px;
@@ -109,7 +112,7 @@ body {
 .recent-foods-section h2 {
     font-size: 16px;
     font-weight: 600;
-    color: #333;
+    color:#B7B5B5;
     margin: 0 0 20px 0;
     padding: 0;
 }
@@ -117,28 +120,32 @@ body {
 .recent-foods-list {
     display: flex;
     flex-direction: column;
-    gap: 0;
+    gap: 20px; /* 카드 간격 추가 */
     max-height: calc(100vh - 300px);
     overflow-y: auto;
 }
 
 /* 제품 카드 */
 .food-card {
+    padding: 26px 19px;
     display: flex;
     align-items: center;
-    gap: 15px;
-    padding: 15px;
+    gap: 20px; /* 이미지와 텍스트 사이 간격 추가 */
     background-color: white;
-    border-bottom: 1px solid #e0e0e0;
+    border-radius: 12px;
+    border: 1px solid var(--neutral-slate-black-slate-black-50, #E8E9EA);
+    box-shadow: 0 4px 24px -6px rgba(64, 72, 82, 0.15);
     transition: all 0.2s ease;
 }
 
 .food-card:last-child {
-    border-bottom: none;
+    border-bottom: none; /* 마지막 카드 하단선 제거 */
 }
 
 .food-card:hover {
     background-color: #f8f9fa;
+    transform: translateY(-2px); /* 호버 시 살짝 위로 이동 */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* 호버 시 그림자 강화 */
 }
 
 /* 제품 이미지 */
@@ -202,14 +209,14 @@ body {
 .plus-icon {
     font-size: 16px;
     font-weight: 600;
-    color: #4285f4;
+    color:rgba(86, 170, 178, 1);
     transition: color 0.2s;
 }
 
 .register-text {
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 500;
-    color: #4285f4;
+    color:rgba(86, 170, 178, 1);
     transition: color 0.2s;
 }
 
@@ -248,11 +255,15 @@ body {
     
     .search-container {
         max-width: none;
+        
     }
     
     .search-input {
-        padding: 10px 40px 10px 12px;
         font-size: 13px;
+        border-radius: 100px;
+        border: 1px solid var(--neutral-slate-black-slate-black-50, #E8E9EA);
+        background: var(--neutral-white-pure-white, #FFF);
+        box-shadow: 0 6px 40px -10px rgba(64, 72, 82, 0.15);
     }
     
     .search-placeholder {
@@ -260,7 +271,7 @@ body {
     }
     
     .cancel-btn {
-        font-size: 13px;
+        font-size: 16px;
         padding: 6px 10px;
     }
     
@@ -275,10 +286,6 @@ body {
         margin-bottom: 15px;
     }
     
-    .food-card {
-        padding: 12px;
-        gap: 12px;
-    }
     
     .food-image {
         width: 50px;
@@ -299,10 +306,6 @@ body {
     
     .plus-icon {
         font-size: 14px;
-    }
-    
-    .register-text {
-        font-size: 11px;
     }
 }
 
@@ -326,7 +329,6 @@ body {
     }
     
     .search-input {
-        padding: 8px 35px 8px 10px;
         font-size: 12px;
     }
     
@@ -335,7 +337,7 @@ body {
     }
     
     .cancel-btn {
-        font-size: 12px;
+        font-size: 16px;
         padding: 5px 8px;
     }
     
@@ -350,18 +352,13 @@ body {
         margin-bottom: 12px;
     }
     
-    .food-card {
-        padding: 10px;
-        gap: 10px;
-    }
-    
     .food-image {
         width: 45px;
         height: 45px;
     }
     
     .food-name {
-        font-size: 12px;
+        font-size: 15px;
     }
     
     .food-company {
@@ -373,11 +370,11 @@ body {
     }
     
     .plus-icon {
-        font-size: 12px;
+        font-size: 14px;
     }
     
     .register-text {
-        font-size: 10px;
+        font-size: 15px;
     }
 }
 

@@ -1,0 +1,181 @@
+* { box-sizing: border-box; }
+html, body { 
+    margin: 0; 
+    padding: 0; 
+    font-family: -apple-system, BlinkMacSystemFont, "Noto Sans KR", system-ui, sans-serif; 
+    color: #111; 
+    background: white; /* #fafafa에서 white로 변경 */
+}
+
+.container { 
+    max-width: 420px; 
+    margin: 0 auto; 
+    min-height: 100dvh; 
+    display: flex; 
+    flex-direction: column;
+    background: white; /* 배경색 추가 */
+}
+
+.topbar { display: flex; align-items: center; gap: 8px; padding: 14px 16px; border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 10; }
+.back-btn { border: 0; background: white; width: 36px; height: 36px; border-radius: 10px; font-size: 18px; cursor: pointer; }
+.title { margin: 0; font-size: 18px; font-weight: 700; }
+
+.food-card { background: #fff; margin: 12px 16px; border-radius: 16px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,.04); }
+.food-image { width: 100%; aspect-ratio: 16/9; background: #f2f2f2; display: flex; align-items: center; justify-content: center; }
+.food-image img { width: 100%; height: 100%; object-fit: cover; }
+.img-skeleton { color: #999; font-size: 14px; }
+.food-info { padding: 14px; }
+.food-name { margin: 0 0 6px; font-weight: 700; font-size: 16px; }
+.food-spec { margin: 0; color: #666; font-size: 13px; }
+
+.diet-form { 
+    color: white;
+    display: flex; 
+    flex-direction: column; 
+    gap: 12px; 
+    }
+
+
+.status-bar {
+    height: 61px;
+    background-color: var(--white);
+    width: 100%;
+    color: #fff;
+}
+/* 제품 이미지 카드 */
+.product-card {
+    background-color: white; /* #f5f5f5에서 white로 변경 */
+    padding: 40px 20px;
+    text-align: center;
+    border: 0.5px solid #e0e0e0;
+}
+
+.product-image-large {
+    width: 200px;
+    height: 200px;
+    margin: 0 auto 20px auto;
+    border-radius: 12px;
+    overflow: hidden;
+    background-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.product-image-large img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.img-skeleton-large {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    color: #999;
+    background-color: #f0f0f0;
+}
+
+.product-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+    line-height: 1.4;
+}
+
+/* 날짜와 끼니 섹션 */
+.datetime-section {
+    background-color: white;
+    border-radius: -10px;
+    padding: 20px;
+    border: 1px solid #e0e0e0;
+}
+
+.date-row {
+    margin-bottom: 30px;
+}
+
+.meal-row {
+    margin-bottom: 0;
+}
+
+.date-label, .meal-label {
+    display: block;
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+#date {
+    font-family: 'Inter', sans-serif;
+    width: 100%;
+    padding: 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 16px;
+    background-color: white;
+    color: #333;
+}
+
+.meal-options {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.meal-chip {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    border: 1px solid #e0e0e0;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.2s;
+    background-color: white;
+    min-width: 70px;
+    justify-content: center;
+    color: #333; /* 기본 텍스트 색상 추가 */
+}
+
+.meal-chip input[type="checkbox"] {
+    display: none;
+}
+
+.meal-chip input[type="checkbox"]:checked + span {
+    color: white; /* 선택된 상태에서는 흰색 */
+}
+
+.meal-chip:has(input:checked) {
+    background-color: rgba(86, 170, 178, 1);
+    border-color: rgba(86, 170, 178, 1);
+    color: white;
+}
+
+.meal-chip span {
+    font-size: 16px;
+    font-weight: 500;
+    color: #333; /* 텍스트 색상 추가 */
+}
+
+/* 기존 제품 관련 스타일 제거 */
+.product-row,
+.product-label,
+.product-info,
+.product-display,
+.product-image,
+.product-details,
+.product-name,
+.product-company {
+    display: none;
+}
+
+.submit-bar { position: fixed; left: 0; right: 0; bottom: 0; background: linear-gradient(180deg, rgba(250,250,250,0) 0%, rgba(250,250,250,1) 28%); padding: 16px; }
+.submit-btn { width: 100%; max-width: 420px; margin: 0 auto; display: block; border: 0; background: rgba(86, 170, 178, 1); color: #fff; font-weight: 700; font-size: 16px; padding: 14px 16px; border-radius: 12px; cursor: pointer; }
+.submit-btn:active { transform: translateY(1px); }
+
+.hidden-input { display: none; }

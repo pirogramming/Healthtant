@@ -10,21 +10,24 @@
 </head>
 <body>
 <div class="meal-register-container">
+    <div class="header">
+        <div class="status-bar"></div>  
+    </div>
     <!-- 검색 섹션 -->
     <div class="search-section">
         <div class="search-container">
             <button type="button" class="search-input" onclick="performSearch()">
                 <span class="search-placeholder">새 제품을 검색해서 찾아보세요</span>
                 <div class="search-icon">
-                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M9.16667 15.8333C12.8486 15.8333 15.8333 12.8486 15.8333 9.16667C15.8333 5.48477 12.8486 2.5 9.16667 2.5C5.48477 2.5 2.5 5.48477 2.5 9.16667C2.5 12.8486 5.48477 15.8333 9.16667 15.8333Z" stroke="#4285f4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M17.5 17.5L13.875 13.875" stroke="#4285f4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M9.183 3.62741C6.11475 3.62741 3.62744 6.11472 3.62744 9.18297C3.62744 12.2512 6.11475 14.7385 9.183 14.7385C10.6756 14.7385 12.0307 14.1499 13.0289 13.1921C13.0525 13.1622 13.0781 13.1334 13.1058 13.1057C13.1334 13.0781 13.1622 13.0525 13.1922 13.0289C14.1499 12.0307 14.7386 10.6756 14.7386 9.18297C14.7386 6.11472 12.2512 3.62741 9.183 3.62741ZM15.146 13.7594C16.1202 12.492 16.6993 10.9051 16.6993 9.18297C16.6993 5.03181 13.3342 1.66663 9.183 1.66663C5.03184 1.66663 1.66666 5.03181 1.66666 9.18297C1.66666 13.3341 5.03184 16.6993 9.183 16.6993C10.9052 16.6993 12.492 16.1201 13.7595 15.1459L16.6597 18.0461C17.0426 18.429 17.6633 18.429 18.0462 18.0461C18.429 17.6633 18.429 17.0425 18.0462 16.6597L15.146 13.7594Z" fill="#56AAB2"/>
                     </svg>
                 </div>
             </button>
         </div>
         <button class="cancel-btn" onclick="clearSearch()">취소</button>
     </div>
+
 
     <!-- 과거 섭취 제품 목록 -->
     <div class="recent-foods-section">
@@ -43,7 +46,7 @@
                     <h3 class="food-name">{{ food.food_name }}</h3>
                     <p class="food-company">제조사: {{ food.company_name }}</p>
                 </div>
-                <button class="register-btn">
+                <button class="register-btn" onclick="registerFood('{{ food.food_id }}')">
                     <span class="plus-icon">+</span>
                     <span class="register-text">등록하기</span>
                 </button>
@@ -58,7 +61,7 @@
                     <h3 class="food-name">하림 닭가슴살 블랙페퍼, 800g, 1개</h3>
                     <p class="food-company">제조사: CJ대원푸드</p>
                 </div>
-                <button class="register-btn">
+                <button class="register-btn" onclick="registerFood('food001')">
                     <span class="plus-icon">+</span>
                     <span class="register-text">등록하기</span>
                 </button>
@@ -72,7 +75,7 @@
                     <h3 class="food-name">득근파티 통 닭가슴살 6종 혼합, 100g</h3>
                     <p class="food-company">제조사: CJ대원푸드</p>
                 </div>
-                <button class="register-btn">
+                <button class="register-btn" onclick="registerFood('food002')">
                     <span class="plus-icon">+</span>
                     <span class="register-text">등록하기</span>
                 </button>
@@ -86,7 +89,7 @@
                     <h3 class="food-name">하림 닭가슴살 블랙페퍼, 800g, 1개</h3>
                     <p class="food-company">제조사: CJ대원푸드</p>
                 </div>
-                <button class="register-btn">
+                <button class="register-btn" onclick="registerFood('food003')">
                     <span class="plus-icon">+</span>
                     <span class="register-text">등록하기</span>
                 </button>
@@ -100,7 +103,7 @@
                     <h3 class="food-name">하림 닭가슴살 블랙페퍼, 800g, 1개</h3>
                     <p class="food-company">제조사: CJ대원푸드</p>
                 </div>
-                <button class="register-btn">
+                <button class="register-btn" onclick="registerFood('food004')">
                     <span class="plus-icon">+</span>
                     <span class="register-text">등록하기</span>
                 </button>
@@ -114,7 +117,7 @@
                     <h3 class="food-name">하림 닭가슴살 블랙페퍼, 800g, 1개</h3>
                     <p class="food-company">제조사: CJ대원푸드</p>
                 </div>
-                <button class="register-btn">
+                <button class="register-btn" onclick="registerFood('food005')">
                     <span class="plus-icon">+</span>
                     <span class="register-text">등록하기</span>
                 </button>
@@ -128,7 +131,7 @@
                     <h3 class="food-name">하림 닭가슴살 블랙페퍼, 800g, 1개</h3>
                     <p class="food-company">제조사: CJ대원푸드</p>
                 </div>
-                <button class="register-btn">
+                <button class="register-btn" onclick="registerFood('food006')">
                     <span class="plus-icon">+</span>
                     <span class="register-text">등록하기</span>
                 </button>
@@ -142,7 +145,7 @@
                     <h3 class="food-name">하림 닭가슴살 블랙페퍼, 800g, 1개</h3>
                     <p class="food-company">제조사: CJ대원푸드</p>
                 </div>
-                <button class="register-btn">
+                <button class="register-btn" onclick="registerFood('food007')">
                     <span class="plus-icon">+</span>
                     <span class="register-text">등록하기</span>
                 </button>
@@ -159,8 +162,24 @@ function performSearch() {
 }
 
 function clearSearch() {
-    // 취소 버튼 기능 (현재는 아무것도 하지 않음)
-    console.log('취소 버튼 클릭됨');
+    // diets_main.html로 이동 (오늘 날짜로)
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = today.getMonth() + 1;
+    
+    window.location.href = `/diets/?year=${year}&month=${month}`;
+}
+
+function registerFood(foodId) {
+    // 오늘 날짜 생성
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    const todayString = `${year}-${month}-${day}`;
+    
+    // diets_upload.html로 이동 (food_id와 오늘 날짜를 파라미터로 전달)
+    window.location.href = `/diets/upload/?food=${foodId}&date=${todayString}`;
 }
 </script>
 </body>

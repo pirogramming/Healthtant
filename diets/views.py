@@ -207,9 +207,43 @@ def diet_update(request, diet_id):
 @login_required
 def diet_form(request, diet_id=None):
     """
-    식사 등록/수정 폼을 렌더링하는 뷰
+    식사 등록/수정 폼을 렌더링하고 처리하는 뷰
     diet_id가 있으면 수정 모드, 없으면 등록 모드
     """
+    if request.method == 'POST':
+        # POST 요청 처리 (수정 또는 등록)
+        if diet_id:
+            # 수정 모드
+            try:
+                diet = Diet.objects.get(diet_id=diet_id)
+                
+                # 폼 데이터 가져오기
+                date_value = request.POST.get('date')
+                meal_value = request.POST.get('meal_kr')  # JavaScript에서 설정한 한글 끼니
+                food_id = request.POST.get('food')
+                
+                # 데이터 업데이트
+                if date_value:
+                    diet.date = date_value
+                if meal_value:
+                    diet.meal = meal_value
+                if food_id:
+                    try:
+                        food = Food.objects.get(food_id=food_id)
+                        diet.food = food
+                    except Food.DoesNotExist:
+                        pass
+                
+                diet.save()
+                
+                # 수정 완료 후 메인 페이지로 리다이렉트
+                today = date.today()
+                return redirect(f'/diets/?year={today.year}&month={today.month}')
+                
+            except Diet.DoesNotExist:
+                return JsonResponse({'message': '식사를 찾을 수 없습니다.'}, status=404)
+    
+    # GET 요청 처리 (폼 렌더링)
     context = {
         'date': request.GET.get('date'),
         'meal': request.GET.get('meal'),
@@ -230,8 +264,49 @@ def diet_form(request, diet_id=None):
 @login_required
 def diet_upload(request):
     """
-    새 식사 등록 폼을 렌더링하는 뷰
+    새 식사 등록 폼을 렌더링하고 처리하는 뷰
     """
+    if request.method == 'POST':
+        # POST 요청 처리 (새 식사 등록)
+        user = request.user
+        date_value = request.POST.get('date')
+        meal_value = request.POST.get('meal_kr')  # JavaScript에서 설정한 한글 끼니
+        food_id = request.POST.get('food')
+        
+        # 필수 값 검증
+        if not food_id or food_id.strip() == '':
+            return JsonResponse({'message': '음식을 선택해주세요.'}, status=400)
+        
+        if not date_value:
+            return JsonResponse({'message': '날짜를 입력해주세요.'}, status=400)
+            
+        if not meal_value:
+            return JsonResponse({'message': '끼니를 선택해주세요.'}, status=400)
+        
+        try:
+            # 음식 정보 가져오기
+            food = Food.objects.get(food_id=food_id.strip())
+            
+            # 새 식사 생성
+            diet = Diet.objects.create(
+                user=user,
+                food=food,
+                meal=meal_value,
+                date=date_value
+            )
+            
+            # 등록 완료 후 메인 페이지로 리다이렉트
+            today = date.today()
+            return redirect(f'/diets/?year={today.year}&month={today.month}')
+            
+        except Food.DoesNotExist:
+            return JsonResponse({'message': f'음식을 찾을 수 없습니다. (food_id: {food_id})'}, status=404)
+        except ValueError as e:
+            return JsonResponse({'message': f'잘못된 UUID 형식입니다: {food_id}'}, status=400)
+        except Exception as e:
+            return JsonResponse({'message': f'등록 중 오류가 발생했습니다: {str(e)}'}, status=500)
+    
+    # GET 요청 처리 (폼 렌더링)
     context = {
         'date': request.GET.get('date'),
         'meal': request.GET.get('meal'),
@@ -244,6 +319,10 @@ def diet_upload(request):
             food = Food.objects.get(food_id=context['food_id'])
             context['food'] = food
         except Food.DoesNotExist:
-            pass
+            # 음식을 찾을 수 없으면 register 페이지로 리다이렉트
+            return redirect('/diets/list/')
+    else:
+        # food_id가 없으면 register 페이지로 리다이렉트
+        return redirect('/diets/list/')
     
     return render(request, 'diets/diets_upload.html', context)
