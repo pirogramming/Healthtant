@@ -68,7 +68,7 @@ def get_level(nutrient, food):
 # food의 NRF 지수를 계산하는 함수
 def NRF(food):
     protein_score = NRFgoodNutrient(get_100kcal_nutrient(food, "protein"), 55)
-    dieatry_fiber_score = NRFgoodNutrient(get_100kcal_nutrient(food, "dietary_fiber"), 25)
+    dietary_fiber_score = NRFgoodNutrient(get_100kcal_nutrient(food, "dietary_fiber"), 25)
     vitaminA_score = NRFgoodNutrient(get_100kcal_nutrient(food, "VitaminA"), 700)
     vitaminC_score = NRFgoodNutrient(get_100kcal_nutrient(food, "VitaminC"), 100)
     vitaminE_score = NRFgoodNutrient(get_100kcal_nutrient(food, "VitaminE"), 11)
@@ -81,7 +81,7 @@ def NRF(food):
     sugar_score = NRFbadNutrient(get_100kcal_nutrient(food, "sugar"), 100)
     salt_score = NRFbadNutrient(get_100kcal_nutrient(food, "salt"), 2000)
 
-    good_score_sum = (protein_score + dieatry_fiber_score + vitaminA_score + vitaminC_score + vitaminE_score + calcium_score + potassium_score + iron_content_score + magnesium_score)/9
+    good_score_sum = (protein_score + dietary_fiber_score + vitaminA_score + vitaminC_score + vitaminE_score + calcium_score + potassium_score + iron_content_score + magnesium_score)/9
     bad_score_sum = (saturated_fatty_acids_score + sugar_score + salt_score)/3
 
     return good_score_sum - bad_score_sum
