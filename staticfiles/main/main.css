@@ -1,0 +1,302 @@
+/* Base 레이아웃 스타일 */
+.screen {
+    width: 100%;
+    max-width: 402px;
+    margin: 0 auto;
+    height: 100vh;  /* min-height → height */
+    background-color: #ffffff;
+    position: relative;
+    overflow-y: auto;  /* 여기로 이동 */
+    overflow-x: hidden;  /* 여기로 이동 */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.screen::-webkit-scrollbar {
+    display: none;
+}
+
+.view {
+    width: 100%;
+    min-height: 100vh;
+    padding-bottom: 80px;
+}
+
+.view::-webkit-scrollbar {
+    display: none;
+}
+
+/* 헤더 영역 */
+.app-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background-color: #ffffff;
+}
+
+.status-bar {
+    height: 61px;
+    background-color: #ffffff;
+    width: 100%;
+    
+}
+
+.app-title {
+    font-family: "Koulen", Helvetica, Arial, sans-serif;
+    font-size: 40px;
+    color: var(--main);
+    text-align: center;
+    font-weight: 400;
+    margin: -5px;
+}
+
+/* 메인 콘텐츠 */
+.main-content {
+    flex: 1;
+}
+
+/* 검색 폼 - 헤더 안에 위치 */
+.search-container {
+    padding: 0px 16px 10px 16px;
+    position: relative;
+}
+
+.search-form {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    background-color: var(--neutralwhitepure-white);
+    border-radius: 100px;
+    border: 1px solid var(--neutralslate-blackslate-black-50);
+    box-shadow: 0px 6px 40px -10px rgba(64, 72, 82, 0.15);
+    gap: 8px;
+}
+
+.search-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-size: 16px;
+    color: var(--neutralslate-blackslate-black-100);
+    font-family: "Satoshi", Helvetica;
+    outline: none;
+}
+
+.search-input::placeholder {
+    color: var(--neutralslate-blackslate-black-100);
+}
+
+.search-button {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.search-icon {
+    width: 20px;
+    height: 20px;
+    fill: var(--neutralslate-blackslate-black-100);
+}
+
+/* 추천 제품 영역 */
+.featured-container {
+    padding: 20px 37px;
+    margin-bottom: 20px;
+}
+
+.featured-product {
+    background-color: #f7f8fa;
+    border-radius: 20px;
+    box-shadow: 0px 4px 4px rgba(217, 217, 217, 0.1);
+    overflow: hidden;
+    min-height: 279px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 21px;
+}
+
+.product-image {
+    max-width: 100%;
+    height: auto;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+/* 네비게이션 바 */
+.main-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-width: 402px;
+    margin: 0 auto;
+    background-color: #ffffff;
+    border-top: 1px solid #f8f8f8;
+    box-shadow: 0px -2px 14px rgba(183, 180, 180, 0.1);
+    z-index: 20;
+}
+
+.nav-list {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 10px 0;
+    list-style: none;
+    margin: 0;
+    height: 62px;
+    position: relative;
+}
+
+.nav-item {
+    text-align: center;
+    flex: 1;
+}
+
+.nav-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #000000;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.nav-icon {
+    width: 24px;
+    height: 24px;
+    margin-bottom: 5px;
+    fill: currentColor;
+}
+
+.nav-text {
+    font-size: 12px;
+    font-family: "Roboto", Helvetica, Arial, sans-serif;
+    letter-spacing: 0.4px;
+    line-height: 16px;
+}
+
+/* 아이콘 컨테이너와 알림 배지 */
+.nav-icon-container {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 5px;
+}
+
+.notification-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background-color: #D2691E;
+    color: white;
+    border-radius: 50%;
+    min-width: 18px;
+    height: 18px;
+    font-size: 10px;
+    font-weight: 500;
+    font-family: "Satoshi", Helvetica;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    padding: 2px 4px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* 홈 버튼 특별 스타일 */
+.nav-item.home-item {
+    position: relative;
+}
+
+.nav-item.home-item .home-link {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #000000;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.home-circle {
+    position: relative;
+    width: 54px;
+    height: 54px;
+    background-color: #ffffff;
+    border-radius: 50%;
+    border: 1px solid #f8f8f8;
+    margin-bottom: 60px;
+    box-shadow: 0px 4px 20px rgba(183, 180, 180, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.home-circle:hover {
+    box-shadow: 0px 4px 20px rgba(183, 180, 180, 0.7);
+    transform: translateY(-1px);
+}
+
+.home-circle:active {
+    transform: translateY(0px);
+    box-shadow: 0px 1px 8px rgba(183, 180, 180, 0.5);
+}
+
+.home-icon {
+    width: 27px;
+    height: 28px;
+    fill: #56AAB2;
+}
+
+/* 다른 nav-item들의 기본 active 스타일 제거 (홈 버튼 제외) */
+.nav-item.active:not(.home-item) {
+    position: relative;
+}
+
+.nav-item.active:not(.home-item) .nav-link {
+    position: relative;
+    z-index: 2;
+}
+
+.nav-item.active:not(.home-item)::before {
+    content: "";
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 54px;
+    height: 57px;
+    background-color: #ffffff;
+    border-radius: 50%;
+    border: 1px solid #f8f8f8;
+    box-shadow: 0px 2px 14px rgba(183, 180, 180, 0.5);
+    z-index: 1;
+}
+
+/* 반응형 디자인 */
+@media (min-width: 768px) {
+    .screen {
+        max-width: 768px;
+    }
+    
+    .main-nav {
+        max-width: 768px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .screen {
+        max-width: 1024px;
+    }
+    
+    .main-nav {
+        max-width: 1024px;
+    }
+}
