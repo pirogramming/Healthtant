@@ -1,0 +1,60 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>제품상세 - Healthtant</title>
+  <link rel="stylesheet" href="{% static 'products/product_detail.css' %}?v=1">
+</head>
+<body>
+<div class="pd-container"><!-- 인라인 스타일 → 클래스로 교체 -->
+
+  <div class="pd-wrap" data-product-id="{{ product.food_id }}">
+    <!-- 상단 이미지 -->
+    <section class="pd-hero">
+      <button class="icon-btn back" onclick="history.back()" aria-label="뒤로가기"></button>
+      <img class="pd-image" src="{{ product.food_img }}" alt="{{ product.food_name }}">
+    </section>
+
+    <!-- 요약 카드 -->
+    <section class="pd-card pd-summary">
+      <div class="pd-head">
+        <h1 class="pd-title">{{ product.food_name }}</h1>
+      </div>
+
+      <ul class="pd-chips">
+        <li class="chip"><span class="chip-txt">열량</span><span class="chip-sub">{{ product.calorie|floatformat:0 }}kcal</span></li>
+        <li class="chip"><span class="chip-txt">단백질</span><span class="chip-sub">{{ product.protein|floatformat:0 }}g</span></li>
+        <li class="chip"><span class="chip-txt">지방</span><span class="chip-sub">{{ product.fat|floatformat:0 }}g</span></li>
+        <li class="chip"><span class="chip-txt">탄수화물</span><span class="chip-sub">{{ product.carbohydrate|floatformat:0 }}g</span></li>
+        <li class="chip"><span class="chip-txt">나트륨</span><span class="chip-sub">{{ product.sodium|floatformat:0 }}mg</span></li>
+      </ul>
+    </section>
+
+    <!-- 상세 영양 -->
+    <section class="pd-card pd-nutrition">
+      <h2 class="sec-title">상세 영양 정보</h2>
+      <dl class="nutri-list">
+        <div><dt>열량</dt><dd>{{ product.calorie|floatformat:0 }}kcal</dd></div>
+        <div><dt>단백질</dt><dd>{{ product.protein|floatformat:0 }}g</dd></div>
+        <div><dt>지방</dt><dd>{{ product.fat|floatformat:0 }}g</dd></div>
+        <div><dt>탄수화물</dt><dd>{{ product.carbohydrate|floatformat:0 }}g</dd></div>
+        <div><dt>나트륨</dt><dd>{{ product.sodium|floatformat:0 }}mg</dd></div>
+      </dl>
+    </section>
+  </div>
+
+  <!-- 하단 CTA (컨테이너 내부, sticky로 고정) -->
+  <div class="pd-cta">
+    <form method="post" action="{% url 'products:product-like' product.food_id %}">
+      {% csrf_token %}
+      <button class="fav-btn {% if product.is_favorite %}on{% endif %}"
+              aria-pressed="{% if product.is_favorite %}true{% else %}false{% endif %}">❤</button>
+    </form>
+    <button class="primary-btn" type="button">식사로 등록하기</button>
+  </div>
+
+</div>
+</body>
+</html>
