@@ -1,7 +1,11 @@
 {% extends 'main/main_base.html' %}
 {% load static %}
-<link rel="stylesheet" href="{% static 'products/products.css' %}">
+
 {% block title %}제품 - Healthtant{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'products/products.css' %}">
+{% endblock %}
 
 {% block content %}
 <div class="products-container">
