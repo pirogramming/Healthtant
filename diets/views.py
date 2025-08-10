@@ -186,7 +186,6 @@ def diet_create(request, food_id):
 
 #식사 수정/삭제
 def diet_update(request, diet_id):
-    print(str(diet_id), "출력결과입니다!@~!~!!~@~!@~!~@!~@!~@!~@~!!~~~")
     #PATCH 메소드 분기
     if request.method == 'PATCH':
         diet = Diet.objects.get(diet_id = diet_id) #수정할 Diet 객체

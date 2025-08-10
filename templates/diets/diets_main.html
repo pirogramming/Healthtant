@@ -52,8 +52,11 @@
                 class="edit-btn"
                 type="button"
                 data-diet-id="{{ diet.diet_id }}"
+                data-food-id="{{ diet.food_id }}"
                 data-food-name="{{ diet.food_name }}"
-                onclick="editMeal('{{ date.date }}','breakfast')"
+                data-date="{{ date.date }}"
+                data-meal="아침"
+                onclick="editMeal(this)"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -106,8 +109,11 @@
                 class="edit-btn"
                 type="button"
                 data-diet-id="{{ diet.diet_id }}"
+                data-food-id="{{ diet.food_id }}"
                 data-food-name="{{ diet.food_name }}"
-                onclick="editMeal('{{ date.date }}','lunch')"
+                data-date="{{ date.date }}"
+                data-meal="점심"
+                onclick="editMeal(this)"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -160,8 +166,11 @@
                 class="edit-btn"
                 type="button"
                 data-diet-id="{{ diet.diet_id }}"
+                data-food-id="{{ diet.food_id }}"
                 data-food-name="{{ diet.food_name }}"
-                onclick="editMeal('{{ date.date }}','dinner ')"
+                data-date="{{ date.date }}"
+                data-meal="저녁"
+                onclick="editMeal(this)"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -225,6 +234,48 @@
           el.closest(".meal-item")?.remove(); // 또는: location.reload();
         } else {
           alert(`삭제 실패 (${res.status})`);
+        }
+      }
+
+      async function editMeal(el) {
+        const dietId = el.dataset.dietId;
+        const curFood = el.dataset.foodId; // 문자열 (uuid 또는 int)
+        const curDate = el.dataset.date; // 'YYYY-MM-DD'
+        const curMeal = el.dataset.meal; // 'breakfast' | 'lunch' | 'dinner'
+
+        // 프롬프트로 새 값 입력(엔터 치면 기존값 유지)
+        const newFood =
+          prompt("food_id를 입력하세요 (생략=현재값 유지)", curFood) || curFood;
+        const newDate =
+          prompt(
+            "날짜를 YYYY-MM-DD로 입력하세요 (생략=현재값 유지)",
+            curDate
+          ) || curDate;
+        const newMeal =
+          prompt(
+            "끼니를 아침/점심/저녁 중 하나로 입력 (생략=현재값 유지)",
+            curMeal
+          ) || curMeal;
+
+        // PATCH 호출
+        const res = await fetch(`/diets/${dietId}/`, {
+          method: "PATCH",
+          headers: {
+            "X-CSRFToken": getCookie("csrftoken"),
+            "X-Requested-With": "XMLHttpRequest",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            food: newFood, // ✅ 뷰에서 Food.objects.get(food_id=data['food'])로 사용
+            date: newDate, // 'YYYY-MM-DD'
+            meal: newMeal, // 'breakfast'|'lunch'|'dinner'
+          }),
+        });
+
+        if (res.ok) {
+          location.reload(); // 간단히 새로고침
+        } else {
+          alert(`수정 실패 (${res.status})`);
         }
       }
     </script>
