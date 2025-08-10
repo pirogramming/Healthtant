@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Case, When, Value, IntegerField
 from datetime import date
 import json
+from django.http import HttpResponse
 
 #유저 식사 리스트 전달
 @login_required
@@ -37,13 +38,13 @@ def diet_main(request):
             'data': []
         }
         #To FE: 템플릿 작업 시작하면 지금 return문 지우고 바로 아래에 주석처리 해둔 return문 채워서 사용해주세요!!!
-        #return render(request, '템플릿 이름.html', context)
-        return JsonResponse({
-            "user_id": str(user.id),
-            "year": year,
-            "month": month,
-            "data": []
-        }, json_dumps_params={'ensure_ascii': False})
+        return render(request, 'diets/diets_main.html', context)
+        # return JsonResponse({
+        #     "user_id": str(user.id),
+        #     "year": year,
+        #     "month": month,
+        #     "data": []
+        # }, json_dumps_params={'ensure_ascii': False})
 
     #--------------------여기부터 API 명세 형식에 맞게 데이터 구성해서 반환하는 부분---------------------------------
     current_date = diets[0].date #diets에서 가장 앞의 데이터(가장 빠른 데이터)를 가져와 현재 날짜로 설정
@@ -81,13 +82,13 @@ def diet_main(request):
     }
     
     #To FE: 템플릿 작업 시작하면 지금 return문 지우고 바로 아래에 주석처리 해둔 return문 채워서 사용해주세요!!!
-    #return render(request, '템플릿 이름.html', context)
-    return JsonResponse({
-        "user_id": user.id,
-        "year": year,
-        "month": month,
-        "data": data_list
-    }, json_dumps_params={'ensure_ascii': False})
+    return render(request, 'diets/diets_main.html', context)
+    # return JsonResponse({
+    #     "user_id": user.id,
+    #     "year": year,
+    #     "month": month,
+    #     "data": data_list
+    # }, json_dumps_params={'ensure_ascii': False})
 
 @login_required
 #유저가 최근 먹은 식품 리스트 전달
@@ -205,7 +206,7 @@ def diet_update(request, diet_id):
     elif request.method == 'DELETE':
         diet = Diet.objects.get(diet_id=diet_id)
         diet.delete()
-        return redirect('/diets/') #식사 관리 메인 페이지로 redirect
+        return HttpResponse(status=204)
     
     #Http 메소드가 PATCH, DELETE 중 무엇도 아닌 경우
     return JsonResponse({'message': "예상치 못한 오류가 발생했습니다."}, status=404)
