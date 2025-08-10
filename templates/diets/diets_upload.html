@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  {% load static %}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>등록 | 식사</title>
+  <link rel="stylesheet" href="{% static 'diets/diets_form.css' %}">
+  {% csrf_token %}
+</head>
+<body>
+  <div class="container">
+    <header class="topbar">
+      <button type="button" class="back-btn" onclick="history.back()">←</button>
+      <h1 class="title">등록하기</h1>
+    </header>
+
+    <!-- 상품(음식) 미리보기 -->
+    <section class="food-card">
+      <div class="food-image">
+        {% if food and food.image_url %}
+          <img src="{{ food.image_url }}" alt="{{ food.name }}">
+        {% else %}
+          <div class="img-skeleton">이미지</div>
+        {% endif %}
+      </div>
+      <div class="food-info">
+        <h2 class="food-name">
+          {% if food and food.name %}{{ food.name }}{% else %}선택된 음식 없음{% endif %}
+        </h2>
+        {% if food and food.spec %}
+          <p class="food-spec">{{ food.spec }}</p>
+        {% endif %}
+      </div>
+    </section>
+
+    <!-- 폼 -->
+    <form method="post" action="" class="diet-form" id="dietForm">
+      {% csrf_token %}
+      <!-- 숨김 값: food_id -->
+      {% if food and food.food_id %}
+        <input type="hidden" name="food" value="{{ food.food_id }}">
+      {% else %}
+        <!-- 쿼리스트링으로 ?food= 전달 못 받은 경우 대비 -->
+        <input type="text" class="hidden-input" name="food" placeholder="food_id" required>
+      {% endif %}
+
+      <!-- 날짜 -->
+      <section class="date-row">
+        <label for="date" class="date-label">날짜</label>
+        <input id="date" name="date" type="date"
+               value="{{ date|default:'' }}"
+               required>
+      </section>
+
+      <!-- 끼니 선택 -->
+      <section class="meal-row">
+        <div class="meal-label">끼니</div>
+        <div class="meal-options" role="group" aria-label="meal">
+          <!-- 체크박스처럼 보이지만 실제로는 라디오 동작(단일 선택) -->
+          {% with selected=meal %}
+          <label class="meal-chip">
+            <input type="checkbox" class="meal-check" data-value="아침"
+                   {% if selected in 'breakfast,아침' %}checked{% endif %}>
+            <span>아침</span>
+          </label>
+          <label class="meal-chip">
+            <input type="checkbox" class="meal-check" data-value="점심"
+                   {% if selected in 'lunch,점심' %}checked{% endif %}>
+            <span>점심</span>
+          </label>
+          <label class="meal-chip">
+            <input type="checkbox" class="meal-check" data-value="저녁"
+                   {% if selected in 'dinner,저녁' %}checked{% endif %}>
+            <span>저녁</span>
+          </label>
+          {% endwith %}
+          <input type="hidden" name="meal_kr" id="mealKrHidden"
+                 value="">
+        </div>
+      </section>
+
+      <!-- 제출 버튼 -->
+      <footer class="submit-bar">
+        <button type="submit" class="submit-btn">
+          등록하기
+        </button>
+      </footer>
+    </form>
+  </div>
+
+  <script>
+    // 단일 선택 강제
+    const checks = Array.from(document.querySelectorAll('.meal-check'));
+    const mealHidden = document.getElementById('mealKrHidden');
+
+    function updateHidden() {
+      const picked = checks.find(c => c.checked);
+      mealHidden.value = picked ? picked.dataset.value : '';
+    }
+    checks.forEach(c => {
+      c.addEventListener('change', (e) => {
+        if (e.target.checked) {
+          checks.forEach(o => { if (o !== e.target) o.checked = false; });
+        }
+        updateHidden();
+      });
+    });
+    // 초기값 세팅
+    updateHidden();
+
+    // 기본값: 오늘 날짜
+    (function initDate() {
+      const dateEl = document.getElementById('date');
+      if (!dateEl.value) {
+        const d = new Date();
+        const m = String(d.getMonth()+1).padStart(2,'0');
+        const day = String(d.getDate()).padStart(2,'0');
+        dateEl.value = `${d.getFullYear()}-${m}-${day}`;
+      }
+    })();
+  </script>
+</body>
+</html>

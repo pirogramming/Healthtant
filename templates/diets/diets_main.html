@@ -243,22 +243,29 @@
         const curFood = el.dataset.foodId; // 문자열 (uuid 또는 int)
         const curDate = el.dataset.date; // 'YYYY-MM-DD'
         const curMeal = el.dataset.meal; // 'breakfast' | 'lunch' | 'dinner'
-
+        const url = `/diets/form/${dietId}/?date=${encodeURIComponent(curDate)}&meal=${encodeURIComponent(curMeal)}`;
+        window.location.href = url;
+        }
         // 프롬프트로 새 값 입력(엔터 치면 기존값 유지)
-        const newFood =
-          prompt("food_id를 입력하세요 (생략=현재값 유지)", curFood) || curFood;
-        const newDate =
-          prompt(
-            "날짜를 YYYY-MM-DD로 입력하세요 (생략=현재값 유지)",
-            curDate
-          ) || curDate;
-        const newMeal =
-          prompt(
-            "끼니를 아침/점심/저녁 중 하나로 입력 (생략=현재값 유지)",
-            curMeal
-          ) || curMeal;
+        function todayYMD() {
+            const d = new Date();
+            const m = String(d.getMonth() + 1).padStart(2, "0");
+            const day = String(d.getDate()).padStart(2, "0");
+            return `${d.getFullYear()}-${m}-${day}`;
+        }
 
-        // PATCH 호출
+        // "새 식사" / "오늘의 식사 추가하기" → 등록 폼 이동
+        document.querySelector(".add-meal-btn")?.addEventListener("click", () => {
+            // 기본: 오늘 날짜만 세팅. 음식/끼니는 폼에서 선택.
+            window.location.href = `/diets/upload/?date=${todayYMD()}`;
+        });
+
+        document.querySelector(".add-today-meal")?.addEventListener("click", () => {
+            window.location.href = `/diets/upload/?date=${todayYMD()}`;
+        });
+    </script>
+
+        {% comment %} // PATCH 호출
         const res = await fetch(`/diets/${dietId}/`, {
           method: "PATCH",
           headers: {
@@ -278,7 +285,7 @@
         } else {
           alert(`수정 실패 (${res.status})`);
         }
-      }
-    </script>
+      } {% endcomment %}
+    
   </body>
 </html>

@@ -203,3 +203,47 @@ def diet_update(request, diet_id):
     
     #Http 메소드가 PATCH, DELETE 중 무엇도 아닌 경우
     return JsonResponse({'message': "예상치 못한 오류가 발생했습니다."}, status=404)
+
+@login_required
+def diet_form(request, diet_id=None):
+    """
+    식사 등록/수정 폼을 렌더링하는 뷰
+    diet_id가 있으면 수정 모드, 없으면 등록 모드
+    """
+    context = {
+        'date': request.GET.get('date'),
+        'meal': request.GET.get('meal'),
+        'diet_id': diet_id
+    }
+    
+    if diet_id:
+        # 수정 모드: 기존 식사 정보 가져오기
+        try:
+            diet = Diet.objects.get(diet_id=diet_id)
+            context['diet'] = diet
+            context['food'] = diet.food
+        except Diet.DoesNotExist:
+            return JsonResponse({'message': '식사를 찾을 수 없습니다.'}, status=404)
+    
+    return render(request, 'diets/diets_form.html', context)
+
+@login_required
+def diet_upload(request):
+    """
+    새 식사 등록 폼을 렌더링하는 뷰
+    """
+    context = {
+        'date': request.GET.get('date'),
+        'meal': request.GET.get('meal'),
+        'food_id': request.GET.get('food')
+    }
+    
+    # food_id가 있으면 해당 음식 정보 가져오기
+    if context['food_id']:
+        try:
+            food = Food.objects.get(food_id=context['food_id'])
+            context['food'] = food
+        except Food.DoesNotExist:
+            pass
+    
+    return render(request, 'diets/diets_upload.html', context)
