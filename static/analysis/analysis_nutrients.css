@@ -1,0 +1,142 @@
+/* 영양소 분석 페이지 전용 스타일 */
+
+.nutrients-container {
+  padding: 20px;
+
+  min-height: 100vh;
+}
+
+/* 헤더 섹션 */
+.nutrients-header {
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.nutrients-title {
+  color: #333;
+  font-family: 'Inter', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+}
+
+.nutrients-subtitle {
+  color: #666;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* 영양소 카테고리 */
+.nutrient-category {
+    margin-bottom: 40px;
+  padding: 20px;
+  border-radius: 10px;
+  border: 1px solid #E8E8E8;
+  background: #FFF;
+  box-shadow: 0 2px 0 0 rgba(142, 142, 142, 0.25);
+}
+
+.category-title {
+  color: #333;
+  font-family: 'Inter', sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 20px 0;
+  padding-bottom: 10px;
+}
+
+/* 영양소 아이템 */
+.nutrient-item {
+  margin-bottom: 20px;
+  display: block;
+}
+
+.nutrient-item:last-child {
+  margin-bottom: 0;
+}
+
+/* 영양소 정보 행 (점 + 이름, 값) */
+.nutrient-info-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.nutrient-info {
+  display: flex;
+  align-items: center;
+}
+
+.nutrient-dot {
+  width: 8px;
+  height: 8px;
+  background-color: #56AAB2;
+  border-radius: 50%;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.nutrient-name {
+  color: #333;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.nutrient-value {
+  color: #333;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+/* 프로그래스 바 */
+.nutrient-bar {
+  width: 100%;
+  height: 8px;
+  background-color: #E9ECEF;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.bar-fill {
+  height: 100%;
+  background-color: #333;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+  min-width: 2px;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 480px) {
+  .nutrients-container {
+    padding: 15px;
+  }
+
+  .nutrients-title {
+    font-size: 20px;
+  }
+
+  .nutrients-subtitle {
+    font-size: 13px;
+  }
+
+  .nutrient-category {
+    padding: 16px;
+  }
+
+  .category-title {
+    font-size: 16px;
+  }
+
+  .nutrient-name,
+  .nutrient-value {
+    font-size: 14px;
+  }
+}
