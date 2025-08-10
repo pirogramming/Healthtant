@@ -18,37 +18,8 @@ body {
     min-height: 100vh;
     padding: 0;
     font-family: 'Noto Sans KR', sans-serif;
-}
-
-/* 상단 헤더 */
-.top-header {
-    background-color: white;
-    padding: 15px 20px;
-    border-bottom: 1px solid #e0e0e0;
-}
-
-.top-header h1 {
-    font-size: 16px;
-    font-weight: 500;
-    color: #333;
-    margin: 0;
-    text-align: left;
-}
-
-/* 메인 헤더 영역 */
-.register-header {
-    background-color: white;
-    padding: 20px 0;
-    text-align: center;
-    border-bottom: 1px solid #e0e0e0;
-}
-
-.register-header h2 {
-    font-size: 18px;
-    font-weight: 600;
-    color: #333;
-    margin: 0;
-    padding: 0 20px;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 /* 검색 섹션 */
@@ -59,12 +30,13 @@ body {
     align-items: center;
     gap: 15px;
     border-bottom: 1px solid #e0e0e0;
+    margin: 0 20px;
+    margin-top: 20px;
 }
 
 .search-container {
     flex: 1;
     position: relative;
-    max-width: 300px;
 }
 
 .search-input {
@@ -77,15 +49,22 @@ body {
     background-color: white;
     outline: none;
     transition: border-color 0.2s;
+    cursor: pointer;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
-.search-input::placeholder {
+.search-input:hover {
+    border-color: #4285f4;
+}
+
+.search-placeholder {
     color: #999;
     font-size: 14px;
-}
-
-.search-input:focus {
-    border-color: #4285f4;
+    flex: 1;
+    text-align: left;
 }
 
 .search-icon {
@@ -123,6 +102,8 @@ body {
     background-color: white;
     padding: 20px;
     flex: 1;
+    margin: 0 20px;
+    margin-top: 0;
 }
 
 .recent-foods-section h2 {
@@ -136,7 +117,8 @@ body {
 .recent-foods-list {
     display: flex;
     flex-direction: column;
-    max-height: calc(100vh - 200px);
+    gap: 0;
+    max-height: calc(100vh - 300px);
     overflow-y: auto;
 }
 
@@ -155,6 +137,10 @@ body {
     border-bottom: none;
 }
 
+.food-card:hover {
+    background-color: #f8f9fa;
+}
+
 /* 제품 이미지 */
 .food-image {
     flex-shrink: 0;
@@ -163,18 +149,12 @@ body {
     border-radius: 8px;
     overflow: hidden;
     background-color: #f8f9fa;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
-.food-image-placeholder {
-    font-size: 10px;
-    font-weight: 500;
-    color: #666;
-    text-align: center;
-    line-height: 1.2;
-    padding: 4px;
+.food-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 /* 제품 정보 */
@@ -209,23 +189,14 @@ body {
     gap: 4px;
     padding: 8px 12px;
     background: none;
-    border: 1px solid #4285f4;
-    border-radius: 6px;
+    border: none;
     cursor: pointer;
     transition: all 0.2s ease;
 }
 
 .register-btn:hover {
-    background-color: #4285f4;
-    color: white;
-}
-
-.register-btn:hover .plus-icon {
-    color: white;
-}
-
-.register-btn:hover .register-text {
-    color: white;
+    background-color: #f0f8ff;
+    border-radius: 6px;
 }
 
 .plus-icon {
@@ -263,9 +234,16 @@ body {
 
 /* 반응형 디자인 */
 @media (max-width: 768px) {
+    .meal-register-container {
+        max-width: 100%;
+        margin: 0;
+    }
+    
     .search-section {
+        margin: 0 15px;
         padding: 15px;
         gap: 10px;
+        margin-top: 15px;
     }
     
     .search-container {
@@ -277,13 +255,19 @@ body {
         font-size: 13px;
     }
     
+    .search-placeholder {
+        font-size: 13px;
+    }
+    
     .cancel-btn {
         font-size: 13px;
         padding: 6px 10px;
     }
     
     .recent-foods-section {
+        margin: 0 15px;
         padding: 15px;
+        margin-top: 0;
     }
     
     .recent-foods-section h2 {
@@ -323,30 +307,30 @@ body {
 }
 
 @media (max-width: 480px) {
-    .top-header {
-        padding: 12px 15px;
-    }
-    
-    .top-header h1 {
-        font-size: 14px;
-    }
-    
-    .register-header {
-        padding: 15px 0;
-    }
-    
-    .register-header h2 {
-        font-size: 16px;
-        padding: 0 15px;
+    .meal-register-container {
+        max-width: 100%;
+        margin: 0;
     }
     
     .search-section {
+        margin: 0 12px;
         padding: 12px;
         gap: 8px;
+        margin-top: 12px;
+        flex-wrap: wrap;
+    }
+    
+    .search-container {
+        flex: 1;
+        min-width: 0;
     }
     
     .search-input {
         padding: 8px 35px 8px 10px;
+        font-size: 12px;
+    }
+    
+    .search-placeholder {
         font-size: 12px;
     }
     
@@ -356,7 +340,9 @@ body {
     }
     
     .recent-foods-section {
+        margin: 0 12px;
         padding: 12px;
+        margin-top: 0;
     }
     
     .recent-foods-section h2 {
@@ -407,6 +393,11 @@ body {
 }
 
 .search-input:focus {
+    outline: 2px solid #4285f4;
+    outline-offset: 2px;
+}
+
+.cancel-btn:focus {
     outline: 2px solid #4285f4;
     outline-offset: 2px;
 }

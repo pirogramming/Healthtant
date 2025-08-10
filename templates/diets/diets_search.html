@@ -1,0 +1,118 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>식사등록페이지 - Healthtant</title>
+    <link rel="stylesheet" href="{% static 'diets/diets_register.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="meal-register-container">
+    <!-- 검색 섹션 -->
+    <div class="search-section">
+        <div class="search-container">
+            <input type="text" class="search-input" placeholder="새 제품을 검색해서 찾아보세요" id="searchInput">
+            <div class="search-icon" onclick="performSearch()">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9.16667 15.8333C12.8486 15.8333 15.8333 12.8486 15.8333 9.16667C15.8333 5.48477 12.8486 2.5 9.16667 2.5C5.48477 2.5 2.5 5.48477 2.5 9.16667C2.5 12.8486 5.48477 15.8333 9.16667 15.8333Z" stroke="#4285f4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M17.5 17.5L13.875 13.875" stroke="#4285f4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+        </div>
+        <button class="cancel-btn" onclick="clearSearch()">취소</button>
+    </div>
+
+    <!-- 검색 결과 섹션 -->
+    <div class="search-results-section" id="searchResults" style="display: none;">
+        <h2>검색 결과</h2>
+        <div class="search-results-list" id="searchResultsList">
+            <!-- 검색 결과가 여기에 동적으로 추가됩니다 -->
+        </div>
+    </div>
+</div>
+
+<script>
+function performSearch() {
+    const searchInput = document.getElementById('searchInput');
+    const keyword = searchInput.value.trim();
+    
+    if (!keyword) {
+        alert('검색어를 입력해주세요.');
+        return;
+    }
+    
+    // AJAX 요청
+    fetch(`/diets/search/?keyword=${encodeURIComponent(keyword)}`)
+        .then(response => response.json())
+        .then(data => {
+            displaySearchResults(data.foods);
+        })
+        .catch(error => {
+            console.error('검색 중 오류가 발생했습니다:', error);
+            alert('검색 중 오류가 발생했습니다.');
+        });
+}
+
+function displaySearchResults(foods) {
+    const searchResults = document.getElementById('searchResults');
+    const searchResultsList = document.getElementById('searchResultsList');
+    
+    if (foods.length === 0) {
+        searchResultsList.innerHTML = '<div class="no-results">검색 결과가 없습니다.</div>';
+    } else {
+        searchResultsList.innerHTML = '';
+        
+        foods.forEach(food => {
+            const foodCard = document.createElement('div');
+            foodCard.className = 'food-card';
+            foodCard.setAttribute('data-food-id', food.food_id);
+            
+            foodCard.innerHTML = `
+                <div class="food-image">
+                    ${food.food_img ? 
+                        `<img src="${food.food_img}" alt="${food.food_name}">` : 
+                        `<img src="{% static 'diets/images/default-food.jpg' %}" alt="${food.food_name}">`
+                    }
+                </div>
+                <div class="food-info">
+                    <h3 class="food-name">${food.food_name}</h3>
+                    <p class="food-company">제조사: ${food.company_name}</p>
+                </div>
+                <button class="register-btn" onclick="registerFood('${food.food_id}')">
+                    <span class="plus-icon">+</span>
+                    <span class="register-text">등록하기</span>
+                </button>
+            `;
+            
+            searchResultsList.appendChild(foodCard);
+        });
+    }
+    
+    searchResults.style.display = 'block';
+}
+
+function registerFood(foodId) {
+    // 식품 등록 기능 (필요에 따라 구현)
+    console.log('식품 등록:', foodId);
+    alert('식품이 등록되었습니다.');
+}
+
+function clearSearch() {
+    const searchInput = document.getElementById('searchInput');
+    const searchResults = document.getElementById('searchResults');
+    
+    searchInput.value = '';
+    searchResults.style.display = 'none';
+}
+
+// Enter 키로도 검색 가능하도록
+document.getElementById('searchInput').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        performSearch();
+    }
+});
+</script>
+</body>
+</html>

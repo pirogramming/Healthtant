@@ -1,3 +1,4 @@
+from math import log
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from .models import Diet
@@ -127,6 +128,10 @@ def diet_list(request):
     #     "user_id": user.id,
     #     "recent_foods": recent_foods
     # })
+
+@login_required
+def diet_search_page(request):
+    return render(request, 'diets/diets_search.html')
 
 @login_required
 #유저가 식품 이름으로 검색하는 기능

@@ -1,0 +1,40 @@
+/* 검색 결과 섹션 */
+.search-results-section {
+    background-color: white;
+    padding: 20px;
+    margin: 0 20px;
+    margin-top: 0;
+}
+
+.search-results-section h2 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 20px 0;
+    padding: 0;
+}
+
+.search-results-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    max-height: calc(100vh - 300px);
+    overflow-y: auto;
+}
+
+.no-results {
+    text-align: center;
+    padding: 40px 20px;
+    color: #666;
+    font-size: 14px;
+}
+
+/* 검색 아이콘 클릭 가능하도록 */
+.search-icon {
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.search-icon:hover {
+    opacity: 0.8;
+}

@@ -8,4 +8,5 @@ urlpatterns = [
     path('search/', views.diet_search),
     path('<uuid:diet_id>/', views.diet_update),
     path('<uuid:food_id>/', views.diet_create),
+    path('search/page/', views.diet_search_page),
 ]
