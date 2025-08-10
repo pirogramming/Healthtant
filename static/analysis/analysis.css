@@ -153,7 +153,7 @@
     background: #FFF;
     box-shadow: 0 6px 4px 0 rgba(142, 142, 142, 0.25);
     margin-bottom: 40px;
-    width: 375px;
+    padding: 15px;
     flex-shrink: 0;
 }
 
@@ -278,6 +278,89 @@
 .chart-placeholder {
     color: var(--gray-100);
     font-size: 14px;
+}
+
+/* 데이터 부족 메시지 스타일 */
+.no-data-message {
+    text-align: center;
+    color: #999;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    padding: 8px;
+    background: rgba(153, 153, 153, 0.1);
+    border-radius: 8px;
+}
+
+/* 섹션 1 차트 스타일 */
+.chart-surface {
+    margin: 20px 0;
+}
+
+.bar-chart {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+    height: 200px;
+    padding: 20px;
+    border-radius: 12px;
+    position: relative;
+    background: var(--White, #FFF);
+    border: 1px solid #E8E8E8;
+    
+}
+
+.bar-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    max-width: 80px;
+}
+
+.bar-track {
+    width: 16px;
+    height: 140px;
+    background: #F0F0F0;
+    border-radius: 8px;
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+.bar-fill {
+    width: 100%;
+    background: #56AAB2;
+    border-radius: 8px;
+    min-height: 8px;
+    transition: all 0.6s ease;
+    position: absolute;
+    bottom: 0;
+}
+
+.bar-label {
+    margin-top: 10px;
+    text-align: center;
+    color: var(--Gray-04, #666);
+    text-align: right;
+    font-family: Inter;
+    font-size: 10px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+
+/* 빈 막대 차트 스타일 */
+.empty-bar {
+    fill: #F0F0F0;
+    border-radius: 8px;
+}
+
+.empty-fill {
+    background: transparent !important;
+    border: none;
+    min-height: 0 !important;
 }
 
 /* ====== 버튼 그룹 스타일 ====== */
@@ -497,10 +580,9 @@ a{
 .compare-krda-card .krda-chart-container{
   width: 100%;
   height: 200px;
-  background: #F8F8F8;
-  border-radius: 12px;
+  
   margin: 16px 0;
-  padding: 20px;
+  
 }
 
 .compare-krda-card .krda-chart{
@@ -512,14 +594,6 @@ a{
 .compare-krda-card .chart-grid{
   display: flex;
   height: 100%;
-  background-image: 
-    repeating-linear-gradient(
-      to top,
-      transparent,
-      transparent 19px,
-      #E8E8E8 19px,
-      #E8E8E8 20px
-    );
 }
 
 .compare-krda-card .y-axis{
@@ -529,7 +603,7 @@ a{
   align-items: flex-end;
   width: 30px;
   margin-right: 10px;
-  height: 140px;
+  height: 190px;
 }
 
 .compare-krda-card .y-label{
@@ -545,10 +619,9 @@ a{
   display: flex;
   align-items: flex-end;
   justify-content: space-around;
-  height: 140px;
+  height: 215px;
   position: relative;
   padding: 0 10px;
-  border-bottom: 2px solid #CCC;
 }
 
 
@@ -565,7 +638,7 @@ a{
 
 .compare-krda-card .bar-track-bg{
   width: 45px;
-  height: 140px;
+  height: 215px;
   background: transparent;
   position: relative;
   display: flex;
@@ -647,6 +720,15 @@ a{
   font-weight: 400;
   color: #000;
   font-family: Inter;
+}
+
+/* 섹션 구분선 */
+.compare-krda-card .section-divider {
+  width: 100%;
+  height: 1px;
+  background: #E8E8E8;
+  margin: 25px 0;
+  border: none;
 }
 
 /* 영양소 섭취 평가 */

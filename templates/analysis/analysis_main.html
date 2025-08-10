@@ -135,34 +135,23 @@
           
           <!-- 막대들 -->
           <div class="bars-container">
-            <div class="bar-wrapper">
-              <div class="bar-track-bg">
-                <div class="bar-fill-krda" style="height: 50%;"></div>
-              </div>
-              <span class="bar-label-krda">에너지</span>
-            </div>
-            <div class="bar-wrapper">
-              <div class="bar-track-bg">
-                <div class="bar-fill-krda" style="height: 110%;"></div>
-              </div>
-              <span class="bar-label-krda">탄수화물</span>
-            </div>
-            <div class="bar-wrapper">
-              <div class="bar-track-bg">
-                <div class="bar-fill-krda" style="height: 50%;"></div>
-              </div>
-              <span class="bar-label-krda">단백질</span>
-            </div>
-            <div class="bar-wrapper">
-              <div class="bar-track-bg">
-                <div class="bar-fill-krda" style="height: 70%;"></div>
-              </div>
-              <span class="bar-label-krda">나트륨</span>
-            </div>
+            {% for item in nutrients_evaluation %}
+              {% if item.name != "지방" %}
+                <div class="bar-wrapper">
+                  <div class="bar-track-bg">
+                    <div class="bar-fill-krda" style="height: {{ item.percentage }}%;"></div>
+                  </div>
+                  <span class="bar-label-krda">{{ item.name }}</span>
+                </div>
+              {% endif %}
+            {% endfor %}
           </div>
         </div>
       </div>
     </div>
+
+    <!-- 구분선 -->
+    <div class="section-divider"></div>
 
     <!-- 권장량 박스 -->
     <div class="krda-recommendations">
@@ -188,6 +177,9 @@
         <span class="krda-value">{{ salt.min|floatformat:0 }} g</span>
       </div>
     </div>
+
+    <!-- 구분선 -->
+    <div class="section-divider"></div>
 
     <!-- 영양소 섭취 평가 -->
     <div class="krda-evaluation">
@@ -231,7 +223,49 @@
   try { data = JSON.parse(el.textContent || '[]'); } catch (_) {}
 
   if (!Array.isArray(data) || data.length === 0) {
-    target.innerHTML = '<div class="chart-placeholder">데이터가 부족해요</div>';
+    // 차트 컨테이너의 부모 요소에 메시지 추가
+    const chartSurface = target.parentElement;
+    
+    // 기존 메시지가 있다면 제거
+    const existingMessage = chartSurface.querySelector('.no-data-message');
+    if (existingMessage) {
+      existingMessage.remove();
+    }
+    
+    // 메시지를 차트 위에 추가
+    const message = document.createElement('div');
+    message.className = 'no-data-message';
+    message.textContent = '데이터가 부족합니다.';
+    chartSurface.insertBefore(message, target);
+    
+ // 빈 막대 차트 생성 (라벨 없음)
+    const emptyCategories = ['', '', '', '', ''];
+    const frag = document.createDocumentFragment();
+    
+    emptyCategories.forEach((category) => {
+      const wrap = document.createElement('div');
+      wrap.className = 'bar-item';
+
+      const track = document.createElement('div');
+      track.className = 'bar-track empty-bar';
+
+      const fill = document.createElement('div');
+      fill.className = 'bar-fill empty-fill';
+      fill.style.height = '0%';
+
+      track.appendChild(fill);
+
+      const label = document.createElement('div');
+      label.className = 'bar-label';
+      label.textContent = category; 
+
+      wrap.appendChild(track);
+      wrap.appendChild(label);
+      frag.appendChild(wrap);
+    });
+
+    target.innerHTML = '';
+    target.appendChild(frag);
     return;
     }
 
