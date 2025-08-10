@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Case, When, Value, IntegerField
 from datetime import date
 import json
+from django.http import HttpResponse
 
 #유저 식사 리스트 전달
 @login_required
@@ -37,13 +38,7 @@ def diet_main(request):
             'data': []
         }
         #To FE: 템플릿 작업 시작하면 지금 return문 지우고 바로 아래에 주석처리 해둔 return문 채워서 사용해주세요!!!
-        #return render(request, '템플릿 이름.html', context)
-        return JsonResponse({
-            "user_id": str(user.id),
-            "year": year,
-            "month": month,
-            "data": []
-        }, json_dumps_params={'ensure_ascii': False})
+        return render(request, 'diets/diets_main.html', context)
 
     #--------------------여기부터 API 명세 형식에 맞게 데이터 구성해서 반환하는 부분---------------------------------
     current_date = diets[0].date #diets에서 가장 앞의 데이터(가장 빠른 데이터)를 가져와 현재 날짜로 설정
@@ -81,13 +76,7 @@ def diet_main(request):
     }
     
     #To FE: 템플릿 작업 시작하면 지금 return문 지우고 바로 아래에 주석처리 해둔 return문 채워서 사용해주세요!!!
-    #return render(request, '템플릿 이름.html', context)
-    return JsonResponse({
-        "user_id": user.id,
-        "year": year,
-        "month": month,
-        "data": data_list
-    }, json_dumps_params={'ensure_ascii': False})
+    return render(request, 'diets/diets_main.html', context)
 
 @login_required
 #유저가 최근 먹은 식품 리스트 전달
@@ -107,11 +96,11 @@ def diet_list(request):
     #유저가 등록한 식단이 없을 경우 예외처리
     if not diets:
         #To FE: 템플릿 작업 시작하면 지금 return문 지우고 바로 아래에 주석처리 해둔 return문 채워서 사용해주세요!!!
-        #return render(request, '템플릿 이름.html', {"user_id": user.id, "recent_foods": []})
-        return JsonResponse({
-            "user_id": user.id,
-            "recent_foods": []
-        })
+        return render(request, 'diets_main.html', {"user_id": user.id, "recent_foods": []})
+        # return JsonResponse({
+        #     "user_id": user.id,
+        #     "recent_foods": []
+        # })
     
     idx = len(diets)-1 #가장 최근의 식사부터 시작
     cnt = 0 #몇개의 제품이 append 되었는지 추적
@@ -205,7 +194,7 @@ def diet_update(request, diet_id):
     elif request.method == 'DELETE':
         diet = Diet.objects.get(diet_id=diet_id)
         diet.delete()
-        return redirect('/diets/') #식사 관리 메인 페이지로 redirect
+        return HttpResponse(status=204)
     
     #Http 메소드가 PATCH, DELETE 중 무엇도 아닌 경우
     return JsonResponse({'message': "예상치 못한 오류가 발생했습니다."}, status=404)
