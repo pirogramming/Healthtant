@@ -44,30 +44,54 @@
   </section>
 
   <!-- (2) 평균 영양소 섭취량 -->
-  <section class="analysis-card" id="avg-nutrients">
+  <section class="analysis-card avg-nutrients-card" id="avg-nutrients">
     <div class="card-header">
-      <h3 class="card-title">평균 영양소 섭취량</h3>
+      <div class="section2-title">
+        <span class="section2-icon">📊</span>
+        <h3 class="card-title">{{ request.user.username }} 님이 섭취한 주요 영양소</h3>
+      </div>
     </div>
 
-    <div class="nutrient-item">
-      <span class="nutrient-name">평균 열량</span>
-      <span class="nutrient-value">{{ avg_calorie_per_day|floatformat:0 }} kcal</span>
+    <p class="section2-subtitle">
+      {{ request.user.username }} 님은 평균적으로 매일 이 정도 양의 영양소를 섭취했어요.
+    </p>
+
+    <div class="nutrients-box">
+      <div class="nutrients-header">
+        <span class="nutrients-dot"></span>
+        <span class="nutrients-label">평균 영양소 섭취량</span>
+      </div>
+
+      <div class="nutrient-item">
+        <span class="nutrient-name">평균 열량</span>
+        <span class="nutrient-value">{{ avg_calorie_per_day|floatformat:0 }} kcal</span>
+      </div>
+      <div class="nutrient-item">
+        <span class="nutrient-name">평균 탄수화물</span>
+        <span class="nutrient-value">{{ avg_carbohydrate_per_day|floatformat:0 }} g</span>
+      </div>
+      <div class="nutrient-item">
+        <span class="nutrient-name">평균 단백질</span>
+        <span class="nutrient-value">{{ avg_protein_per_day|floatformat:0 }} g</span>
+      </div>
+      <div class="nutrient-item">
+        <span class="nutrient-name">평균 지방</span>
+        <span class="nutrient-value">{{ avg_fat_per_day|floatformat:0 }} g</span>
+      </div>
+      <div class="nutrient-item">
+        <span class="nutrient-name">평균 나트륨</span>
+        <span class="nutrient-value">{{ avg_salt_per_day|floatformat:0 }} mg</span>
+      </div>
     </div>
-    <div class="nutrient-item">
-      <span class="nutrient-name">평균 탄수화물</span>
-      <span class="nutrient-value">{{ avg_carbohydrate_per_day|floatformat:0 }} g</span>
-    </div>
-    <div class="nutrient-item">
-      <span class="nutrient-name">평균 단백질</span>
-      <span class="nutrient-value">{{ avg_protein_per_day|floatformat:0 }} g</span>
-    </div>
-    <div class="nutrient-item">
-      <span class="nutrient-name">평균 지방</span>
-      <span class="nutrient-value">{{ avg_fat_per_day|floatformat:0 }} g</span>
-    </div>
-    <div class="nutrient-item">
-      <span class="nutrient-name">평균 나트륨</span>
-      <span class="nutrient-value">{{ avg_salt_per_day|floatformat:0 }} mg</span>
+
+    <p class="section2-note">
+      * 위 평균치는 사용자가 등록한 가공식품에 대해 산출한 결과이며, 함께 먹은 음식이 고려되지 않았습니다
+    </p>
+
+    <div class="button-group">
+      <a class="btn-secondary" href="/analysis/nutrients/?start_date={{ start_date }}&end_date={{ end_date }}">
+        더 다양한 영양소에 대한 통계치 보러가기 →
+      </a>
     </div>
   </section>
 
@@ -122,7 +146,7 @@
 {% endblock %}
 
 {% block navigation %}
-{{ block.super }}
+<!-- 네비게이션 제거 -->
 {% endblock %}
 
 {% block extra_js %}

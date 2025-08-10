@@ -149,11 +149,11 @@
 
 /* 분석 카드 스타일 */
 .analysis-card {
-    background-color: var(--white);
-    border-radius: var(--border-radius-md);
-    padding: var(--spacing-lg);
-    margin-bottom: var(--spacing-md);
-    box-shadow: var(--shadow-light);
+    border-radius: 10px;
+    border: 1px solid #E8E8E8;
+    background: #FFF;
+    box-shadow: 0 6px 4px 0 rgba(142, 142, 142, 0.25);
+    margin-bottom: 40px;
 }
 
 .card-header {
@@ -254,7 +254,7 @@
     }
     
     .analysis-card {
-        padding: var(--spacing-md);
+        padding: 20px 18px 27px 18px;
     }
     
     .result-title {
@@ -287,16 +287,27 @@
 }
 
 .btn-secondary {
-    padding: 12px var(--spacing-md);
-    background-color: transparent;
-    color: var(--primary-color);
-    border: 1px solid var(--primary-color);
-    border-radius: var(--border-radius-sm);
-    font-size: 14px;
-    font-weight: 500;
     cursor: pointer;
     transition: all 0.3s ease;
     flex: 1;
+    color: #000;
+    border-radius: 5px;
+    border: 1px solid #E8E8E8;
+
+    background: #FFF;
+
+    text-align: center;
+    font-family: Inter;
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    letter-spacing: 0.26px;
+    padding: 7px 0;
+}
+
+a{
+    text-decoration: none;
 }
 
 .btn-secondary:hover {
@@ -362,3 +373,82 @@
 
 .category-summary .highlight-green{ color:#3CB371; font-weight:800; }
 .category-summary .highlight-red{ color:#E56565; font-weight:800; }
+
+/* Section 2 - 평균 영양소 섭취량 카드 스타일 */
+.avg-nutrients-card .section2-title{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.avg-nutrients-card .section2-icon{
+  font-size: 20px;
+}
+
+.avg-nutrients-card .section2-subtitle{
+  color: #666;
+  margin: 8px 0 18px;
+  font-family: Inter;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.24px;
+}
+
+/* 영양소 박스 (라운드 테두리) */
+.avg-nutrients-card .nutrients-box{
+  background: #F8FEFF;
+  border: 2px solid #56AAB2;
+  border-radius: 20px;
+  padding: 20px 18px;
+  margin: 16px 0;
+}
+
+.avg-nutrients-card .nutrients-header{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.avg-nutrients-card .nutrients-dot{
+  width: 12px;
+  height: 12px;
+  background: #56AAB2;
+  border-radius: 50%;
+}
+
+.avg-nutrients-card .nutrients-label{
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+/* 영양소 아이템들 */
+.avg-nutrients-card .nutrient-item{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: none;
+}
+
+.avg-nutrients-card .nutrient-name{
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+}
+
+.avg-nutrients-card .nutrient-value{
+  font-size: 16px;
+  font-weight: 700;
+  color: #56AAB2;
+}
+
+/* 하단 주석 */
+.avg-nutrients-card .section2-note{
+  font-size: 11px;
+  color: #999;
+  margin: 16px 0 8px;
+  line-height: 1.4;
+}
