@@ -1,5 +1,17 @@
 /* ====== 분석 페이지 공통 스타일 ====== */
 
+/* 헤더 하단 구분선 - 모든 analysis 페이지 공통 적용 */
+.app-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0px;
+  right: 0px;
+  height: 1px;
+  background: var(--layer, #E5E5E5);
+  border-radius: 1px;
+}
+
 /* 분석 날짜 선택 페이지 스타일 */
 .analysis-date-container {
     display: flex;
@@ -153,7 +165,7 @@
     background: #FFF;
     box-shadow: 0 6px 4px 0 rgba(142, 142, 142, 0.25);
     margin-bottom: 40px;
-    padding: 15px;
+    padding: 25px 20px 40px 20px;
     flex-shrink: 0;
 }
 
@@ -165,11 +177,16 @@
 }
 
 .card-title {
-    font-size: 18px;
+    font-size: 21px;
     font-weight: 600;
     color: var(--black);
 }
 
+.card-title3 {
+    font-size: 19.5px;
+    font-weight: 600;
+    color: var(--black);
+}
 .card-icon {
     width: 24px;
     height: 24px;
@@ -181,7 +198,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: var(--spacing-sm) 0;
+    padding: 0px 0px 20px 0px;
     border-bottom: 1px solid var(--gray-border);
 }
 
@@ -255,7 +272,7 @@
     }
     
     .analysis-card {
-        padding: 20px 18px 27px 18px;
+        padding: 25px 20px 40px 20px;
     }
     
     .result-title {
@@ -382,7 +399,7 @@
 
     text-align: center;
     font-family: Inter;
-    font-size: 13px;
+    font-size: 15px;
     font-style: normal;
     font-weight: 600;
     line-height: normal;
@@ -448,7 +465,7 @@ a{
   color: #666666;
   margin: 6px 0 16px;
   font-family: Inter;
-    font-size: 12px;
+    font-size: 19px;
     font-style: normal;
     font-weight: 600;
     line-height: normal;
@@ -474,7 +491,7 @@ a{
   color: #666;
   margin: 8px 0 18px;
   font-family: Inter;
-  font-size: 12px;
+  font-size: 18px;
   font-weight: 600;
   letter-spacing: 0.24px;
 }
@@ -483,12 +500,15 @@ a{
 .avg-nutrients-card .nutrients-box{
   border: 2px solid #56AAB2;
   border-radius: 20px;
-  padding: 20px 18px;
+  padding: 30px 17px;
   margin: 16px 0;
 }
 
 .avg-nutrients-card {
-    filter: drop-shadow(0 0 4px rgba(86, 170, 178, 0.50));
+    border-radius: 10px;
+    border: 1px solid #E8E8E8;
+    background: #FFF;
+    box-shadow: 0 6px 4px 0 rgba(142, 142, 142, 0.25);
 
 }
 
@@ -548,7 +568,7 @@ a{
 
     text-align: center;
     font-family: Inter;
-    font-size: 7.5px;
+    font-size: 11.5px;
     font-style: normal;
     font-weight: 500;
     line-height: normal;
@@ -571,7 +591,7 @@ a{
   color: #666;
   margin: 8px 0 18px;
   font-family: Inter;
-  font-size: 12px;
+  font-size: 17px;
   font-weight: 600;
   letter-spacing: 0.24px;
 }
@@ -660,7 +680,7 @@ a{
 }
 
 .compare-krda-card .bar-label-krda{
-  font-size: 11px;
+  font-size: 12px;
   color: #333;
   font-weight: 600;
   margin-top: 8px;
@@ -696,9 +716,14 @@ a{
 }
 
 .compare-krda-card .krda-label{
-  font-size: 14px;
-  font-weight: 600;
-  color: #333;
+
+    color: #000;
+    font-family: Inter;
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    letter-spacing: 0.3px;
 }
 
 .compare-krda-card .krda-item{
@@ -709,14 +734,14 @@ a{
 }
 
 .compare-krda-card .krda-name{
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 500;
-  color: #333;
+  color: #000;
   font-family: Inter;
 }
 
 .compare-krda-card .krda-value{
-  font-size: 12px;
+  font-size: 15px;
   font-weight: 400;
   color: #000;
   font-family: Inter;
@@ -751,9 +776,13 @@ a{
 }
 
 .compare-krda-card .krda-eval-label{
-  font-size: 14px;
-  font-weight: 600;
-  color: #333;
+    color: #000;
+    font-family: Inter;
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    letter-spacing: 0.3px;
 }
 
 .compare-krda-card .evaluation-item{
@@ -768,7 +797,7 @@ a{
 }
 
 .compare-krda-card .eval-name{
-  font-size: 16px;
+  font-size: 17px;
   font-weight: 600;
   color: #333;
 }
@@ -777,13 +806,13 @@ a{
   color: white;
   padding: 4px 12px;
   border-radius: 12px;
-  font-size: 12px;
+  font-size: 17px;
   font-weight: 700;
 }
 
 .compare-krda-card .eval-message{
-  font-size: 11px;
-  color: #666;
+  font-size: 12px;
+  color: #444;
   margin: 0;
   line-height: 1.3;
 }
