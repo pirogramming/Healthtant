@@ -107,7 +107,7 @@ def diet_list(request):
     #유저가 등록한 식단이 없을 경우 예외처리
     if not diets:
         #To FE: 템플릿 작업 시작하면 지금 return문 지우고 바로 아래에 주석처리 해둔 return문 채워서 사용해주세요!!!
-        return render(request, 'diets_main.html', {"user_id": user.id, "recent_foods": []})
+        return render(request, 'diets/diets_main.html', {"user_id": user.id, "recent_foods": []})
         # return JsonResponse({
         #     "user_id": user.id,
         #     "recent_foods": []
@@ -180,8 +180,8 @@ def diet_create(request, food_id):
     ret = {'diet_id': str(diet.diet_id), 'user_id': user.id, 'food': str(food_data), 'message': "새 식사 등록이 완료되었습니다."}
 
     #To FE: 템플릿 작업 시작하면 지금 return문 지우고 바로 아래에 주석처리 해둔 return문 채워서 사용해주세요!!!
-    #return redirect(f'/diets/?year={date.today().year}&month={date.today().month}')
-    return JsonResponse(ret, json_dumps_params={'ensure_ascii': False})
+    return redirect(f'/diets/?year={date.today().year}&month={date.today().month}')
+    # return JsonResponse(ret, json_dumps_params={'ensure_ascii': False})
 
 #식사 수정/삭제
 def diet_update(request, diet_id):
