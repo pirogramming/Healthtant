@@ -426,8 +426,6 @@ def analysis_diet(request):
     }
     #--------------------------------------------------여기부터 context 반환-----------------------------------------------------------
     context = {
-        "start_date": start_date,
-        "end_date": end_date,
         "meal_product_analysis": {
             "meal_number": meal_number,
             "product_number": product_number,
