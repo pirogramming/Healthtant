@@ -1,0 +1,214 @@
+{% extends 'main/main_base.html' %}
+{% load static %}
+
+{% block title %}제품 - Healthtant{% endblock %}
+
+{% block content %}
+<div class="products-container">
+    <div class="products-header">
+        <h1>건강 제품</h1>
+        <div class="products-filter">
+            <select class="filter-select">
+                <option value="">전체</option>
+                <option value="vitamin">비타민</option>
+                <option value="protein">단백질</option>
+                <option value="omega">오메가3</option>
+                <option value="probiotic">프로바이오틱스</option>
+            </select>
+            <select class="sort-select">
+                <option value="popular">인기순</option>
+                <option value="price-low">가격 낮은순</option>
+                <option value="price-high">가격 높은순</option>
+                <option value="rating">평점순</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="products-grid">
+        <!-- 제품 카드 1 -->
+        <div class="product-card">
+            <div class="product-image">
+                <img src="{% static 'products/images/product1.jpg' %}" alt="비타민C">
+                <div class="product-badge">BEST</div>
+            </div>
+            <div class="product-info">
+                <h3 class="product-name">고함량 비타민C 1000mg</h3>
+                <div class="product-rating">
+                    <span class="stars">★★★★★</span>
+                    <span class="rating-text">(4.8)</span>
+                </div>
+                <div class="product-price">
+                    <span class="current-price">₩15,900</span>
+                    <span class="original-price">₩25,000</span>
+                    <span class="discount">36%</span>
+                </div>
+                <div class="product-tags">
+                    <span class="tag">무료배송</span>
+                    <span class="tag">첫구매할인</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 제품 카드 2 -->
+        <div class="product-card">
+            <div class="product-image">
+                <img src="{% static 'products/images/product2.jpg' %}" alt="오메가3">
+                <div class="product-badge">NEW</div>
+            </div>
+            <div class="product-info">
+                <h3 class="product-name">고순도 오메가3 1000mg</h3>
+                <div class="product-rating">
+                    <span class="stars">★★★★☆</span>
+                    <span class="rating-text">(4.5)</span>
+                </div>
+                <div class="product-price">
+                    <span class="current-price">₩28,500</span>
+                    <span class="original-price">₩35,000</span>
+                    <span class="discount">19%</span>
+                </div>
+                <div class="product-tags">
+                    <span class="tag">무료배송</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 제품 카드 3 -->
+        <div class="product-card">
+            <div class="product-image">
+                <img src="{% static 'products/images/product3.jpg' %}" alt="프로바이오틱스">
+            </div>
+            <div class="product-info">
+                <h3 class="product-name">유산균 프로바이오틱스</h3>
+                <div class="product-rating">
+                    <span class="stars">★★★★★</span>
+                    <span class="rating-text">(4.9)</span>
+                </div>
+                <div class="product-price">
+                    <span class="current-price">₩22,000</span>
+                </div>
+                <div class="product-tags">
+                    <span class="tag">무료배송</span>
+                    <span class="tag">첫구매할인</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 제품 카드 4 -->
+        <div class="product-card">
+            <div class="product-image">
+                <img src="{% static 'products/images/product4.jpg' %}" alt="단백질">
+            </div>
+            <div class="product-info">
+                <h3 class="product-name">웨이프로틴 단백질 파우더</h3>
+                <div class="product-rating">
+                    <span class="stars">★★★★☆</span>
+                    <span class="rating-text">(4.6)</span>
+                </div>
+                <div class="product-price">
+                    <span class="current-price">₩45,000</span>
+                    <span class="original-price">₩55,000</span>
+                    <span class="discount">18%</span>
+                </div>
+                <div class="product-tags">
+                    <span class="tag">무료배송</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 제품 카드 5 -->
+        <div class="product-card">
+            <div class="product-image">
+                <img src="{% static 'products/images/product5.jpg' %}" alt="비타민D">
+            </div>
+            <div class="product-info">
+                <h3 class="product-name">비타민D3 2000IU</h3>
+                <div class="product-rating">
+                    <span class="stars">★★★★★</span>
+                    <span class="rating-text">(4.7)</span>
+                </div>
+                <div class="product-price">
+                    <span class="current-price">₩12,800</span>
+                    <span class="original-price">₩18,000</span>
+                    <span class="discount">29%</span>
+                </div>
+                <div class="product-tags">
+                    <span class="tag">무료배송</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 제품 카드 6 -->
+        <div class="product-card">
+            <div class="product-image">
+                <img src="{% static 'products/images/product6.jpg' %}" alt="마그네슘">
+            </div>
+            <div class="product-info">
+                <h3 class="product-name">마그네슘 400mg</h3>
+                <div class="product-rating">
+                    <span class="stars">★★★★☆</span>
+                    <span class="rating-text">(4.4)</span>
+                </div>
+                <div class="product-price">
+                    <span class="current-price">₩18,500</span>
+                </div>
+                <div class="product-tags">
+                    <span class="tag">무료배송</span>
+                    <span class="tag">첫구매할인</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 제품 카드 7 -->
+        <div class="product-card">
+            <div class="product-image">
+                <img src="{% static 'products/images/product7.jpg' %}" alt="콜라겐">
+            </div>
+            <div class="product-info">
+                <h3 class="product-name">해양콜라겐 펩타이드</h3>
+                <div class="product-rating">
+                    <span class="stars">★★★★★</span>
+                    <span class="rating-text">(4.8)</span>
+                </div>
+                <div class="product-price">
+                    <span class="current-price">₩32,000</span>
+                    <span class="original-price">₩40,000</span>
+                    <span class="discount">20%</span>
+                </div>
+                <div class="product-tags">
+                    <span class="tag">무료배송</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 제품 카드 8 -->
+        <div class="product-card">
+            <div class="product-image">
+                <img src="{% static 'products/images/product8.jpg' %}" alt="루테인">
+            </div>
+            <div class="product-info">
+                <h3 class="product-name">루테인 지아잔틴</h3>
+                <div class="product-rating">
+                    <span class="stars">★★★★☆</span>
+                    <span class="rating-text">(4.5)</span>
+                </div>
+                <div class="product-price">
+                    <span class="current-price">₩25,500</span>
+                </div>
+                <div class="product-tags">
+                    <span class="tag">무료배송</span>
+                    <span class="tag">첫구매할인</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="pagination">
+        <button class="page-btn active">1</button>
+        <button class="page-btn">2</button>
+        <button class="page-btn">3</button>
+        <button class="page-btn">4</button>
+        <button class="page-btn">5</button>
+        <button class="page-btn next">다음 ></button>
+    </div>
+</div>
+{% endblock %}
