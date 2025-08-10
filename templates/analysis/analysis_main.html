@@ -1,0 +1,177 @@
+{% extends 'analysis/analysis_base.html' %}
+{% load static %}
+
+{% block title %}분석 결과 - HEALTHTANT{% endblock %}
+{% block page_title %}분석하기{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'analysis/analysis.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="analysis-result-container">
+
+  <!-- (1) 식품 분류 종합 -->
+  <section class="analysis-card category-summary" id="section1-category">
+    <div class="card-header">
+      <div class="category-title">
+        <span class="emoji" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="17" height="23" viewBox="0 0 17 23" fill="none">
+                <path d="M3.39014 22.3201C3.24457 22.3201 3.12292 22.2613 3.02519 22.1437C2.92746 22.026 2.87859 21.8807 2.87859 21.7075V11.8578C1.95597 11.5768 1.2452 11.0876 0.746301 10.3901C0.248767 9.69265 0 8.83958 0 7.83093V0.880993C0 0.707031 0.0492067 0.561653 0.14762 0.444862C0.246033 0.32807 0.368025 0.269265 0.513595 0.268449C0.659164 0.267632 0.780814 0.326436 0.878544 0.444862C0.976274 0.563287 1.02514 0.708664 1.02514 0.880993V7.21838H2.87859V0.880993C2.87859 0.707031 2.9278 0.561653 3.02621 0.444862C3.12462 0.327253 3.24627 0.268449 3.39116 0.268449C3.53673 0.268449 3.65872 0.327253 3.75713 0.444862C3.85555 0.56247 3.90441 0.707847 3.90373 0.880993V7.21838H5.75718V0.880993C5.75718 0.707031 5.80605 0.561653 5.90378 0.444862C6.00219 0.327253 6.12418 0.268449 6.26975 0.268449C6.41532 0.268449 6.53697 0.327253 6.6347 0.444862C6.73243 0.56247 6.78164 0.707847 6.78232 0.880993V7.83093C6.78232 8.83958 6.53287 9.69265 6.03397 10.3901C5.53643 11.0868 4.82635 11.5764 3.90373 11.859V21.7075C3.90373 21.8815 3.85452 22.0269 3.75611 22.1437C3.6577 22.2604 3.5357 22.3192 3.39014 22.3201ZM12.9916 22.3201C12.846 22.3201 12.724 22.2613 12.6256 22.1437C12.5272 22.026 12.4783 21.8807 12.479 21.7075V11.4523C11.5564 11.0684 10.846 10.3918 10.3478 9.42232C9.84954 8.45286 9.60043 7.27759 9.60043 5.89651C9.60043 4.34636 9.93257 3.02082 10.5969 1.91987C11.2612 0.818922 12.0594 0.268449 12.9916 0.268449C13.9299 0.268449 14.733 0.820147 15.4007 1.92354C16.0684 3.02694 16.4022 4.35371 16.4022 5.90386C16.4022 7.30046 16.15 8.48227 15.6457 9.44927C15.1406 10.4171 14.4268 11.0815 13.5042 11.4425V21.7075C13.5042 21.8815 13.455 22.0269 13.3565 22.1437C13.2581 22.2613 13.1365 22.3201 12.9916 22.3201Z" fill="#7C78F5"/>
+            </svg>
+        </span>
+        <h3 class="card-title">{{ request.user.username }} 님이 드신 식품 분류 종합</h3>
+      </div>
+    </div>
+
+    <p class="category-subtitle">
+      {{ request.user.username }} 님은 총
+      <span class="highlight-green">{{ meal_number }}</span>회의 끼니에서
+      <span class="highlight-red">{{ product_number }}</span>개의 가공식품을 드셨어요.
+    </p>
+
+    <div class="chart-surface">
+      <div class="bar-chart" id="categoryChart"></div>
+    </div>
+
+    <div class="button-group">
+      <a class="btn-secondary" href="/analysis/diets/?start_date={{ start_date }}&end_date={{ end_date }}">
+        더 자세하게 식사 분석하기 →
+      </a>
+    </div>
+
+    {{ category_status|json_script:"category-data" }}
+  </section>
+
+  <!-- (2) 평균 영양소 섭취량 -->
+  <section class="analysis-card" id="avg-nutrients">
+    <div class="card-header">
+      <h3 class="card-title">평균 영양소 섭취량</h3>
+    </div>
+
+    <div class="nutrient-item">
+      <span class="nutrient-name">평균 열량</span>
+      <span class="nutrient-value">{{ avg_calorie_per_day|floatformat:0 }} kcal</span>
+    </div>
+    <div class="nutrient-item">
+      <span class="nutrient-name">평균 탄수화물</span>
+      <span class="nutrient-value">{{ avg_carbohydrate_per_day|floatformat:0 }} g</span>
+    </div>
+    <div class="nutrient-item">
+      <span class="nutrient-name">평균 단백질</span>
+      <span class="nutrient-value">{{ avg_protein_per_day|floatformat:0 }} g</span>
+    </div>
+    <div class="nutrient-item">
+      <span class="nutrient-name">평균 지방</span>
+      <span class="nutrient-value">{{ avg_fat_per_day|floatformat:0 }} g</span>
+    </div>
+    <div class="nutrient-item">
+      <span class="nutrient-name">평균 나트륨</span>
+      <span class="nutrient-value">{{ avg_salt_per_day|floatformat:0 }} mg</span>
+    </div>
+  </section>
+
+  <!-- (3) 기준과 비교 + 평가 -->
+  <section class="analysis-card" id="compare-krda">
+    <div class="card-header">
+      <h3 class="card-title">2020 한국인 영양소 섭취 기준과 비교</h3>
+    </div>
+
+    <div class="mb-md">
+      <div class="nutrient-item">
+        <span class="nutrient-name">필요 에너지 추정량</span>
+        <span>{{ calorie.min|floatformat:0 }} ~ {{ calorie.max|floatformat:0 }} kcal (필수 {{ calorie.essential|floatformat:0 }} kcal)</span>
+      </div>
+      <div class="nutrient-item">
+        <span class="nutrient-name">탄수화물 적정섭취량</span>
+        <span>{{ carbohydrate.min|floatformat:0 }} ~ {{ carbohydrate.max|floatformat:0 }} g (필수 {{ carbohydrate.essential|floatformat:0 }} g)</span>
+      </div>
+      <div class="nutrient-item">
+        <span class="nutrient-name">단백질 권장섭취량</span>
+        <span>{{ protein.min|floatformat:0 }} ~ {{ protein.max|floatformat:0 }} g (필수 {{ protein.essential|floatformat:0 }} g)</span>
+      </div>
+      <div class="nutrient-item">
+        <span class="nutrient-name">지방 적정섭취량</span>
+        <span>{{ fat.min|floatformat:0 }} ~ {{ fat.max|floatformat:0 }} g</span>
+      </div>
+      <div class="nutrient-item">
+        <span class="nutrient-name">나트륨 충분·권고섭취량</span>
+        <span>{{ salt.min|floatformat:0 }} ~ {{ salt.max|floatformat:0 }} mg (필수 {{ salt.essential|floatformat:0 }} mg)</span>
+      </div>
+    </div>
+
+    <div class="mb-sm" style="font-weight:600;">영양소 섭취 평가</div>
+    {% for item in nutrients_evaluation %}
+      <div class="mb-sm">
+        <div class="flex-between">
+          <span style="font-weight:500;">{{ item.name }}</span>
+          <span>{{ item.percentage|floatformat:0 }}%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: {{ item.percentage }}%; background-color: {{ item.color }};"></div>
+        </div>
+        <div style="font-size:12px; color:#666;">{{ item.level }} - {{ item.message }}</div>
+      </div>
+    {% endfor %}
+
+    <div class="button-group">
+      <a class="btn-secondary" href="/analysis/nutrients/?start_date={{ start_date }}&end_date={{ end_date }}">WHO 기준과 비교하기 →</a>
+    </div>
+  </section>
+</div>
+{% endblock %}
+
+{% block navigation %}
+{{ block.super }}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+  const el = document.getElementById('category-data');
+  const target = document.getElementById('categoryChart');
+  if (!el || !target) return;
+
+  let data = [];
+  try { data = JSON.parse(el.textContent || '[]'); } catch (_) {}
+
+  if (!Array.isArray(data) || data.length === 0) {
+    target.innerHTML = '<div class="chart-placeholder">데이터가 부족해요</div>';
+    return;
+    }
+
+  // 상위 6개만 사용 (이미 정렬돼 있다면 그대로, 아니라면 정렬)
+  data = data.sort((a,b) => (b.count||0) - (a.count||0)).slice(0, 6);
+  const max = Math.max(...data.map(d => d.count || 0), 1);
+
+  const frag = document.createDocumentFragment();
+  data.forEach(({ food_category, count }) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'bar-item';
+
+    const track = document.createElement('div');
+    track.className = 'bar-track';
+
+    const fill = document.createElement('div');
+    fill.className = 'bar-fill';
+    const h = Math.round((count / max) * 100);
+    fill.style.height = Math.max(8, h) + '%'; // 최소 8% 보장
+
+    track.appendChild(fill);
+
+    const label = document.createElement('div');
+    label.className = 'bar-label';
+    label.textContent = food_category || '기타';
+
+    wrap.appendChild(track);
+    wrap.appendChild(label);
+    frag.appendChild(wrap);
+  });
+
+  target.innerHTML = '';
+  target.appendChild(frag);
+})();
+</script>
+{% endblock %}
+
+

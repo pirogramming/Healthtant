@@ -318,3 +318,47 @@
 @keyframes spin {
     to { transform: rotate(360deg); }
 }
+
+/* static/analysis/analysis.css - 섹션1(카테고리) 제목 한 줄 처리 */
+.category-summary .category-title{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: nowrap;
+  white-space: nowrap;     /* 줄바꿈 금지 */
+}
+
+.category-summary .category-title .emoji{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.category-summary .category-title .emoji svg{
+  display: block;          /* 베이스라인 여백 제거 */
+  width: 17px;
+  height: 23px;
+}
+
+.category-summary .card-title{
+  margin: 0;
+  white-space: nowrap;     /* 제목도 한 줄 유지 */
+  overflow: hidden;
+  text-overflow: ellipsis; /* 길면 말줄임 */
+}
+
+/* 섹션1 부제 및 강조 색상 */
+.category-summary .category-subtitle{
+  color: #666666;
+  margin: 6px 0 16px;
+  font-family: Inter;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    letter-spacing: 0.24px;
+}
+
+.category-summary .highlight-green{ color:#3CB371; font-weight:800; }
+.category-summary .highlight-red{ color:#E56565; font-weight:800; }
