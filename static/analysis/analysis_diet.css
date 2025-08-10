@@ -1,0 +1,272 @@
+/* ====== 개별 식사 분석 페이지 전용 스타일 ====== */
+
+.meal-detail-container {
+    padding: 0;
+    margin: 0;
+    background-color: #f8f9fa;
+    min-height: 100vh;
+}
+
+/* 뒤로가기 버튼 영역 */
+.back-button-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 20px;
+    background: linear-gradient(180deg, #7C78F5 0%, #7C78F5 100%);
+    color: white;
+    position: relative;
+}
+
+.back-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    color: white;
+    text-decoration: none;
+    transition: background-color 0.2s;
+}
+
+.back-button:hover {
+    background: rgba(255, 255, 255, 0.3);
+    color: white;
+    text-decoration: none;
+}
+
+.page-title {
+    font-family: 'Inter', sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0;
+    color: white;
+}
+
+/* 기간 표시 카드 */
+.period-card {
+    background: white;
+    margin: 20px;
+    padding: 24px;
+    border-radius: 16px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    border: 1px solid #f0f0f0;
+}
+
+.period-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.period-icon {
+    font-size: 20px;
+}
+
+.period-title {
+    font-family: 'Inter', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: #7C78F5;
+    margin: 0;
+}
+
+.period-subtitle {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: #666;
+    margin: 0;
+    margin-left: 32px; /* 아이콘 + gap 만큼 들여쓰기 */
+}
+
+/* 메인 통계 카드 */
+.main-stats-card {
+    background: white;
+    margin: 0 20px 20px;
+    border-radius: 16px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    border: 1px solid #f0f0f0;
+    overflow: hidden;
+}
+
+.stats-content {
+    padding: 24px;
+}
+
+.stats-description {
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    color: #333;
+    margin: 0 0 20px 0;
+    line-height: 1.5;
+}
+
+.highlight-green {
+    color: #4CAF50;
+    font-weight: 700;
+}
+
+.highlight-red {
+    color: #F44336;
+    font-weight: 700;
+}
+
+.stats-detail {
+    margin-top: 20px;
+}
+
+.stats-note {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    color: #999;
+    margin: 0 0 16px 0;
+}
+
+/* 진행률 바 */
+.progress-container {
+    margin-top: 16px;
+}
+
+.progress-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.progress-text {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+}
+
+.progress-fraction {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: #7C78F5;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background-color: #f0f0f0;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #333 0%, #666 100%);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.progress-percentage {
+    text-align: center;
+    font-family: 'Inter', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: #333;
+    margin-top: 8px;
+}
+
+/* 권장사항 박스 */
+.recommendation-box {
+    background: linear-gradient(135deg, #E3F2FD 0%, #F3E5F5 100%);
+    padding: 20px;
+    text-align: center;
+    margin-top: 0;
+}
+
+.recommendation-text {
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+    line-height: 1.4;
+}
+
+/* 상세 분석 카드 */
+.detail-analysis-card {
+    background: white;
+    margin: 0 20px 20px;
+    padding: 24px;
+    border-radius: 16px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    border: 1px solid #f0f0f0;
+}
+
+.detail-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.detail-icon {
+    font-size: 20px;
+}
+
+.detail-title {
+    font-family: 'Inter', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: #7C78F5;
+    margin: 0;
+}
+
+.detail-subtitle {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: #666;
+    margin: 0;
+    margin-left: 32px; /* 아이콘 + gap 만큼 들여쓰기 */
+}
+
+/* 반응형 디자인 */
+@media (max-width: 480px) {
+    .meal-detail-container {
+        padding: 0;
+    }
+    
+    .back-button-container {
+        padding: 16px;
+    }
+    
+    .page-title {
+        font-size: 18px;
+    }
+    
+    .period-card,
+    .main-stats-card,
+    .detail-analysis-card {
+        margin: 16px;
+    }
+    
+    .stats-content {
+        padding: 20px;
+    }
+    
+    .stats-description {
+        font-size: 15px;
+    }
+    
+    .period-title,
+    .detail-title {
+        font-size: 16px;
+    }
+    
+    .recommendation-text {
+        font-size: 15px;
+    }
+}

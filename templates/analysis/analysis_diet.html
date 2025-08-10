@@ -1,0 +1,87 @@
+{% extends 'analysis/analysis_base.html' %}
+{% load static %}
+
+{% block title %}상세 식사 분석 - HEALTHTANT{% endblock %}
+{% block page_title %}상세 식사 분석{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'analysis/analysis.css' %}">
+<link rel="stylesheet" href="{% static 'analysis/analysis_diet.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="meal-detail-container">
+  <!-- 뒤로가기 버튼 -->
+  <div class="back-button-container">
+    <a href="/analysis/result/?start_date={{ start_date }}&end_date={{ end_date }}" class="back-button">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </a>
+    <h1 class="page-title">상세 식사 분석</h1>
+  </div>
+
+  <!-- 기간 표시 카드 -->
+  <div class="period-card">
+    <div class="period-header">
+      <span class="period-icon">📊</span>
+      <h2 class="period-title">{{ username }} 님의 식품분류 종합</h2>
+    </div>
+    <p class="period-subtitle">{{ start_date }} - {{ end_date }}</p>
+  </div>
+
+  <!-- 메인 통계 카드 -->
+  <div class="main-stats-card">
+    <div class="stats-content">
+      <p class="stats-description">
+        {{ username }} 님은 총 <span class="highlight-green">{{ total_meals }}회</span>의 끼니에서
+        <span class="highlight-red">{{ total_products }}개</span>의 가공식품을 드셨어요.
+      </p>
+      
+      <div class="stats-detail">
+        <p class="stats-note">사용자가 등록한 식사 내역 기준</p>
+        
+        <!-- 진행률 바 -->
+        <div class="progress-container">
+          <div class="progress-label">
+            <span class="progress-text">가공식품 포함 끼니</span>
+            <span class="progress-fraction">{{ processed_meals }}/{{ total_meals }} 회</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: {{ progress_percentage }}%;"></div>
+          </div>
+          <div class="progress-percentage">{{ progress_percentage|floatformat:0 }}%</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 권장사항 박스 -->
+    <div class="recommendation-box">
+      <p class="recommendation-text">
+        가공식품을 조금 줄이는 것<br/>
+        좋을 것 같아요! 💪
+      </p>
+    </div>
+  </div>
+
+  <!-- 상세 분석 카드 -->
+  <div class="detail-analysis-card">
+    <div class="detail-header">
+      <span class="detail-icon">📊</span>
+      <h2 class="detail-title">{{ username }} 님이 섭취한 영양 추이</h2>
+    </div>
+    <p class="detail-subtitle">{{ start_date }} - {{ end_date }}</p>
+  </div>
+</div>
+{% endblock %}
+
+{% block navigation %}
+<!-- 네비게이션 제거 -->
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// 필요한 JavaScript 로직 추가
+console.log('Meal detail page loaded');
+</script>
+{% endblock %}
