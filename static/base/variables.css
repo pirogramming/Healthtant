@@ -1,0 +1,91 @@
+/* ====== CSS 변수 정의 ====== */
+:root {
+  /* 색상 변수 */
+  --primary-color: rgba(86, 170, 178, 1);
+  --primary-hover: rgba(76, 160, 168, 1);
+  
+  /* 중성 색상 */
+  --white: rgba(255, 255, 255, 1);
+  --black: rgba(0, 0, 0, 1);
+  --gray-100: rgba(185, 186, 189, 1);
+  --gray-50: rgba(232, 233, 234, 1);
+  --gray-border: rgba(248, 248, 248, 1);
+  
+  /* 상태 색상 */
+  --good-color: rgba(210, 255, 212, 1);
+  --normal-color: rgba(255, 238, 210, 1);
+  --bad-color: rgba(255, 210, 210, 1);
+  --normal-icon: rgba(178, 120, 86, 1);
+  --bad-icon: rgba(178, 86, 88, 1);
+  
+  /* 타이포그래피 */
+  --font-primary: "Satoshi", Helvetica, Arial, sans-serif;
+  --font-title: "Koulen", Helvetica, Arial, sans-serif;
+  --font-nav: "Roboto", Helvetica, Arial, sans-serif;
+  
+  /* 폰트 크기 */
+  --font-size-base: 16px;
+  --font-size-sm: 12px;
+  --font-size-lg: 40px;
+  --font-size-title: 18px;
+  
+  /* 간격 */
+  --spacing-xs: 5px;
+  --spacing-sm: 10px;
+  --spacing-md: 16px;
+  --spacing-lg: 20px;
+  --spacing-xl: 37px;
+  
+  /* 보더 반지름 */
+  --border-radius-sm: 10px;
+  --border-radius-md: 20px;
+  --border-radius-lg: 100px;
+  --border-radius-full: 50%;
+  
+  /* 그림자 */
+  --shadow-light: 0px 2px 14px rgba(183, 180, 180, 0.1);
+  --shadow-medium: 0px 4px 20px rgba(183, 180, 180, 0.6);
+  --shadow-heavy: 0px 6px 40px -10px rgba(64, 72, 82, 0.15);
+  
+  /* Z-index */
+  --z-header: 100;
+  --z-nav: 20;
+  --z-modal: 1000;
+
+  /* 기존 호환성을 위한 변수들 */
+  --neutralslate-blackslate-black-100: var(--gray-100);
+  --neutralwhitepure-white: var(--white);
+  --neutralslate-blackslate-black-50: var(--gray-50);
+  --body-base-regular-font-family: var(--font-primary);
+  --body-base-regular-font-weight: 400;
+  --body-base-regular-font-size: var(--font-size-base);
+  --body-base-regular-letter-spacing: -0.18000000715255737px;
+  --body-base-regular-line-height: 22px;
+  --body-base-regular-font-style: normal;
+  --main: var(--primary-color);
+  --good: var(--good-color);
+  --normal: var(--normal-color);
+  --bad: var(--bad-color);
+  --colors-labels-primary: var(--black);
+}
+
+/* 다크모드 지원 */
+[data-colors-mode="light"] {
+  --text-primary: var(--black);
+  --bg-primary: var(--white);
+  --colors-labels-primary: var(--black);
+}
+
+[data-colors-mode="dark"] {
+  --text-primary: var(--white);
+  --bg-primary: var(--black);
+  --colors-labels-primary: var(--white);
+}
+
+[data-colors-mode="[C-light]"] {
+  --colors-labels-primary: var(--black);
+}
+
+[data-colors-mode="[C-dark]"] {
+  --colors-labels-primary: var(--white);
+}

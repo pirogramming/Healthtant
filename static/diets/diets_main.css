@@ -305,7 +305,7 @@ body {
     
     .add-today-text {
         font-size: 14px;
-        color: var(--main-color);
+        color: var(—main-color);
         font-weight: 500;
         line-height: 1.2;
     }

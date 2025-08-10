@@ -10,6 +10,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Koulen&display=swap" rel="stylesheet">
+    <!-- 새로운 CSS 구조 -->
+    <link rel="stylesheet" href="{% static 'base/variables.css' %}">
+    <link rel="stylesheet" href="{% static 'base/base.css' %}">
     <link rel="stylesheet" href="{% static 'accounts/signup.css' %}">
 </head>
 <body>
@@ -44,7 +47,7 @@
                 {% csrf_token %}
                 
                 <div class="form-group">
-                    <label class="form-label">이름</label>
+                    <label class="form-label">닉네임</label>
                     <input 
                         type="text" 
                         class="input-field" 

@@ -6,6 +6,6 @@ urlpatterns = [
     path('', views.diet_main),
     path('list/', views.diet_list),
     path('search/', views.diet_search),
-    path('<str:food_id>/', views.diet_create),
-    path('<str:diet_id>/', views.diet_update),
+    path('<uuid:diet_id>/', views.diet_update),
+    path('<uuid:food_id>/', views.diet_create),
 ]
