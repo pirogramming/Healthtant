@@ -126,7 +126,6 @@
 /* ====== 분석 결과 페이지 공통 스타일 ====== */
 
 .analysis-result-container {
-    padding: var(--spacing-md);
     max-width: 100%;
 }
 
@@ -154,6 +153,8 @@
     background: #FFF;
     box-shadow: 0 6px 4px 0 rgba(142, 142, 142, 0.25);
     margin-bottom: 40px;
+    padding: 15px;
+    flex-shrink: 0;
 }
 
 .card-header {
@@ -279,6 +280,89 @@
     font-size: 14px;
 }
 
+/* 데이터 부족 메시지 스타일 */
+.no-data-message {
+    text-align: center;
+    color: #999;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    padding: 8px;
+    background: rgba(153, 153, 153, 0.1);
+    border-radius: 8px;
+}
+
+/* 섹션 1 차트 스타일 */
+.chart-surface {
+    margin: 20px 0;
+}
+
+.bar-chart {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+    height: 200px;
+    padding: 20px;
+    border-radius: 12px;
+    position: relative;
+    background: var(--White, #FFF);
+    border: 1px solid #E8E8E8;
+    
+}
+
+.bar-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    max-width: 80px;
+}
+
+.bar-track {
+    width: 16px;
+    height: 140px;
+    background: #F0F0F0;
+    border-radius: 8px;
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+.bar-fill {
+    width: 100%;
+    background: #56AAB2;
+    border-radius: 8px;
+    min-height: 8px;
+    transition: all 0.6s ease;
+    position: absolute;
+    bottom: 0;
+}
+
+.bar-label {
+    margin-top: 10px;
+    text-align: center;
+    color: var(--Gray-04, #666);
+    text-align: right;
+    font-family: Inter;
+    font-size: 10px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+
+/* 빈 막대 차트 스타일 */
+.empty-bar {
+    fill: #F0F0F0;
+    border-radius: 8px;
+}
+
+.empty-fill {
+    background: transparent !important;
+    border: none;
+    min-height: 0 !important;
+}
+
 /* ====== 버튼 그룹 스타일 ====== */
 .button-group {
     display: flex;
@@ -397,11 +481,15 @@ a{
 
 /* 영양소 박스 (라운드 테두리) */
 .avg-nutrients-card .nutrients-box{
-  background: #F8FEFF;
   border: 2px solid #56AAB2;
   border-radius: 20px;
   padding: 20px 18px;
   margin: 16px 0;
+}
+
+.avg-nutrients-card {
+    filter: drop-shadow(0 0 4px rgba(86, 170, 178, 0.50));
+
 }
 
 .avg-nutrients-card .nutrients-header{
@@ -429,26 +517,273 @@ a{
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 0;
+  padding: 6px 0;
   border-bottom: none;
 }
 
 .avg-nutrients-card .nutrient-name{
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 500;
+  font-family: Inter;
   color: #333;
 }
 
 .avg-nutrients-card .nutrient-value{
-  font-size: 16px;
-  font-weight: 700;
-  color: #56AAB2;
+    color: #000;
+    text-align: right;
+    font-family: Inter;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    letter-spacing: 0.24px;
 }
 
-/* 하단 주석 */
+/* 하단 주석 - 라운드 탭 스타일 */
 .avg-nutrients-card .section2-note{
-  font-size: 11px;
+  background: #F0F0F0;
+  padding: 10px 10px;
+  margin: 10px 0 23px;
+  color: #B7B5B5;
+
+    text-align: center;
+    font-family: Inter;
+    font-size: 7.5px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    letter-spacing: -0.16px;
+}
+
+/* Section 3 - 2020 한국인 영양소 섭취 기준과 비교 */
+.compare-krda-card .section3-title{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.compare-krda-card .section3-icon{
+  font-size: 20px;
+}
+
+.compare-krda-card .section3-subtitle{
+  color: #666;
+  margin: 8px 0 18px;
+  font-family: Inter;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.24px;
+}
+
+/* 차트 컨테이너 */
+.compare-krda-card .krda-chart-container{
+  width: 100%;
+  height: 200px;
+  
+  margin: 16px 0;
+  
+}
+
+.compare-krda-card .krda-chart{
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.compare-krda-card .chart-grid{
+  display: flex;
+  height: 100%;
+}
+
+.compare-krda-card .y-axis{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-end;
+  width: 30px;
+  margin-right: 10px;
+  height: 190px;
+}
+
+.compare-krda-card .y-label{
+  font-size: 10px;
   color: #999;
-  margin: 16px 0 8px;
-  line-height: 1.4;
+  font-weight: 500;
+  line-height: 1;
+  font-family: Inter;
+}
+
+.compare-krda-card .bars-container{
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  height: 215px;
+  position: relative;
+  padding: 0 10px;
+}
+
+
+
+.compare-krda-card .bar-wrapper{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  justify-content: flex-end;
+  flex: 1;
+  max-width: 60px;
+}
+
+.compare-krda-card .bar-track-bg{
+  width: 45px;
+  height: 215px;
+  background: transparent;
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.compare-krda-card .bar-fill-krda{
+  width: 100%;
+  background: #56AAB2;
+  border-radius: 4px 4px 0 0;
+  min-height: 0;
+  max-height: 140px;
+  transition: all 0.6s ease;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.compare-krda-card .bar-label-krda{
+  font-size: 11px;
+  color: #333;
+  font-weight: 600;
+  margin-top: 8px;
+  text-align: center;
+  font-family: Inter;
+  white-space: nowrap;
+}
+
+/* 권장량 박스 */
+.compare-krda-card .krda-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    font-family: Inter;
+    font-style: normal;
+
+    line-height: normal;
+    letter-spacing: 0.28px;
+}
+
+.compare-krda-card .krda-header{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.compare-krda-card .krda-dot{
+  width: 12px;
+  height: 12px;
+  background: #56AAB2;
+  border-radius: 50%;
+}
+
+.compare-krda-card .krda-label{
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.compare-krda-card .krda-item{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+}
+
+.compare-krda-card .krda-name{
+  font-size: 13px;
+  font-weight: 500;
+  color: #333;
+  font-family: Inter;
+}
+
+.compare-krda-card .krda-value{
+  font-size: 12px;
+  font-weight: 400;
+  color: #000;
+  font-family: Inter;
+}
+
+/* 섹션 구분선 */
+.compare-krda-card .section-divider {
+  width: 100%;
+  height: 1px;
+  background: #E8E8E8;
+  margin: 25px 0;
+  border: none;
+}
+
+/* 영양소 섭취 평가 */
+.compare-krda-card .krda-evaluation{
+  margin: 20px 0;
+}
+
+.compare-krda-card .krda-eval-header{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.compare-krda-card .krda-eval-dot{
+  width: 12px;
+  height: 12px;
+  background: #56AAB2;
+  border-radius: 50%;
+}
+
+.compare-krda-card .krda-eval-label{
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.compare-krda-card .evaluation-item{
+  margin-bottom: 16px;
+}
+
+.compare-krda-card .eval-row{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.compare-krda-card .eval-name{
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.compare-krda-card .eval-percentage{
+  color: white;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.compare-krda-card .eval-message{
+  font-size: 11px;
+  color: #666;
+  margin: 0;
+  line-height: 1.3;
 }
