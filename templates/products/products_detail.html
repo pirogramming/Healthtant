@@ -1,27 +1,47 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" data-colors-mode="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{ product.food_name }} - Healthtant</title>
+  <meta name="csrf-token" content="{{ csrf_token }}">
+  
+  <!-- 폰트 로드 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Koulen&family=Satoshi:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <!-- 기본 CSS 구조 -->
+  <link rel="stylesheet" href="{% static 'base/variables.css' %}">
+  <link rel="stylesheet" href="{% static 'base/base.css' %}">
   <link rel="stylesheet" href="{% static 'products/product_detail.css' %}">
 </head>
 <body>
-<div class="product-container">
-  <!-- 헤더 -->
-  <header class="product-header">
-    <button class="back-btn" onclick="history.back()">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-        <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-    </button>
-    <button class="share-btn">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-        <path d="M18 8C19.6569 8 21 6.65685 21 5C21 3.34315 19.6569 2 18 2C16.3431 2 15 3.34315 15 5C15 5.58835 15.1978 6.1264 15.5357 6.56066L8.46434 10.5607C8.1264 10.1978 7.58835 10 7 10C5.34315 10 4 11.3431 4 13C4 14.6569 5.34315 16 7 16C7.58835 16 8.1264 15.8022 8.46434 15.4393L15.5357 19.4393C15.1978 19.8736 15 20.4117 15 21C15 22.6569 16.3431 24 18 24C19.6569 24 21 22.6569 21 21C21 19.3431 19.6569 18 18 18C17.4117 18 16.8736 18.1978 16.4393 18.5357L9.36066 14.5357C9.69822 14.1264 9.9 13.5883 9.9 13C9.9 12.4117 9.69822 11.8736 9.36066 11.4393L16.4393 7.43934C16.8736 7.80218 17.4117 8 18 8Z" fill="currentColor"/>
-      </svg>
-    </button>
-  </header>
+<div class="screen">
+  <div class="view">
+    <!-- 헤더 영역 -->
+    <header class="app-header">
+      <div class="status-bar"></div>
+      
+      <!-- 뒤로가기 버튼 + 제목 -->
+      <div class="header-nav">
+        <button class="back-button" onclick="history.back()" aria-label="뒤로가기">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M15 18L9 12L15 6" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <h1 class="page-title">{{ product.food_name }}</h1>
+        <button class="share-btn">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M18 8C19.6569 8 21 6.65685 21 5C21 3.34315 19.6569 2 18 2C16.3431 2 15 3.34315 15 5C15 5.58835 15.1978 6.1264 15.5357 6.56066L8.46434 10.5607C8.1264 10.1978 7.58835 10 7 10C5.34315 10 4 11.3431 4 13C4 14.6569 5.34315 16 7 16C7.58835 16 8.1264 15.8022 8.46434 15.4393L15.5357 19.4393C15.1978 19.8736 15 20.4117 15 21C15 22.6569 16.3431 24 18 24C19.6569 24 21 22.6569 21 21C21 19.3431 19.6569 18 18 18C17.4117 18 16.8736 18.1978 16.4393 18.5357L9.36066 14.5357C9.69822 14.1264 9.9 13.5883 9.9 13C9.9 12.4117 9.69822 11.8736 9.36066 11.4393L16.4393 7.43934C16.8736 7.80218 17.4117 8 18 8Z" fill="currentColor"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- 메인 컨텐츠 -->
+    <main class="product-content">
 
   <!-- 제품 이미지 -->
   <div class="product-image">
@@ -108,7 +128,8 @@
     <!-- 구분선 -->
     <div class="section-divider"></div>
 
-    <!-- 건강 정보 -->
+    <!-- 건강 정보 --> 
+    {% comment %} 여기부분 어떻게 수정해야할지 고민입니다.. js로 해볼까요? {% endcomment %}
     <div class="health-info">
       <div class="health-group good">
         <div class="health-item">
@@ -126,29 +147,305 @@
           <span class="health-text">이 제품은 <span class="highlight">나트륨이 많은</span> 제품입니다.</span>
         </div>
       </div>
-    </div>
+  </div>
 
     <!-- 구분선 -->
     <div class="section-divider"></div>
 
-    <!-- 상세 정보 페이지 링크 -->
-    <div class="detail-link">
-      <span class="detail-text">상세 정보 페이지</span>
+    <!-- 상세 정보 페이지 -->
+    <div class="detail-section">
+      <h3 class="detail-title">상세 정보 페이지</h3>
+      
+      <!-- 영양소 테이블 -->
+      <div class="nutrition-table-container">
+        <div class="nutrition-table">
+          <div class="nutrition-row">
+            <span class="nutrition-name">열량</span>
+            <span class="nutrition-amount">{{ product.calorie|floatformat:0 }}kcal</span>
+          </div>
+          
+          <div class="nutrition-row divider">
+            <span class="nutrition-name">단백질</span>
+            <span class="nutrition-amount">{{ product.protein|floatformat:0 }}g</span>
+          </div>
+          
+          <div class="nutrition-row divider">
+            <span class="nutrition-name">지방</span>
+            <span class="nutrition-amount">{{ product.fat|floatformat:0 }}g</span>
+          </div>
+          
+          <div class="nutrition-row divider">
+            <span class="nutrition-name">탄수화물</span>
+            <span class="nutrition-amount">{{ product.carbohydrate|floatformat:0 }}g</span>
+          </div>
+          
+          <div class="nutrition-row divider">
+            <span class="nutrition-name">나트륨</span>
+            <span class="nutrition-amount">{{ product.sodium|floatformat:0 }}mg</span>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- 하단 버튼 -->
-  <div class="bottom-actions">
-    <form method="post" action="{% url 'products:product-like' product.food_id %}" class="favorite-form">
-      {% csrf_token %}
-      <button type="submit" class="favorite-btn {% if product.is_favorite %}active{% endif %}">
+    </main>
+    
+    <!-- 하단 버튼 -->
+    <div class="bottom-actions">
+      <button id="favoriteBtn" class="favorite-btn {% if product.is_favorite %}active{% endif %}" data-product-id="{{ product.food_id }}" data-is-favorite="{{ product.is_favorite|yesno:'true,false' }}">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
           <path d="M20.84 4.61C20.3292 4.099 19.7228 3.69364 19.0554 3.41708C18.3879 3.14052 17.6725 2.99817 16.95 2.99817C16.2275 2.99817 15.5121 3.14052 14.8446 3.41708C14.1772 3.69364 13.5708 4.099 13.06 4.61L12 5.67L10.94 4.61C9.9083 3.5783 8.50903 2.9987 7.05 2.9987C5.59096 2.9987 4.19169 3.5783 3.16 4.61C2.1283 5.6417 1.5487 7.04097 1.5487 8.5C1.5487 9.95903 2.1283 11.3583 3.16 12.39L12 21.23L20.84 12.39C21.351 11.8792 21.7563 11.2728 22.0329 10.6053C22.3095 9.93789 22.4518 9.22248 22.4518 8.5C22.4518 7.77752 22.3095 7.06211 22.0329 6.39467C21.7563 5.72723 21.351 5.12087 20.84 4.61V4.61Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-    </form>
-    <button class="add-meal-btn">식사로 등록하기</button>
+      <button class="add-meal-btn">식사로 등록하기</button>
+    </div>
   </div>
 </div>
+
+<script>
+// 사용자별 맞춤형 영양소 기준값 계산
+function calculateUserStandards() {
+  // 사용자 정보 (로그인한 경우에만 사용 가능)
+  {% if user.is_authenticated and user.profile %}
+    const userAge = {{ user.profile.user_age|default:25 }};
+    const userGender = '{{ user.profile.user_gender|default:"M" }}';
+  {% else %}
+    const userAge = 25; // 기본값
+    const userGender = 'M'; // 기본값
+  {% endif %}
+  
+  // 나이 범위별 인덱스 찾기
+  const ageIntervals = [[1,2], [3,5], [6,8], [9,11], [12,14], [15,18], [19,29], [30,49], [50,64], [65,74], [75,150]];
+  let ageIndex = 6; // 기본값 (19-29세)
+  
+  for (let i = 0; i < ageIntervals.length; i++) {
+    const [start, end] = ageIntervals[i];
+    if (userAge >= start && userAge <= end) {
+      ageIndex = i;
+      break;
+    }
+  }
+  
+  // 에너지 필요추정량 표 (kcal) - [남성, 여성]
+  const eerTable = [[900, 900], [1400, 1400], [1700, 1500], [2000, 1800], [2500, 2100], [2700, 2000], [2600, 2000], [2600, 2000], [2400, 1900], [2200, 1800], [2000, 1600]];
+  
+  // 단백질 권장섭취량 (g) - [남성, 여성]
+  const proteinTable = [[15, 15], [20, 20], [30, 25], [40, 35], [55, 45], [60, 50], [60, 50], [60, 50], [60, 50], [60, 50], [60, 50]];
+  
+  // 나트륨 충분섭취량 (mg)
+  const minSaltTable = [810, 1000, 1200, 1500, 1500, 1500, 1500, 1500, 1500, 1300, 1100];
+  
+  // 나트륨 만성질환 위험감소 섭취량 (mg)
+  const maxSaltTable = [1200, 1600, 1900, 2300, 2300, 2300, 2300, 2300, 2300, 2300, 1700];
+  
+  // 기본 칼로리 계산
+  const recommendCalorie = userGender === 'M' ? eerTable[ageIndex][0] : eerTable[ageIndex][1];
+  
+  return {
+    calorie: {
+      min: Math.round(recommendCalorie * 0.9),
+      max: Math.round(recommendCalorie * 1.1),
+      essential: Math.round(recommendCalorie * 0.8)
+    },
+    protein: {
+      min: Math.round(recommendCalorie * 0.07 / 4),
+      max: Math.round(recommendCalorie * 0.2 / 4),
+      essential: userGender === 'M' ? proteinTable[ageIndex][0] : proteinTable[ageIndex][1]
+    },
+    fat: {
+      min: Math.round(recommendCalorie * 0.15 / 9),
+      max: Math.round(recommendCalorie * 0.3 / 9)
+    },
+    carbohydrate: {
+      min: Math.round(recommendCalorie * 0.55 / 4),
+      max: Math.round(recommendCalorie * 0.65 / 4),
+      essential: 130
+    },
+    sodium: {
+      min: minSaltTable[ageIndex],
+      max: maxSaltTable[ageIndex],
+      essential: minSaltTable[ageIndex]
+    }
+  };
+}
+
+// 사용자별 영양소 기준값
+const NUTRITION_STANDARDS = calculateUserStandards();
+
+// 영양소 수준 평가 함수 (3단계: good, bad, natural)
+function evaluateNutrient(value, standard) {
+  // 너무 낮거나 높으면 bad
+  if (value < standard.min * 0.8 || value > standard.max * 1.2) {
+    return { level: value < standard.min * 0.8 ? '부족' : '과다', type: 'bad' };
+  }
+  // 적정 범위이면 good
+  else if (value >= standard.min && value <= standard.max) {
+    return { level: '적정', type: 'good' };
+  }
+  // 그 외에는 natural (중간 단계)
+  else {
+    return { level: '보통', type: 'natural' };
+  }
+}
+
+// 메시지 생성 함수 (3단계용)
+function generateMessage(nutrientName, evaluation) {
+  const messages = {
+    '부족': `${nutrientName}이 부족합니다`,
+    '적정': `${nutrientName}이 적정합니다`,
+    '과다': `${nutrientName}이 과다합니다`,
+    '보통': `${nutrientName} 수준이 보통입니다`
+  };
+  return messages[evaluation.level] || `${nutrientName} 수준을 확인해주세요.`;
+}
+
+// 동적 건강 정보 생성
+function generateHealthInfo() {
+  // 현재 제품 데이터 가져오기
+  const calorie = {{ product.calorie|floatformat:0 }};
+  const protein = {{ product.protein|floatformat:0 }};
+  const fat = {{ product.fat|floatformat:0 }};
+  const carbohydrate = {{ product.carbohydrate|floatformat:0 }};
+  const sodium = {{ product.sodium|floatformat:0 }};
+
+  const nutrients = {
+    '열량': { value: calorie, standard: NUTRITION_STANDARDS.calorie },
+    '단백질': { value: protein, standard: NUTRITION_STANDARDS.protein },
+    '지방': { value: fat, standard: NUTRITION_STANDARDS.fat },
+    '탄수화물': { value: carbohydrate, standard: NUTRITION_STANDARDS.carbohydrate },
+    '나트륨': { value: sodium, standard: NUTRITION_STANDARDS.sodium }
+  };
+
+  const healthInfoContainer = document.querySelector('.health-info');
+  let goodItems = [];
+  let badItems = [];
+
+  let naturalItems = [];
+  
+  // 각 영양소 평가
+  Object.entries(nutrients).forEach(([name, data]) => {
+    const evaluation = evaluateNutrient(data.value, data.standard);
+    const message = generateMessage(name, evaluation);
+    
+    if (evaluation.type === 'good') {
+      goodItems.push(`이 제품은 <span class="highlight">${name}이 적정한</span> 제품입니다.`);
+    } else if (evaluation.type === 'bad') {
+      badItems.push(`이 제품은 <span class="highlight">${name}이 ${evaluation.level}</span> 제품입니다.`);
+    } else if (evaluation.type === 'natural') {
+      naturalItems.push(`이 제품은 <span class="highlight">${name}이 보통인</span> 제품입니다.`);
+    }
+  });
+
+  // HTML 생성 (3단계: GOOD, BAD, NATURAL)
+  let html = '';
+  
+  if (goodItems.length > 0) {
+    html += `
+      <div class="health-group good">
+        <div class="health-item">
+          <span class="health-badge">GOOD</span>
+          <span class="health-text">${goodItems[0]}</span>
+        </div>
+        ${goodItems.slice(1).map(item => `<div class="health-item indent"><span class="health-text">${item}</span></div>`).join('')}
+      </div>
+    `;
+  }
+  
+  if (naturalItems.length > 0) {
+    html += `
+      <div class="health-group natural">
+        <div class="health-item">
+          <span class="health-badge">NATURAL</span>
+          <span class="health-text">${naturalItems[0]}</span>
+        </div>
+        ${naturalItems.slice(1).map(item => `<div class="health-item indent"><span class="health-text">${item}</span></div>`).join('')}
+      </div>
+    `;
+  }
+  
+  if (badItems.length > 0) {
+    html += `
+      <div class="health-group bad">
+        <div class="health-item">
+          <span class="health-badge">BAD</span>
+          <span class="health-text">${badItems[0]}</span>
+        </div>
+        ${badItems.slice(1).map(item => `<div class="health-item indent"><span class="health-text">${item}</span></div>`).join('')}
+      </div>
+    `;
+  }
+
+  if (html) {
+    healthInfoContainer.innerHTML = html;
+  } else {
+    healthInfoContainer.innerHTML = '<div class="health-item"><span class="health-text">이 제품의 영양 정보를 분석 중입니다.</span></div>';
+  }
+}
+
+// AJAX 좋아요 기능
+function toggleFavorite() {
+  const favoriteBtn = document.getElementById('favoriteBtn');
+  const productId = favoriteBtn.getAttribute('data-product-id');
+  const isFavorite = favoriteBtn.getAttribute('data-is-favorite') === 'true';
+  
+  // 버튼 비활성화 (중복 클릭 방지)
+  favoriteBtn.disabled = true;
+  
+  // CSRF 토큰 가져오기
+  const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
+                   document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+  
+  fetch(`/products/${productId}/like/`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': csrfToken,
+      'X-Requested-With': 'XMLHttpRequest'
+    },
+    credentials: 'same-origin'
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('네트워크 오류가 발생했습니다.');
+    }
+    return response.json();
+  })
+  .then(data => {
+    // UI 업데이트
+    if (data.is_favorite) {
+      favoriteBtn.classList.add('active');
+      favoriteBtn.setAttribute('data-is-favorite', 'true');
+    } else {
+      favoriteBtn.classList.remove('active');
+      favoriteBtn.setAttribute('data-is-favorite', 'false');
+    }
+    
+    // 성공 메시지 (선택사항)
+    // console.log(data.is_favorite ? '좋아요 추가!' : '좋아요 취소!');
+  })
+  .catch(error => {
+    console.error('좋아요 처리 오류:', error);
+    // 에러 메시지 표시 (선택사항)
+    // alert('좋아요 처리 중 오류가 발생했습니다.');
+  })
+  .finally(() => {
+    // 버튼 재활성화
+    favoriteBtn.disabled = false;
+  });
+}
+
+// 페이지 로드 시 실행
+document.addEventListener('DOMContentLoaded', function() {
+  // 건강 정보 생성
+  generateHealthInfo();
+  
+  // 좋아요 버튼 이벤트 리스너 추가
+  const favoriteBtn = document.getElementById('favoriteBtn');
+  if (favoriteBtn) {
+    favoriteBtn.addEventListener('click', toggleFavorite);
+  }
+});
+</script>
+
 </body>
 </html>
