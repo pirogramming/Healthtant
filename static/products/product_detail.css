@@ -1,63 +1,351 @@
-/* 래퍼 */
-.pd-wrap { padding-bottom:112px; font-family:'Noto Sans KR',system-ui,-apple-system,Segoe UI,Roboto,sans-serif; }
+/* 제품 상세 페이지 스타일 */
 
-/* 히어로 */
-.pd-hero{ position:relative; background:#fff; }
-.pd-image{ width:100%; display:block; object-fit:cover; aspect-ratio:16/10; }
-.icon-btn{ position:absolute; top:16px; left:16px; width:36px; height:36px; border:none; border-radius:999px; background:rgba(255,255,255,.7); backdrop-filter:blur(4px); cursor:pointer; }
-.icon-btn::before{ content:''; display:block; width:100%; height:100%; background:#333; mask:no-repeat center / 18px 18px url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24'%3E%3Cpath fill='%23000' d='M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z'/%3E%3C/svg%3E"); }
-
-/* 카드 공통 */
-.pd-card{ background:#fff; border-radius:16px; box-shadow:0 2px 10px rgba(0,0,0,.06); padding:16px; margin:12px 16px; }
-
-/* 타이틀 */
-.pd-head{ display:flex; justify-content:space-between; align-items:flex-end; gap:12px; }
-.pd-title{ font-size:20px; font-weight:700; line-height:1.35; margin:0; }
-
-/* 칩 */
-.pd-chips{ display:grid; grid-template-columns:repeat(5,1fr); gap:8px; margin:14px 0 6px; padding:0; list-style:none; }
-.chip{ background:#F6F7F8; border-radius:10px; padding:10px 8px; text-align:center; }
-.chip-txt{ display:block; font-size:12px; color:#666; }
-.chip-sub{ display:block; font-size:12px; font-weight:700; color:#333; margin-top:2px; }
-
-/* 상세표 */
-.sec-title{ font-size:15px; font-weight:700; margin:0 0 10px; }
-.pd-nutrition .nutri-list{ display:grid; grid-template-columns:1fr auto; row-gap:10px; column-gap:16px; margin:0; }
-.pd-nutrition .nutri-list>div{ display:contents; }
-.pd-nutrition dt{ color:#666; }
-.pd-nutrition dd{ margin:0; font-weight:600; }
-
-/* 하단 CTA */
-.fav-btn{ width:48px; height:48px; border-radius:12px; border:1px solid #E0E0E0; background:#fff; font-size:20px; cursor:pointer; }
-.fav-btn.on{ background:#FFE8EC; border-color:#FF9BB0; }
-.primary-btn{ flex:1; height:48px; border-radius:12px; border:none; background:#56AAB2; color:#fff; font-weight:700; font-size:16px; cursor:pointer; }
-
-/* 전체 컨테이너: 모바일은 꽉 차게, 데스크톱에선 402×874 캔버스 */
-.pd-container{
-  width: 100%;
-  max-width: 402px;     /* 가로 캔버스 */
-  min-height: 874px;    /* 세로 기본값 */
-  margin: 0 auto;
-  background: #fff;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between; /* CTA가 아래에 붙도록 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-/* CTA를 컨테이너 안에서 고정 */
-.pd-cta{
-  position: sticky;     /* fixed → sticky */
-  bottom: 0;
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: #f5f5f5;
+  color: #333;
+}
+
+.product-container {
+  max-width: 390px;
+  margin: 0 auto;
+  background-color: white;
+  min-height: 100vh;
+  position: relative;
+}
+
+/* 헤더 */
+.product-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 50px 20px 20px;
+}
+
+.back-btn,
+.share-btn {
+  width: 44px;
+  height: 44px;
+  border: none;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+}
+
+.back-btn:hover,
+.share-btn:hover {
+  background: rgba(255, 255, 255, 1);
+}
+
+/* 제품 이미지 */
+.product-image {
   width: 100%;
-  background: #fff;
-  padding: 12px 16px;
+  height: 400px;
+  overflow: hidden;
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.product-image img {
+  width: 280px;
+  height: 280px;
+  object-fit: contain;
+  border-radius: 20px;
+}
+
+/* 제품 정보 */
+.product-info {
+  padding: 24px 20px;
+  background: white;
+  border-radius: 24px 24px 0 0;
+  margin-top: -24px;
+  position: relative;
+  z-index: 5;
+}
+
+/* 브랜드 태그 */
+.brand-tag {
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  background-color: #56AAB2;
+  color: white;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+/* 제품명과 가격 */
+.product-title-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 32px;
+}
+
+.product-name {
+  font-size: 20px;
+  font-weight: 700;
+  color: #333;
+  line-height: 1.3;
+  flex: 1;
+  margin-right: 16px;
+}
+
+.product-price {
+  color: #525252;
+  font-family: Inter;
+  font-size: 36px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+
+.currency {
+  font-size: 14px;
+  font-weight: 500;
+  color: #666;
+  margin-left: 2px;
+}
+
+/* 영양 정보 아이콘 */
+.nutrition-icons {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  padding: 0 8px;
+}
+
+.nutrition-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  flex: 1;
+}
+
+.nutrition-icon {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  border: 1px solid #56AAB2;
+  background: #FFF;
+  box-shadow: 0 3px 6px 0 rgba(181, 181, 181, 0.25);
+}
+
+.nutrition-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.nutrition-label {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 2px;
+  color: var(--Gray-3, #828282);
+  font-family: Inter;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+
+.nutrition-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  text-align: center;
+  font-family: Inter;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+}
+
+/* 구분선 */
+.section-divider {
+  height: 1px;
+  background-color: #E5E5E5;
+  margin: 24px 0;
+}
+
+/* 건강 정보 */
+.health-info {
+  margin-bottom: 32px;
+}
+
+.health-group {
+  margin-bottom: 16px;
+}
+
+.health-group:last-child {
+  margin-bottom: 0;
+}
+
+.health-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.health-item:last-child {
+  margin-bottom: 0;
+}
+
+.health-badge {
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-right: 12px;
+  min-width: 44px;
+  text-align: center;
+}
+
+.health-group.good .health-badge {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.health-group.bad .health-badge {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.health-text {
+  color: #666;
+}
+
+.highlight {
+  color: #56AAB2;
+  font-weight: 600;
+}
+
+/* 상세 정보 링크 */
+.detail-link {
+  padding: 16px 0;
+  border-top: 1px solid #f0f0f0;
+  margin-bottom: 20px;
+}
+
+.detail-text {
+  color: #666;
+  font-size: 14px;
+}
+
+/* 하단 버튼 */
+.bottom-actions {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 390px;
+  padding: 16px 20px 32px;
+  background: white;
+  border-top: 1px solid #f0f0f0;
   display: flex;
   gap: 12px;
   align-items: center;
-  box-shadow: 0 -6px 20px rgba(0,0,0,.08);
 }
 
-/* (선택) 화면이 402px보다 좁을 때도 자연스럽게 보이게 */
-@media (max-width: 402px){
-  .pd-container{ min-height: 100dvh; } /* 기기뷰포트 꽉 채움 */
+.favorite-form {
+  flex-shrink: 0;
+}
+
+.favorite-btn {
+  width: 52px;
+  height: 52px;
+  border: 2px solid #e0e0e0;
+  background: white;
+  border-radius: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.favorite-btn:hover {
+  border-color: #ff6b6b;
+}
+
+.favorite-btn.active {
+  border-color: #ff6b6b;
+  background: #ff6b6b;
+  color: white;
+}
+
+.favorite-btn.active svg path {
+  fill: white;
+  stroke: white;
+}
+
+.add-meal-btn {
+  flex: 1;
+  height: 52px;
+  background: #56AAB2;
+  color: white;
+  border: none;
+  border-radius: 26px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.add-meal-btn:hover {
+  background: #4a9aa0;
+}
+
+/* 컨테이너 하단 여백 (하단 버튼 공간 확보) */
+.product-info {
+  padding-bottom: 120px;
+}
+
+/* 반응형 */
+@media (max-width: 390px) {
+  .product-container {
+    max-width: 100%;
+  }
+  
+  .bottom-actions {
+    max-width: 100%;
+  }
+}
+
+@media (max-height: 700px) {
+  .product-image {
+    height: 300px;
+  }
+  
+  .product-image img {
+    width: 200px;
+    height: 200px;
+  }
 }
