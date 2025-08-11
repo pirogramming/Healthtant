@@ -11,18 +11,6 @@
 <body>
 <header class="app-header">
     <div class="status-bar"></div>
-    
-    <!-- 뒤로가기 버튼 + 제목 -->
-    {% comment %} <div class="header-nav">
-        <button class="back-button" onclick="history.back()" aria-label="뒤로가기">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <path d="M15 18L9 12L15 6" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-        </button>
-        <h1 class="page-title">
-            {% block page_title %}분석하기{% endblock %}
-        </h1>
-    </div> {% endcomment %}
     <div class="search-section">
         <div class="search-container">
             <button type="button" class="search-input" onclick="performSearch()">
