@@ -384,7 +384,7 @@
 /* 툴팁 스타일 */
 .bar-tooltip {
     position: absolute;
-    bottom: 160px; /* bar-track 높이(140px) + 여백 */
+    bottom: 140px; /* bar-track 높이(140px) + 여백 */
     left: 50%;
     transform: translateX(-50%);
     background: rgba(26, 26, 26, 0.8);

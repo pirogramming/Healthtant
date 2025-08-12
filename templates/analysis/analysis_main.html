@@ -198,11 +198,11 @@
       {% endfor %}
     </div>
 
-    <div class="button-group">
+    {% comment %} <div class="button-group">
       <a class="btn-secondary" href="/analysis/nutrients/?start_date={{ start_date }}&end_date={{ end_date }}">
         WHO 기준과 비교하기 →
       </a>
-    </div>
+    </div> {% endcomment %}
   </section>
 </div>
 {% endblock %}
@@ -285,17 +285,17 @@
 
     track.appendChild(fill);
 
-    // 🎯 툴팁 추가!
+    // 툴팁
     const tooltip = document.createElement('div');
     tooltip.className = 'bar-tooltip';
     tooltip.textContent = `${count}개`;
+    track.appendChild(tooltip); // track 안에 추가
 
     const label = document.createElement('div');
     label.className = 'bar-label';
     label.textContent = food_category || '기타';
 
     wrap.appendChild(track);
-    wrap.appendChild(tooltip); // 툴팁 추가
     wrap.appendChild(label);
     frag.appendChild(wrap);
   });
