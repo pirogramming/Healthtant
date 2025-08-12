@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - 페이지를 찾을 수 없음</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'errors/errors_404.css' %}">
+    <!-- 새로운 CSS 구조 -->
+    <link rel="stylesheet" href="{% static 'base/variables.css' %}">
+    <link rel="stylesheet" href="{% static 'base/base.css' %}">
+</head>
+<body>
+        <!-- 헤더 영역 -->
+        <header class="app-header">
+            <div class="status-bar"></div>
+            
+            <!-- 뒤로가기 버튼 + 제목 -->
+            <div class="header-nav">
+                <button class="back-button" onclick="history.back()" aria-label="뒤로가기">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+                <h1 class="page-title">
+                    {% block page_title %}오류 페이지{% endblock %}
+                </h1>
+            </div>
+        </header>
+        
+        <div class="error-content">
+            <div class="error-icon-container">
+                <div class="error-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 44 44" fill="none">
+                        <path d="M27.6779 10.824C26.0109 9.15647 23.8868 8.02093 21.5743 7.56105C19.2618 7.10118 16.8648 7.33763 14.6868 8.2405C12.5087 9.14337 10.6474 10.6721 9.33844 12.6331C8.02948 14.5942 7.33168 16.8995 7.33336 19.2573L7.33519 21.0906H3.66852V19.2573C3.66756 16.7721 4.26102 14.3227 5.39935 12.1135C6.53769 9.90429 8.1879 7.9994 10.2123 6.55777C12.2366 5.11613 14.5764 4.17958 17.0364 3.82626C19.4964 3.47294 22.0052 3.7131 24.3535 4.5267C26.7017 5.3403 28.8214 6.70375 30.5355 8.50325C32.2496 10.3028 33.5084 12.4861 34.2069 14.8712C34.9055 17.2562 35.0235 19.7737 34.551 22.2136C34.0786 24.6535 33.0295 26.945 31.4912 28.897L41.2885 38.6961L38.6962 41.2885L28.8989 31.4893C26.1509 33.6586 22.7511 34.8369 19.25 34.8333H17.4167V31.1666H19.25C21.6068 31.1665 23.9106 30.4675 25.8702 29.1581C27.8298 27.8487 29.357 25.9876 30.2589 23.8102C31.1608 21.6328 31.3968 19.2369 30.937 16.9253C30.4773 14.6138 29.3425 12.4905 27.676 10.824M3.06536 24.3045L8.25002 29.491L13.4365 24.3045L16.0289 26.8986L10.8442 32.0833L16.0289 37.268L13.4365 39.8621L8.25002 34.6756L3.06536 39.8621L0.473022 37.268L5.65769 32.0833L0.473022 26.8986L3.06536 24.3045Z" fill="#56AAB2"/>
+                    </svg>
+                </div>
+            </div>
+            
+            <div class="error-number">404</div>
+            <div class="error-title">페이지를 찾을 수 없음</div>
+            
+            <div class="error-description">
+                <p>요청하신 페이지를 찾을 수 없습니다.</p>
+                <p>주소를 다시 확인해 주세요.</p>
+            </div>
+            
+            <div class="button-container">
+                <button class="home-button" onclick="window.location.href='/'">홈으로 돌아가기</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

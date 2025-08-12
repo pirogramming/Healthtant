@@ -1,63 +1,381 @@
-/* 래퍼 */
-.pd-wrap { padding-bottom:112px; font-family:'Noto Sans KR',system-ui,-apple-system,Segoe UI,Roboto,sans-serif; }
+/* 제품 상세 페이지 스타일 - 새로운 네비게이션 구조 적용 */
 
-/* 히어로 */
-.pd-hero{ position:relative; background:#fff; }
-.pd-image{ width:100%; display:block; object-fit:cover; aspect-ratio:16/10; }
-.icon-btn{ position:absolute; top:16px; left:16px; width:36px; height:36px; border:none; border-radius:999px; background:rgba(255,255,255,.7); backdrop-filter:blur(4px); cursor:pointer; }
-.icon-btn::before{ content:''; display:block; width:100%; height:100%; background:#333; mask:no-repeat center / 18px 18px url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24'%3E%3Cpath fill='%23000' d='M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z'/%3E%3C/svg%3E"); }
+/* 메인 컨텐츠 영역 */
+.product-content {
+  padding: var(--spacing-md);
+  padding-bottom: 100px; /* 하단 버튼 공간 확보 */
+}
 
-/* 카드 공통 */
-.pd-card{ background:#fff; border-radius:16px; box-shadow:0 2px 10px rgba(0,0,0,.06); padding:16px; margin:12px 16px; }
-
-/* 타이틀 */
-.pd-head{ display:flex; justify-content:space-between; align-items:flex-end; gap:12px; }
-.pd-title{ font-size:20px; font-weight:700; line-height:1.35; margin:0; }
-
-/* 칩 */
-.pd-chips{ display:grid; grid-template-columns:repeat(5,1fr); gap:8px; margin:14px 0 6px; padding:0; list-style:none; }
-.chip{ background:#F6F7F8; border-radius:10px; padding:10px 8px; text-align:center; }
-.chip-txt{ display:block; font-size:12px; color:#666; }
-.chip-sub{ display:block; font-size:12px; font-weight:700; color:#333; margin-top:2px; }
-
-/* 상세표 */
-.sec-title{ font-size:15px; font-weight:700; margin:0 0 10px; }
-.pd-nutrition .nutri-list{ display:grid; grid-template-columns:1fr auto; row-gap:10px; column-gap:16px; margin:0; }
-.pd-nutrition .nutri-list>div{ display:contents; }
-.pd-nutrition dt{ color:#666; }
-.pd-nutrition dd{ margin:0; font-weight:600; }
-
-/* 하단 CTA */
-.fav-btn{ width:48px; height:48px; border-radius:12px; border:1px solid #E0E0E0; background:#fff; font-size:20px; cursor:pointer; }
-.fav-btn.on{ background:#FFE8EC; border-color:#FF9BB0; }
-.primary-btn{ flex:1; height:48px; border-radius:12px; border:none; background:#56AAB2; color:#fff; font-weight:700; font-size:16px; cursor:pointer; }
-
-/* 전체 컨테이너: 모바일은 꽉 차게, 데스크톱에선 402×874 캔버스 */
-.pd-container{
+/* 헤더 내비게이션 조정 */
+.header-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   width: 100%;
-  max-width: 402px;     /* 가로 캔버스 */
-  min-height: 874px;    /* 세로 기본값 */
-  margin: 0 auto;
-  background: #fff;
+}
+
+.header-nav .page-title {
+  flex: 1;
+  text-align: center;
+  margin: 0 10px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.share-btn {
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: transparent;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #333;
+}
+
+.share-btn:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+/* 제품 이미지 */
+.product-image {
+  width: 100%;
+  height: 250px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0 0 20px 20px;
+}
+
+.product-image img {
+  max-width: 180px;
+  max-height: 180px;
+  object-fit: contain;
+}
+
+/* 제품 정보 */
+.product-info {
+  background: white;
+  border-radius: 20px;
+  padding: 0px 20px;
+  margin-bottom: 20px;
+}
+
+/* 브랜드 태그 */
+.brand-tag {
+  display: inline-flex;
+  width: 32px;
+  height: 32px;
+  background-color: #56AAB2;
+  color: white;
+  border-radius: 8px;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+/* 제품명과 가격 */
+.product-title-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 32px;
+}
+
+.product-name {
+  font-size: 20px;
+  font-weight: 700;
+  color: #333;
+  line-height: 1.3;
+  flex: 1;
+  margin-right: 16px;
+}
+
+.product-price {
+  color: #525252;
+  font-size: 36px;
+  font-weight: 400;
+}
+
+.currency {
+  font-size: 14px;
+  font-weight: 500;
+  color: #666;
+  margin-left: 2px;
+}
+
+/* 영양 정보 아이콘 */
+.nutrition-icons {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 32px;
+}
+
+.nutrition-item {
   display: flex;
   flex-direction: column;
-  justify-content: space-between; /* CTA가 아래에 붙도록 */
+  align-items: center;
+  text-align: center;
+  flex: 1;
 }
 
-/* CTA를 컨테이너 안에서 고정 */
-.pd-cta{
-  position: sticky;     /* fixed → sticky */
-  bottom: 0;
+.nutrition-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  border: 1px solid #56AAB2;
+  background: #FFF;
+  box-shadow: 0 3px 6px 0 rgba(181, 181, 181, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.nutrition-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.nutrition-label {
+  font-size: 10px;
+  color: var(--Gray-3, #828282);
+  font-weight: 400;
+  margin-bottom: 2px;
+}
+
+.nutrition-value {
+  font-size: 12px;
+  font-weight: 600;
+  color: #333;
+  text-align: center;
+}
+
+/* 구분선 */
+.section-divider {
+  height: 1px;
+  background-color: #E5E5E5;
+  margin: 24px 0;
+}
+
+/* 건강 정보 */
+.health-info {
+  margin: 32px 0;
+}
+
+.health-group {
+  margin-bottom: 16px;
+}
+
+.health-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  gap: 8px;
+}
+
+.health-item.indent {
+  margin-left: 46px; /* 배지보다 더 많이 들여쓰기 */
+}
+
+.health-badge {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.health-group.good .health-badge {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.health-group.natural .health-badge {
+  background-color: #e2e3e5;
+  color: #383d41;
+}
+
+.health-group.bad .health-badge {
+  border-radius: 15px;
+  background: #B25656;
+  box-shadow: 0 1px 2px 0 rgba(99, 99, 99, 0.25);
+  color: #FFF;
+  
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 20px; /* 181.818% */
+  letter-spacing: 0.11px;
+}
+
+.health-text {
+  color: #000;
+  font-family: Inter;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 20px; /* 153.846% */
+  letter-spacing: 0.13px;
+}
+
+.highlight {
+  color: var(--bad-icon, #B25658);
+  font-family: Inter;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 20px;
+  letter-spacing: 0.13px;
+}
+
+/* 상세 정보 섹션 */
+.detail-section {
+  margin-bottom: 20px;
+}
+
+.detail-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 16px;
+}
+
+/* 영양소 테이블 컨테이너 */
+.nutrition-table-container {
+  background: #ffffff;
+}
+
+/* 스크롤바 스타일링 제거 (스크롤 기능 사용 안함) */
+
+/* 영양소 테이블 */
+.nutrition-table {
   width: 100%;
-  background: #fff;
-  padding: 12px 16px;
+}
+
+.nutrition-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background: transparent;
+}
+
+.nutrition-row.divider {
+  border-top: 1px solid #f0f0f0;
+}
+
+.nutrition-name {
+  font-size: 14px;
+  color: #333;
+  font-weight: 500;
+}
+
+.nutrition-amount {
+  font-size: 14px;
+  color: #666;
+  font-weight: 400;
+}
+
+/* 하단 버튼 */
+.bottom-actions {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 390px;
   display: flex;
   gap: 12px;
-  align-items: center;
-  box-shadow: 0 -6px 20px rgba(0,0,0,.08);
+  padding: 16px 20px;
+  background: white;
+  border-top: 1px solid #eee;
+  z-index: 100;
 }
 
-/* (선택) 화면이 402px보다 좁을 때도 자연스럽게 보이게 */
-@media (max-width: 402px){
-  .pd-container{ min-height: 100dvh; } /* 기기뷰포트 꽉 채움 */
+.favorite-form {
+  flex-shrink: 0;
+}
+
+.favorite-btn {
+  width: 48px;
+  height: 48px;
+  border: 2px solid #ddd;
+  background: white;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #666;
+}
+
+.favorite-btn.active {
+  border-color: #ff6b6b;
+  color: #ff6b6b;
+}
+
+.favorite-btn:hover {
+  background: #f8f9fa;
+}
+
+.add-meal-btn {
+  flex: 1;
+  height: 48px;
+  background: #56AAB2;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.add-meal-btn:hover {
+  background: #4a9aa1;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 480px) {
+  .product-content {
+    padding: var(--spacing-sm);
+    padding-bottom: 90px;
+  }
+  
+  .nutrition-icons {
+    padding: 0;
+    gap: 4px;
+  }
+  
+  .nutrition-icon {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .nutrition-label {
+    font-size: 9px;
+  }
+  
+  .nutrition-value {
+    font-size: 11px;
+  }
+  
+  .product-name {
+    font-size: 18px;
+  }
+  
+  .product-price {
+    font-size: 28px;
+  }
 }

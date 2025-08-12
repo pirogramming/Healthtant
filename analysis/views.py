@@ -116,9 +116,9 @@ def get_color(level):
     if level == "매우 부족" or level == "매우 과다":
         return "#ff3232"
     elif level == "부족" or level == "과다":
-        return "#ffbb00"
+        return "#FF9021"
     else:
-        return "#56aab2"
+        return "#56AAB2"
 
 # 영양 섭취 수준을 입력 받아 프론트에서 출력해야 할 메세지를 반환하는 메소드
 def get_message(level):
@@ -312,12 +312,14 @@ def analysis_main(request):
         "protein" : recommend_nutrients['protein'],
         "fat" : recommend_nutrients['fat'],
         "salt" : recommend_nutrients['salt'],
-        "nutrients_evaluation": nutrient_evaluation
+        "nutrients_evaluation": nutrient_evaluation,
+        "start_date": start_date.strftime('%Y-%m-%d'),
+        "end_date": end_date.strftime('%Y-%m-%d'),
     }
 
     #나중에 프론트에서 main.html 같은 템플릿 만들고 나면 아래 주석처리 해놓은 render 함수로 바꿔 사용해주세요!
     return render(request, "analysis/analysis_main.html", context)
-    return JsonResponse(context, json_dumps_params={'ensure_ascii': False})
+    # return JsonResponse(context, json_dumps_params={'ensure_ascii': False})
 
 
 def stdev_summary(stdev):
@@ -424,6 +426,8 @@ def analysis_diet(request):
     }
     #--------------------------------------------------여기부터 context 반환-----------------------------------------------------------
     context = {
+        "start_date": start_date,
+        "end_date": end_date,
         "meal_product_analysis": {
             "meal_number": meal_number,
             "product_number": product_number,
@@ -441,11 +445,11 @@ def analysis_diet(request):
             "std_dev": stdev,
             "summary_message": stdev_summary(stdev)
         },
-        "meal_pattern_analysis": meal_pattern_analysis
+        "meal_pattern_analysis": meal_pattern_analysis,
     }
 
     #나중에 프론트에서 diet_analysis.html 같은 템플릿 만들고 나면 아래 주석처리 해놓은 render 함수로 바꿔 사용해주세요!
-    return render(request, "analysis/diet_analysis.html", context)
+    return render(request, "analysis/analysis_diet.html", context)
     #return JsonResponse(context, json_dumps_params={'ensure_ascii': False})
 
 
@@ -497,6 +501,6 @@ def analysis_nutrients(request):
     }
 
     #나중에 프론트에서 diet_analysis.html 같은 템플릿 만들고 나면 아래 주석처리 해놓은 render 함수로 바꿔 사용해주세요!
-    #return render(request, "analysis/nutrients_analysis.html", context)
-    return JsonResponse(context, json_dumps_params={'ensure_ascii': False})
+    return render(request, "analysis/analysis_nutrients.html", context)
+    #return JsonResponse(context, json_dumps_params={'ensure_ascii': False})
     

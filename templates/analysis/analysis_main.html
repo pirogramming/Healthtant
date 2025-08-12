@@ -47,7 +47,11 @@
   <section class="analysis-card avg-nutrients-card" id="avg-nutrients">
     <div class="card-header">
       <div class="section2-title">
-        <span class="section2-icon">📊</span>
+        <span class="section2-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 19 19" fill="none">
+                <path d="M0.192383 10.0238V8.34547H4.85602L6.73784 13.4644L11.6469 0.184631L14.6742 8.34547H18.1924V10.0238H13.5287L11.6469 4.90491L6.73784 18.1846L3.71056 10.0238H0.192383Z" fill="#7C78F5"/>
+            </svg>
+        </span>
         <h3 class="card-title">{{ request.user.username }} 님이 섭취한 주요 영양소</h3>
       </div>
     </div>
@@ -95,59 +99,115 @@
     </div>
   </section>
 
-  <!-- (3) 기준과 비교 + 평가 -->
-  <section class="analysis-card" id="compare-krda">
+  <!-- (3) 2020 한국인 영양소 섭취 기준과 비교 -->
+  <section class="analysis-card compare-krda-card" id="compare-krda">
     <div class="card-header">
-      <h3 class="card-title">2020 한국인 영양소 섭취 기준과 비교</h3>
-    </div>
-
-    <div class="mb-md">
-      <div class="nutrient-item">
-        <span class="nutrient-name">필요 에너지 추정량</span>
-        <span>{{ calorie.min|floatformat:0 }} ~ {{ calorie.max|floatformat:0 }} kcal (필수 {{ calorie.essential|floatformat:0 }} kcal)</span>
-      </div>
-      <div class="nutrient-item">
-        <span class="nutrient-name">탄수화물 적정섭취량</span>
-        <span>{{ carbohydrate.min|floatformat:0 }} ~ {{ carbohydrate.max|floatformat:0 }} g (필수 {{ carbohydrate.essential|floatformat:0 }} g)</span>
-      </div>
-      <div class="nutrient-item">
-        <span class="nutrient-name">단백질 권장섭취량</span>
-        <span>{{ protein.min|floatformat:0 }} ~ {{ protein.max|floatformat:0 }} g (필수 {{ protein.essential|floatformat:0 }} g)</span>
-      </div>
-      <div class="nutrient-item">
-        <span class="nutrient-name">지방 적정섭취량</span>
-        <span>{{ fat.min|floatformat:0 }} ~ {{ fat.max|floatformat:0 }} g</span>
-      </div>
-      <div class="nutrient-item">
-        <span class="nutrient-name">나트륨 충분·권고섭취량</span>
-        <span>{{ salt.min|floatformat:0 }} ~ {{ salt.max|floatformat:0 }} mg (필수 {{ salt.essential|floatformat:0 }} mg)</span>
+      <div class="section3-title">
+        <span class="section3-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="17" height="14" viewBox="0 0 17 14" fill="none">
+                <path d="M13.3577 7.99997C9.42923 12.4884 5.31 14.1508 1 12.9874C5.28231 11.8332 8.24808 9.00615 9.89731 4.50612L6.76923 1.34662H16V10.6667L13.3577 7.99997Z" stroke="#7C78F5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </span>
+        <h3 class="card-title3">2020 한국인 영양소 섭취 기준과 비교</h3>
       </div>
     </div>
 
-    <div class="mb-sm" style="font-weight:600;">영양소 섭취 평가</div>
-    {% for item in nutrients_evaluation %}
-      <div class="mb-sm">
-        <div class="flex-between">
-          <span style="font-weight:500;">{{ item.name }}</span>
-          <span>{{ item.percentage|floatformat:0 }}%</span>
+    <p class="section3-subtitle">
+      '2020 한국인 영양소 섭취 기준'을 바탕으로 영양 섭취를 평가해드릴게요!
+    </p>
+
+    <!-- 막대 차트 -->
+    <div class="krda-chart-container">
+      <div class="krda-chart">
+        <div class="chart-grid">
+          <!-- Y축 눈금 -->
+          <div class="y-axis">
+            <span class="y-label">140</span>
+            <span class="y-label">120</span>
+            <span class="y-label">100</span>
+            <span class="y-label">80</span>
+            <span class="y-label">60</span>
+            <span class="y-label">40</span>
+            <span class="y-label">20</span>
+            <span class="y-label">0</span>
+          </div>
+          
+          <!-- 막대들 -->
+          <div class="bars-container">
+            {% for item in nutrients_evaluation %}
+              {% if item.name != "지방" %}
+                <div class="bar-wrapper">
+                  <div class="bar-track-bg">
+                    <div class="bar-fill-krda" style="height: {{ item.percentage }}%;"></div>
+                  </div>
+                  <span class="bar-label-krda">{{ item.name }}</span>
+                </div>
+              {% endif %}
+            {% endfor %}
+          </div>
         </div>
-        <div class="progress-bar">
-          <div class="progress-fill" style="width: {{ item.percentage }}%; background-color: {{ item.color }};"></div>
-        </div>
-        <div style="font-size:12px; color:#666;">{{ item.level }} - {{ item.message }}</div>
       </div>
-    {% endfor %}
-
-    <div class="button-group">
-      <a class="btn-secondary" href="/analysis/nutrients/?start_date={{ start_date }}&end_date={{ end_date }}">WHO 기준과 비교하기 →</a>
     </div>
+
+    <!-- 구분선 -->
+    <div class="section-divider"></div>
+
+    <!-- 권장량 박스 -->
+    <div class="krda-recommendations">
+      <div class="krda-header">
+        <span class="krda-dot"></span>
+        <span class="krda-label">{{ request.user.username }} 님의 1일 영양소 권장량</span>
+      </div>
+
+      <div class="krda-item">
+        <span class="krda-name">필요 에너지 추정량</span>
+        <span class="krda-value">{{ calorie.min|floatformat:0 }} kcal</span>
+      </div>
+      <div class="krda-item">
+        <span class="krda-name">탄수화물 권장섭취량</span>
+        <span class="krda-value">{{ carbohydrate.min|floatformat:0 }} g</span>
+      </div>
+      <div class="krda-item">
+        <span class="krda-name">단백질 권장섭취량</span>
+        <span class="krda-value">{{ protein.min|floatformat:0 }} g</span>
+      </div>
+      <div class="krda-item">
+        <span class="krda-name">나트륨 충분섭취량</span>
+        <span class="krda-value">{{ salt.min|floatformat:0 }} g</span>
+      </div>
+    </div>
+
+    <!-- 구분선 -->
+    <div class="section-divider"></div>
+
+    <!-- 영양소 섭취 평가 -->
+    <div class="krda-evaluation">
+      <div class="krda-eval-header">
+        <span class="krda-eval-dot"></span>
+        <span class="krda-eval-label">영양소 섭취 평가</span>
+      </div>
+
+      {% for item in nutrients_evaluation %}
+        <div class="evaluation-item">
+          <div class="eval-row">
+            <span class="eval-name">{{ item.name }}</span>
+            <span class="eval-percentage" style="background-color: {{ item.color }};">{{ item.percentage|floatformat:0 }}%</span>
+          </div>
+          <p class="eval-message">{{ item.message }}</p>
+        </div>
+      {% endfor %}
+    </div>
+
+    {% comment %} <div class="button-group">
+      <a class="btn-secondary" href="/analysis/nutrients/?start_date={{ start_date }}&end_date={{ end_date }}">
+        WHO 기준과 비교하기 →
+      </a>
+    </div> {% endcomment %}
   </section>
 </div>
 {% endblock %}
 
-{% block navigation %}
-<!-- 네비게이션 제거 -->
-{% endblock %}
+
 
 {% block extra_js %}
 <script>
@@ -160,7 +220,49 @@
   try { data = JSON.parse(el.textContent || '[]'); } catch (_) {}
 
   if (!Array.isArray(data) || data.length === 0) {
-    target.innerHTML = '<div class="chart-placeholder">데이터가 부족해요</div>';
+    // 차트 컨테이너의 부모 요소에 메시지 추가
+    const chartSurface = target.parentElement;
+    
+    // 기존 메시지가 있다면 제거
+    const existingMessage = chartSurface.querySelector('.no-data-message');
+    if (existingMessage) {
+      existingMessage.remove();
+    }
+    
+    // 메시지를 차트 위에 추가
+    const message = document.createElement('div');
+    message.className = 'no-data-message';
+    message.textContent = '데이터가 부족합니다.';
+    chartSurface.insertBefore(message, target);
+    
+ // 빈 막대 차트 생성 (라벨 없음)
+    const emptyCategories = ['', '', '', '', ''];
+    const frag = document.createDocumentFragment();
+    
+    emptyCategories.forEach((category) => {
+      const wrap = document.createElement('div');
+      wrap.className = 'bar-item';
+
+      const track = document.createElement('div');
+      track.className = 'bar-track empty-bar';
+
+      const fill = document.createElement('div');
+      fill.className = 'bar-fill empty-fill';
+      fill.style.height = '0%';
+
+      track.appendChild(fill);
+
+      const label = document.createElement('div');
+      label.className = 'bar-label';
+      label.textContent = category; 
+
+      wrap.appendChild(track);
+      wrap.appendChild(label);
+      frag.appendChild(wrap);
+    });
+
+    target.innerHTML = '';
+    target.appendChild(frag);
     return;
     }
 
@@ -182,6 +284,12 @@
     fill.style.height = Math.max(8, h) + '%'; // 최소 8% 보장
 
     track.appendChild(fill);
+
+    // 툴팁
+    const tooltip = document.createElement('div');
+    tooltip.className = 'bar-tooltip';
+    tooltip.textContent = `${count}개`;
+    track.appendChild(tooltip); // track 안에 추가
 
     const label = document.createElement('div');
     label.className = 'bar-label';
