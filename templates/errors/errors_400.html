@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>400 - 잘못된 요청</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'errors/errors_400.css' %}">
+    <!-- 새로운 CSS 구조 -->
+    <link rel="stylesheet" href="{% static 'base/variables.css' %}">
+    <link rel="stylesheet" href="{% static 'base/base.css' %}">
+</head>
+<body>
+        <!-- 헤더 영역 -->
+        <header class="app-header">
+            <div class="status-bar"></div>
+            
+            <!-- 뒤로가기 버튼 + 제목 -->
+            <div class="header-nav">
+                <button class="back-button" onclick="history.back()" aria-label="뒤로가기">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+                <h1 class="page-title">
+                    {% block page_title %}오류 페이지{% endblock %}
+                </h1>
+            </div>
+        </header>
+        
+        <div class="error-content">
+            <div class="error-icon-container">
+                <div class="error-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="55" height="55" viewBox="0 0 55 55" fill="none">
+                        <path d="M25.2106 22.9167H29.794V34.3751H25.2106V22.9167ZM25.2083 36.6667H29.7917V41.2501H25.2083V36.6667Z" fill="#56AAB2"/>
+                        <path d="M31.5517 9.62491C30.7542 8.12387 29.2004 7.19116 27.5 7.19116C25.7996 7.19116 24.2458 8.12387 23.4483 9.6272L6.63209 41.3966C6.25982 42.0945 6.07548 42.8773 6.09718 43.668C6.11887 44.4587 6.34586 45.2301 6.75584 45.9066C7.16008 46.5864 7.73501 47.1488 8.4236 47.5379C9.1122 47.927 9.89054 48.1294 10.6815 48.1249H44.3186C45.9411 48.1249 47.41 47.2953 48.2465 45.9066C48.6564 45.2301 48.8834 44.4587 48.9051 43.668C48.9268 42.8773 48.7425 42.0945 48.3702 41.3966L31.5517 9.62491ZM10.6815 43.5416L27.5 11.7722L44.33 43.5416H10.6815Z" fill="#56AAB2"/>
+                    </svg>
+                </div>
+            </div>
+            
+            <div class="error-number">400</div>
+            <div class="error-title">잘못된 요청</div>
+            
+            <div class="error-description">
+                <p>요청하신 내용에 오류가 있습니다.</p>
+                <p>입력 정보를 다시 확인해 주세요.</p>
+            </div>
+            
+            <div class="button-container">
+                <button class="home-button" onclick="location.href='/'">홈으로 돌아가기</button>
+                {% comment %} <button class="login-button">문의하기</button> {% endcomment %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>
