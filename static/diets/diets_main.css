@@ -1,23 +1,13 @@
-/* 식사기록페이지 스타일 */
+/* 식사기록페이지 전용 스타일 */
 :root {
     --main-color: rgba(86, 170, 178, 1);
     --main-color-hover: rgba(94, 189, 198, 0.65);
 }
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    /* width:402px;
-    height: 874px; */
+.view {
+    padding-bottom: 0 !important;
 }
 
-
-
-body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background-color: #2c2c2c;
-    line-height: 1.6;
-}
+/* base.css에서 body 스타일을 상속받으므로 여기서는 제거 */
 
 .nav-bar {
     
@@ -55,13 +45,11 @@ body {
 
 /* 메인 컨테이너 */
 .meal-record-container {
-    max-width: 800px;
     background-color: white;
     border-radius: 12px;
     padding: 30px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    min-height: calc(100vh - 80px);
-    overflow-y: auto;
+    min-height: auto;
 }
 
 /* 월 네비게이션 */
@@ -83,6 +71,11 @@ body {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
+    position: sticky;
+    top: 0;
+    background-color: white;
+    z-index: 100;
+    padding: 10px 0;
 }
 .header-separator {
     height: 1px;
@@ -99,8 +92,8 @@ body {
 }
 
 .cutlery-icon {
+    display: block; 
     margin-right: 8px;
-    font-size: 20px;
     color: #999;
 }
 
