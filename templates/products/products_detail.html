@@ -82,7 +82,7 @@
         </div>
         <div class="nutrition-text">
           <span class="nutrition-label">당류</span>
-          <span class="nutrition-value">{{ product.protein|floatformat:0 }}g</span>
+          <span class="nutrition-value">{{ product.sugar|floatformat:0 }}g</span>
         </div>
       </div>
 
@@ -94,7 +94,7 @@
         </div>
         <div class="nutrition-text">
           <span class="nutrition-label">단백질</span>
-          <span class="nutrition-value">{{ product.carbohydrate|floatformat:0 }}g</span>
+          <span class="nutrition-value">{{ product.protein|floatformat:0 }}g</span>
         </div>
       </div>
 
@@ -107,7 +107,7 @@
         </div>
         <div class="nutrition-text">
           <span class="nutrition-label">나트륨</span>
-          <span class="nutrition-value">{{ product.sodium|floatformat:0 }}mg</span>
+          <span class="nutrition-value">{{ product.salt|floatformat:0 }}mg</span>
         </div>
       </div>
 
@@ -180,8 +180,8 @@
           </div>
           
           <div class="nutrition-row divider">
-            <span class="nutrition-name">나트륨</span>
-            <span class="nutrition-amount">{{ product.sodium|floatformat:0 }}mg</span>
+          <span class="nutrition-name">나트륨</span>
+          <span class="nutrition-amount">{{ product.salt|floatformat:0 }}mg</span>
           </div>
         </div>
       </div>
@@ -191,10 +191,11 @@
     </main>
     
     <!-- 하단 버튼 -->
-    <div class="bottom-actions">
-      <button id="favoriteBtn" class="favorite-btn {% if product.is_favorite %}active{% endif %}" data-product-id="{{ product.food_id }}" data-is-favorite="{{ product.is_favorite|yesno:'true,false' }}">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-          <path d="M20.84 4.61C20.3292 4.099 19.7228 3.69364 19.0554 3.41708C18.3879 3.14052 17.6725 2.99817 16.95 2.99817C16.2275 2.99817 15.5121 3.14052 14.8446 3.41708C14.1772 3.69364 13.5708 4.099 13.06 4.61L12 5.67L10.94 4.61C9.9083 3.5783 8.50903 2.9987 7.05 2.9987C5.59096 2.9987 4.19169 3.5783 3.16 4.61C2.1283 5.6417 1.5487 7.04097 1.5487 8.5C1.5487 9.95903 2.1283 11.3583 3.16 12.39L12 21.23L20.84 12.39C21.351 11.8792 21.7563 11.2728 22.0329 10.6053C22.3095 9.93789 22.4518 9.22248 22.4518 8.5C22.4518 7.77752 22.3095 7.06211 22.0329 6.39467C21.7563 5.72723 21.351 5.12087 20.84 4.61V4.61Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <div class="bottom-actions">
+      <button id="favoriteBtn" class="favorite-btn {% if product.is_favorite %}active{% endif %}" data-product-id="{{ product.food_id }}" data-is-favorite="{{ product.is_favorite|yesno:'true,false' }}" type="button" aria-pressed="{{ product.is_favorite|yesno:'true,false' }}" aria-label="즐겨찾기">
+        <!-- 기본: 비워진 하트, 활성화 시 CSS로 채움 -->
+        <svg xmlns="http://www.w3.org/2000/svg" width="35" height="33" viewBox="0 0 35 33" fill="none" aria-hidden="true" focusable="false">
+          <path class="heart-path" d="M17.5009 8.65503C20.2022 6.37317 24.3767 6.44891 26.9791 8.90171C29.5803 11.3556 29.67 15.2636 27.2505 17.8127L17.4986 27.0007L7.74912 17.8127C5.32957 15.2636 5.42042 11.3491 8.02052 8.90171C10.6252 6.45216 14.7916 6.36993 17.5009 8.65503Z"/>
         </svg>
       </button>
       <button class="add-meal-btn">식사로 등록하기</button>
@@ -392,8 +393,9 @@ function toggleFavorite() {
   favoriteBtn.disabled = true;
   
   // CSRF 토큰 가져오기
-  const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
-                   document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+  const metaToken = document.querySelector('meta[name="csrf-token"]');
+  const inputToken = document.querySelector('[name=csrfmiddlewaretoken]');
+  const csrfToken = inputToken ? inputToken.value : (metaToken ? metaToken.getAttribute('content') : '');
   
   fetch(`/products/${productId}/like/`, {
     method: 'POST',
@@ -415,9 +417,11 @@ function toggleFavorite() {
     if (data.is_favorite) {
       favoriteBtn.classList.add('active');
       favoriteBtn.setAttribute('data-is-favorite', 'true');
+      favoriteBtn.setAttribute('aria-pressed', 'true');
     } else {
       favoriteBtn.classList.remove('active');
       favoriteBtn.setAttribute('data-is-favorite', 'false');
+      favoriteBtn.setAttribute('aria-pressed', 'false');
     }
     
     // 성공 메시지 (선택사항)
