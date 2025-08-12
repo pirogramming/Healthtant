@@ -133,6 +133,7 @@ width: 100%;
 
 /* 제품 카드 */
 .food-card {
+    margin: 0 0 7px 0px;
     padding: 26px 19px;
     display: flex;
     align-items: center;

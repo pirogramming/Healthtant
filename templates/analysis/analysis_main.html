@@ -285,17 +285,17 @@
 
     track.appendChild(fill);
 
-    // 🎯 툴팁 추가!
+    // 툴팁
     const tooltip = document.createElement('div');
     tooltip.className = 'bar-tooltip';
     tooltip.textContent = `${count}개`;
+    track.appendChild(tooltip); // track 안에 추가
 
     const label = document.createElement('div');
     label.className = 'bar-label';
     label.textContent = food_category || '기타';
 
     wrap.appendChild(track);
-    wrap.appendChild(tooltip); // 툴팁 추가
     wrap.appendChild(label);
     frag.appendChild(wrap);
   });
