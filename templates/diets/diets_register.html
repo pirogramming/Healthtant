@@ -55,102 +55,14 @@
                 </button>
             </div>
             {% empty %}
-            <!-- Mock 데이터 (실제 데이터가 없을 때) -->
-            <div class="food-card" data-food-id="food001">
-                <div class="food-image">
-                    <img src="https://image.example.com/food001.jpg" alt="하림 닭가슴살 블랙페퍼">
-                </div>
-                <div class="food-info">
-                    <h3 class="food-name">하림 닭가슴살 블랙페퍼, 800g, 1개</h3>
-                    <p class="food-company">제조사: CJ대원푸드</p>
-                </div>
-                <button class="register-btn" onclick="registerFood('food001')">
+            <!-- 빈 상태: 최근 섭취 제품이 없을 때 -->
+            <div class="empty-state">
+                <div class="empty-icon">🔎</div>
+                <div class="empty-title">최근에 등록한 제품이 없어요</div>
+                <div class="empty-sub">상단의 검색을 눌러 제품을 찾아 등록해보세요.</div>
+                <button class="register-btn" type="button" onclick="performSearch()">
                     <span class="plus-icon">+</span>
-                    <span class="register-text">등록하기</span>
-                </button>
-            </div>
-
-            <div class="food-card" data-food-id="food002">
-                <div class="food-image">
-                    <img src="https://image.example.com/food002.jpg" alt="득근파티 통 닭가슴살 6종 혼합">
-                </div>
-                <div class="food-info">
-                    <h3 class="food-name">득근파티 통 닭가슴살 6종 혼합, 100g</h3>
-                    <p class="food-company">제조사: CJ대원푸드</p>
-                </div>
-                <button class="register-btn" onclick="registerFood('food002')">
-                    <span class="plus-icon">+</span>
-                    <span class="register-text">등록하기</span>
-                </button>
-            </div>
-
-            <div class="food-card" data-food-id="food003">
-                <div class="food-image">
-                    <img src="https://image.example.com/food003.jpg" alt="하림 닭가슴살 블랙페퍼">
-                </div>
-                <div class="food-info">
-                    <h3 class="food-name">하림 닭가슴살 블랙페퍼, 800g, 1개</h3>
-                    <p class="food-company">제조사: CJ대원푸드</p>
-                </div>
-                <button class="register-btn" onclick="registerFood('food003')">
-                    <span class="plus-icon">+</span>
-                    <span class="register-text">등록하기</span>
-                </button>
-            </div>
-
-            <div class="food-card" data-food-id="food004">
-                <div class="food-image">
-                    <img src="https://image.example.com/food004.jpg" alt="하림 닭가슴살 블랙페퍼">
-                </div>
-                <div class="food-info">
-                    <h3 class="food-name">하림 닭가슴살 블랙페퍼, 800g, 1개</h3>
-                    <p class="food-company">제조사: CJ대원푸드</p>
-                </div>
-                <button class="register-btn" onclick="registerFood('food004')">
-                    <span class="plus-icon">+</span>
-                    <span class="register-text">등록하기</span>
-                </button>
-            </div>
-
-            <div class="food-card" data-food-id="food005">
-                <div class="food-image">
-                    <img src="https://image.example.com/food005.jpg" alt="하림 닭가슴살 블랙페퍼">
-                </div>
-                <div class="food-info">
-                    <h3 class="food-name">하림 닭가슴살 블랙페퍼, 800g, 1개</h3>
-                    <p class="food-company">제조사: CJ대원푸드</p>
-                </div>
-                <button class="register-btn" onclick="registerFood('food005')">
-                    <span class="plus-icon">+</span>
-                    <span class="register-text">등록하기</span>
-                </button>
-            </div>
-
-            <div class="food-card" data-food-id="food006">
-                <div class="food-image">
-                    <img src="https://image.example.com/food006.jpg" alt="하림 닭가슴살 블랙페퍼">
-                </div>
-                <div class="food-info">
-                    <h3 class="food-name">하림 닭가슴살 블랙페퍼, 800g, 1개</h3>
-                    <p class="food-company">제조사: CJ대원푸드</p>
-                </div>
-                <button class="register-btn" onclick="registerFood('food006')">
-                    <span class="plus-icon">+</span>
-                    <span class="register-text">등록하기</span>
-                </button>
-            </div>
-
-            <div class="food-card" data-food-id="food007">
-                <div class="food-image">
-                    <img src="https://image.example.com/food007.jpg" alt="하림 닭가슴살 블랙페퍼">
-                </div>
-                <div class="food-info">
-                    <h3 class="food-name">하림 닭가슴살 블랙페퍼, 800g, 1개</h3>
-                    <p class="food-company">제조사: CJ대원푸드</p>
-                </div>
-                <button class="register-btn" onclick="registerFood('food007')">
-                    <span class="plus-icon">+</span>
-                    <span class="register-text">등록하기</span>
+                    <span class="register-text">새 제품 검색하러 가기</span>
                 </button>
             </div>
             {% endfor %}
