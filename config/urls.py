@@ -27,3 +27,7 @@ urlpatterns = [
     path('analysis/', include('analysis.urls')),
     path('products/', include('products.urls')),
 ]
+
+# 에러 핸들러 설정
+handler403 = 'main.views.permission_denied_view'
+handler404 = 'main.views.not_found_view'
