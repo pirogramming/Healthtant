@@ -9,11 +9,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
-<div class="meal-register-container">
-    <div class="header">
-        <div class="status-bar"></div>  
-    </div>
-    <!-- 검색 섹션 -->
+<header class="app-header">
+    <div class="status-bar"></div>
     <div class="search-section">
         <div class="search-container">
             <button type="button" class="search-input" onclick="performSearch()">
@@ -27,6 +24,12 @@
         </div>
         <button class="cancel-btn" onclick="clearSearch()">취소</button>
     </div>
+</header>
+
+<div class="meal-register-container">
+    {% comment %} <div class="header">
+        <div class="status-bar"></div>  
+    </div> {% endcomment %}
 
 
     <!-- 과거 섭취 제품 목록 -->

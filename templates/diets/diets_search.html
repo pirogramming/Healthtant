@@ -9,22 +9,23 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
-<div class="meal-register-container">
-    <div class="header">
-        <div class="status-bar"></div>  
-    </div>
-    <!-- 검색 섹션 -->
-    <div class="search-section">
-        <div class="search-container">
-            <input type="text" class="search-input" placeholder="새 제품을 검색해서 찾아보세요" id="searchInput">
-            <div class="search-icon" onclick="performSearch()">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
-                    <path fill-rule="evenodd" clip-rule="evenodd" d="M9.183 3.62741C6.11475 3.62741 3.62744 6.11472 3.62744 9.18297C3.62744 12.2512 6.11475 14.7385 9.183 14.7385C10.6756 14.7385 12.0307 14.1499 13.0289 13.1921C13.0525 13.1622 13.0781 13.1334 13.1058 13.1057C13.1334 13.0781 13.1622 13.0525 13.1922 13.0289C14.1499 12.0307 14.7386 10.6756 14.7386 9.18297C14.7386 6.11472 12.2512 3.62741 9.183 3.62741ZM15.146 13.7594C16.1202 12.492 16.6993 10.9051 16.6993 9.18297C16.6993 5.03181 13.3342 1.66663 9.183 1.66663C5.03184 1.66663 1.66666 5.03181 1.66666 9.18297C1.66666 13.3341 5.03184 16.6993 9.183 16.6993C10.9052 16.6993 12.492 16.1201 13.7595 15.1459L16.6597 18.0461C17.0426 18.429 17.6633 18.429 18.0462 18.0461C18.429 17.6633 18.429 17.0425 18.0462 16.6597L15.146 13.7594Z" fill="#56AAB2"/>
-                </svg>
+    <header class="app-header">
+        <div class="status-bar"></div>
+        <div class="search-section">
+            <div class="search-container">
+                <button type="button" class="search-input" onclick="performSearch()">
+                    <span class="search-placeholder">새 제품을 검색해서 찾아보세요</span>
+                    <div class="search-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M9.183 3.62741C6.11475 3.62741 3.62744 6.11472 3.62744 9.18297C3.62744 12.2512 6.11475 14.7385 9.183 14.7385C10.6756 14.7385 12.0307 14.1499 13.0289 13.1921C13.0525 13.1622 13.0781 13.1334 13.1058 13.1057C13.1334 13.0781 13.1622 13.0525 13.1922 13.0289C14.1499 12.0307 14.7386 10.6756 14.7386 9.18297C14.7386 6.11472 12.2512 3.62741 9.183 3.62741ZM15.146 13.7594C16.1202 12.492 16.6993 10.9051 16.6993 9.18297C16.6993 5.03181 13.3342 1.66663 9.183 1.66663C5.03184 1.66663 1.66666 5.03181 1.66666 9.18297C1.66666 13.3341 5.03184 16.6993 9.183 16.6993C10.9052 16.6993 12.492 16.1201 13.7595 15.1459L16.6597 18.0461C17.0426 18.429 17.6633 18.429 18.0462 18.0461C18.429 17.6633 18.429 17.0425 18.0462 16.6597L15.146 13.7594Z" fill="#56AAB2"/>
+                        </svg>
+                    </div>
+                </button>
             </div>
+            <button class="cancel-btn" onclick="clearSearch()">취소</button>
         </div>
-        <button class="cancel-btn" onclick="clearSearch()">취소</button>
-    </div>
+    </header>
+<div class="meal-register-container">
 
     <!-- 검색 결과 섹션 -->
     <div class="search-results-section" id="searchResults" style="display: none;">
