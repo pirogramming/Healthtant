@@ -26,6 +26,7 @@ urlpatterns = [
     path('diets/', include('diets.urls')),
     path('analysis/', include('analysis.urls')),
     path('products/', include('products.urls')),
+    path('mypage/', include('mypage.urls')),
 ]
 
 # 에러 핸들러 설정
