@@ -333,6 +333,7 @@
     align-items: center;
     flex: 1;
     max-width: 80px;
+    position: relative; /* 툴팁 위치 설정을 위해 추가 */
 }
 
 .bar-track {
@@ -378,6 +379,43 @@
     background: transparent !important;
     border: none;
     min-height: 0 !important;
+}
+
+/* 툴팁 스타일 */
+.bar-tooltip {
+    position: absolute;
+    bottom: 160px; /* bar-track 높이(140px) + 여백 */
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(26, 26, 26, 0.8);
+    color: white;
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    transition: all 0.3s ease;
+    z-index: 1000;
+    pointer-events: none;
+    display: none; /* 추가로 display도 숨김 */
+}
+
+.bar-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: rgba(26, 26, 26, 0.8);
+}
+
+.bar-item:hover .bar-tooltip {
+    opacity: 1 !important;
+    visibility: visible !important;
+    display: block !important; /* hover시 다시 보이게 */
 }
 
 /* ====== 버튼 그룹 스타일 ====== */
