@@ -1,0 +1,14 @@
+{% extends 'main/main_base.html' %}
+{% block content %}
+<h1>회원 탈퇴</h1>
+
+<p>정말로 탈퇴하시겠습니까? 이 작업은 되돌릴 수 없습니다.</p>
+
+<form method="post" style="margin-top:12px;">
+  {% csrf_token %}
+  <button type="submit" style="color:#fff;background:#d9534f;border:none;padding:8px 12px;border-radius:6px;cursor:pointer;">
+    탈퇴하기
+  </button>
+  <a href="{% url 'mypage:profile_view' %}" style="margin-left:10px;">취소</a>
+</form>
+{% endblock %}
