@@ -1,0 +1,262 @@
+/* 전체 리셋 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #F8F9FA;
+    overflow-x: hidden;
+}
+
+/* 컨테이너 */
+.container {
+    max-width: 414px;
+    margin: 0 auto;
+    background-color: #F8F9FA;
+    min-height: 100vh;
+    position: relative;
+}
+
+/* 헤더 */
+.header {
+    height: 56px;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    background-color: #F8F9FA;
+    border-bottom: 1px solid #E8E9EA;
+    position: relative;
+}
+
+.back-button {
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    color: black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    left: 20px;
+}
+
+.page-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: black;
+    text-align: center;
+    width: 100%;
+    margin: 0;
+}
+
+/* 메인 컨텐츠 */
+.content {
+    padding: 32px 20px;
+    background-color: #F8F9FA;
+}
+
+.main-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: black;
+    margin-bottom: 24px;
+    text-align: left;
+}
+
+/* 안내사항 박스 */
+.notice-box {
+    background-color: #F1F3F5;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 32px;
+}
+
+.notice-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.notice-list li {
+    color: #495057;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.5;
+    margin-bottom: 8px;
+    position: relative;
+    padding-left: 12px;
+}
+
+.notice-list li:last-child {
+    margin-bottom: 0;
+}
+
+.notice-list li::before {
+    content: "•";
+    color: #495057;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+/* 동의 섹션 */
+.agreement-section {
+    margin-bottom: 40px;
+}
+
+.checkbox-container {
+    display: flex;
+    align-items: flex-start;
+    cursor: pointer;
+    position: relative;
+    padding-left: 32px;
+    margin-bottom: 0;
+    font-size: 14px;
+    user-select: none;
+}
+
+.checkbox-container input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.checkmark {
+    position: absolute;
+    top: 2px;
+    left: 0;
+    height: 20px;
+    width: 20px;
+    background-color: white;
+    border: 2px solid #DEE2E6;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.checkbox-container:hover input ~ .checkmark {
+    border-color: #56AAB2;
+}
+
+.checkbox-container input:checked ~ .checkmark {
+    background-color: #56AAB2;
+    border-color: #56AAB2;
+}
+
+.checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+.checkbox-container input:checked ~ .checkmark:after {
+    display: block;
+}
+
+.checkbox-container .checkmark:after {
+    left: 6px;
+    top: 2px;
+    width: 4px;
+    height: 8px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.checkbox-text {
+    color: black;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.5;
+}
+
+/* 탈퇴 버튼 */
+.withdraw-button {
+    width: 100%;
+    height: 56px;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background-color: #E9ECEF;
+    color: #ADB5BD;
+}
+
+.withdraw-button:disabled {
+    background-color: #E9ECEF;
+    color: #ADB5BD;
+    cursor: not-allowed;
+}
+
+.withdraw-button.active {
+    background-color: #56AAB2;
+    color: white;
+    cursor: pointer;
+}
+
+.withdraw-button.active:hover {
+    background-color: #4A9BA3;
+}
+
+.withdraw-button.active:active {
+    transform: translateY(1px);
+}
+
+/* 모바일 최적화 */
+@media (max-width: 414px) {
+    .container {
+        max-width: 100%;
+    }
+    
+    .header {
+        padding: 0 16px;
+    }
+    
+    .back-button {
+        left: 16px;
+    }
+    
+    .content {
+        padding: 24px 16px;
+    }
+    
+    .main-title {
+        font-size: 18px;
+    }
+    
+    .notice-list li {
+        font-size: 13px;
+    }
+    
+    .checkbox-text {
+        font-size: 13px;
+    }
+}
+
+/* 아이폰 SE 대응 */
+@media (max-width: 375px) {
+    .content {
+        padding: 20px 16px;
+    }
+    
+    .main-title {
+        font-size: 17px;
+        margin-bottom: 20px;
+    }
+    
+    .notice-box {
+        padding: 16px;
+        margin-bottom: 24px;
+    }
+    
+    .agreement-section {
+        margin-bottom: 32px;
+    }
+}
