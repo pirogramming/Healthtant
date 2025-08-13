@@ -1,22 +1,24 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-  {% load static %}
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>수정 | 식사</title>
-  <link rel="stylesheet" href="{% static 'diets/diets_form.css' %}">
-  {% csrf_token %}
-</head>
-<body>
-  <div class="container">
-    <div class="header">
-        {% comment %} <div class="status-bar"></div>   {% endcomment %}
-      <header class="topbar">
-        <button type="button" class="back-btn" onclick="goBackToSearch()">←</button>
-        <h1 class="title">수정하기</h1>
-      </header>
-    </div>
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}수정 | 식사 - HEALTHTANT{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'diets/diets_form.css' %}">
+{% endblock %}
+
+{% block header %}
+<header class="topbar">
+  <button type="button" class="back-btn" onclick="goBackToSearch()">←</button>
+  <h1 class="title">수정하기</h1>
+</header>
+{% endblock %}
+
+{% block bottom_navigation %}{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="header">
 
     <!-- 폼 시작 -->
     <form method="post" action="" class="diet-form" id="dietForm">
@@ -91,43 +93,45 @@
         </button>
       </footer>
     </form>
-
-    <script>
-      // 뒤로가기 함수 - diets_search.html로 이동
-      function goBackToSearch() {
-        window.location.href = '/diets/search/page/';
-      }
-
-      // 단일 선택 강제
-      const checks = Array.from(document.querySelectorAll('.meal-check'));
-      const mealHidden = document.getElementById('mealKrHidden');
-
-      function updateHidden() {
-        const picked = checks.find(c => c.checked);
-        mealHidden.value = picked ? picked.dataset.value : '';
-      }
-      checks.forEach(c => {
-        c.addEventListener('change', (e) => {
-          if (e.target.checked) {
-            checks.forEach(o => { if (o !== e.target) o.checked = false; });
-          }
-          updateHidden();
-        });
-      });
-      // 초기값 세팅
-      updateHidden();
-
-      // 기본값: 오늘 날짜
-      (function initDate() {
-        const dateEl = document.getElementById('date');
-        if (!dateEl.value) {
-          const d = new Date();
-          const m = String(d.getMonth()+1).padStart(2,'0');
-          const day = String(d.getDate()).padStart(2,'0');
-          dateEl.value = `${d.getFullYear()}-${m}-${day}`;
-        }
-      })();
-    </script>
   </div>
-</body>
-</html>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // 뒤로가기 함수 - diets_search.html로 이동
+  function goBackToSearch() {
+    window.location.href = '/diets/search/page/';
+  }
+
+  // 단일 선택 강제
+  const checks = Array.from(document.querySelectorAll('.meal-check'));
+  const mealHidden = document.getElementById('mealKrHidden');
+
+  function updateHidden() {
+    const picked = checks.find(c => c.checked);
+    mealHidden.value = picked ? picked.dataset.value : '';
+  }
+  checks.forEach(c => {
+    c.addEventListener('change', (e) => {
+      if (e.target.checked) {
+        checks.forEach(o => { if (o !== e.target) o.checked = false; });
+      }
+      updateHidden();
+    });
+  });
+  // 초기값 세팅
+  updateHidden();
+
+  // 기본값: 오늘 날짜
+  (function initDate() {
+    const dateEl = document.getElementById('date');
+    if (!dateEl.value) {
+      const d = new Date();
+      const m = String(d.getMonth()+1).padStart(2,'0');
+      const day = String(d.getDate()).padStart(2,'0');
+      dateEl.value = `${d.getFullYear()}-${m}-${day}`;
+    }
+  })();
+</script>
+{% endblock %}
