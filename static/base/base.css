@@ -52,7 +52,7 @@ body {
 }
 
 .status-bar {
-  height: 61px;
+  height: 40px;
   background-color: var(--white);
   width: 100%;
 }
