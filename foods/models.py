@@ -57,9 +57,6 @@ class Food(models.Model):
 
     def __str__(self):
         return self.food_name
-<<<<<<< HEAD
-
-
 class Price(models.Model):
     price_id = models.CharField(max_length=255, primary_key=True)  # P20240001 형태
     food = models.ForeignKey(Food, on_delete=models.CASCADE, related_name='prices')
@@ -79,7 +76,6 @@ class Price(models.Model):
 
     def __str__(self):
         return f"{self.food.food_name} - {self.shop_name}: {self.price}원"
-=======
     
 from django.contrib.auth import get_user_model
 
@@ -108,4 +104,4 @@ class FavoriteFood(models.Model):
 
     def __str__(self):
         return f'{getattr(self.user, "username", self.user_id)} ♥ {self.food_id}'
->>>>>>> f951233ffdadc0dfc6c3c39d0499cd9473321ba2
+
