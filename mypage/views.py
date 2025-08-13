@@ -116,5 +116,5 @@ def account_withdraw(request):
         user.save()
         logout(request)
         messages.success(request, '회원 탈퇴가 완료되었습니다.')
-        return redirect('main:home')  # 홈 등 적절한 곳으로
+        return redirect('main:main_page')  # 메인 페이지로
     return render(request, 'mypage/mypage_withdraw_confirm.html', {'user': request.user})

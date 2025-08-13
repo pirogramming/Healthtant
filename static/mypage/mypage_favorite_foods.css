@@ -1,0 +1,352 @@
+/* 기본 스타일 리셋 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background-color: white;
+    margin: 0;
+    padding: 0;
+}
+
+.app-header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background-color: white;
+}
+
+.status-bar {
+    height: 61px;
+    background-color: white;
+    width: 100%;
+}
+
+/* 즐겨찾는 제품 전체 컨테이너 */
+.favorite-foods-container {
+    background-color: white;
+    min-height: 100vh;
+    padding: 0;
+    font-family: 'Noto Sans KR', sans-serif;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* 검색 섹션 */
+.search-section {
+    background-color: white;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    border-bottom: 1px solid #e0e0e0;
+    margin: 20px 20px 0 20px;
+}
+
+.search-container {
+    flex: 1;
+}
+
+.search-input-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.search-input {
+    width: 100%;
+    height: 50px;
+    padding: 0 50px 0 20px;
+    border: 1px solid var(--neutral-slate-black-slate-black-50, #E8E9EA);
+    border-radius: 100px;
+    background: var(--neutral-white-pure-white, #FFF);
+    box-shadow: 0 6px 40px -10px rgba(64, 72, 82, 0.15);
+    font-size: 14px;
+    color: #333;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.search-input:focus {
+    border-color: #4285f4;
+}
+
+.search-input::placeholder {
+    color: #999;
+}
+
+.search-button {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+}
+
+.search-button:hover {
+    background-color: rgba(86, 170, 178, 0.1);
+}
+
+.search-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+}
+
+.cancel-btn {
+    background: none;
+    border: none;
+    color: #56AAB2;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 8px;
+    transition: background-color 0.2s;
+}
+
+.cancel-btn:hover {
+    background-color: rgba(86, 170, 178, 0.1);
+}
+
+/* 검색 결과 섹션 */
+.search-results-section {
+    padding: 20px;
+}
+
+.search-results-section h2 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 16px;
+    padding-left: 4px;
+}
+
+.search-results-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* 음식 카드 스타일 */
+.food-card {
+    display: flex;
+    align-items: center;
+    background: white;
+    border: 1px solid #E8E9EA;
+    border-radius: 12px;
+    padding: 16px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.food-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-color: #56AAB2;
+}
+
+.food-image {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-right: 16px;
+    flex-shrink: 0;
+    background-color: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.food-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.food-info {
+    flex: 1;
+    margin-right: 16px;
+}
+
+.food-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 4px;
+    line-height: 1.3;
+}
+
+.food-company {
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+    line-height: 1.3;
+}
+
+/* 즐겨찾기 버튼 */
+.favorite-btn {
+    background-color: #56AAB2;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    min-width: 80px;
+    justify-content: center;
+}
+
+.favorite-btn:hover {
+    background-color: #4A9BA3;
+    transform: translateY(-1px);
+}
+
+.favorite-btn:active {
+    transform: translateY(0);
+}
+
+.favorite-btn.active {
+    background-color: #56AAB2;
+}
+
+.favorite-text {
+    font-size: 14px;
+}
+
+/* 결과 없음 메시지 */
+.no-results {
+    text-align: center;
+    color: #666;
+    font-size: 16px;
+    padding: 40px 20px;
+    background-color: #f8f9fa;
+    border-radius: 12px;
+    border: 1px dashed #ddd;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .search-section {
+        margin: 10px 10px 0 10px;
+        padding: 15px;
+    }
+    
+    .search-results-section {
+        padding: 15px;
+    }
+    
+    .food-card {
+        padding: 12px;
+    }
+    
+    .food-image {
+        width: 50px;
+        height: 50px;
+        margin-right: 12px;
+    }
+    
+    .food-name {
+        font-size: 15px;
+    }
+    
+    .food-company {
+        font-size: 13px;
+    }
+    
+    .favorite-btn {
+        padding: 6px 12px;
+        font-size: 13px;
+        min-width: 70px;
+    }
+}
+
+@media (max-width: 480px) {
+    .search-section {
+        margin: 5px 5px 0 5px;
+        padding: 12px;
+        gap: 10px;
+    }
+    
+    .search-input {
+        height: 45px;
+        font-size: 13px;
+    }
+    
+    .cancel-btn {
+        font-size: 14px;
+        padding: 6px 8px;
+    }
+    
+    .search-results-section {
+        padding: 12px;
+    }
+    
+    .search-results-section h2 {
+        font-size: 16px;
+        margin-bottom: 12px;
+    }
+    
+    .food-card {
+        padding: 10px;
+        border-radius: 10px;
+    }
+    
+    .food-image {
+        width: 45px;
+        height: 45px;
+        margin-right: 10px;
+    }
+    
+    .food-name {
+        font-size: 14px;
+    }
+    
+    .food-company {
+        font-size: 12px;
+    }
+    
+    .favorite-btn {
+        padding: 5px 10px;
+        font-size: 12px;
+        min-width: 60px;
+        border-radius: 16px;
+    }
+}
+
+/* 로딩 상태 */
+.loading {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+}
+
+/* 애니메이션 */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.food-card {
+    animation: fadeIn 0.3s ease-out;
+}

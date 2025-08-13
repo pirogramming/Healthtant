@@ -1,14 +1,82 @@
-{% extends 'main/main_base.html' %}
-{% block content %}
-<h1>회원 탈퇴</h1>
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원탈퇴</title>
+    <link rel="stylesheet" href="{% static 'mypage/mypage_withdraw_confirm.css' %}">
+</head>
+<body>
+    <div class="container">
+        <!-- 헤더 -->
+        <div class="header">
+            <button class="back-button" onclick="history.back()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M15 18L9 12L15 6" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+            <h1 class="page-title">회원탈퇴</h1>
+        </div>
+        
+        <div class="content">
+            <!-- 제목 -->
+            <h2 class="main-title">회원탈퇴 전 확인해주세요.</h2>
+            
+            <!-- 안내사항 박스 -->
+            <div class="notice-box">
+                <ul class="notice-list">
+                    <li>회원가입 시 입력한 정보는 모두 삭제됩니다.</li>
+                    <li>회원 탈퇴 시 모든 데이터는 복구되지 않습니다.</li>
+                </ul>
+            </div>
+            
+            <!-- 동의 체크박스 -->
+            <div class="agreement-section">
+                <label class="checkbox-container">
+                    <input type="checkbox" id="agreeCheckbox" onchange="toggleSubmitButton()">
+                    <span class="checkmark"></span>
+                    <span class="checkbox-text">위 내용을 모두 확인하였으며, 이에 동의합니다.</span>
+                </label>
+            </div>
+            
+            <!-- 탈퇴 버튼 -->
+            <form method="post" id="withdrawForm">
+                {% csrf_token %}
+                <button type="submit" class="withdraw-button" id="submitButton" disabled>
+                    회원탈퇴
+                </button>
+            </form>
+        </div>
+    </div>
 
-<p>정말로 탈퇴하시겠습니까? 이 작업은 되돌릴 수 없습니다.</p>
+    <script>
+        function toggleSubmitButton() {
+            const checkbox = document.getElementById('agreeCheckbox');
+            const submitButton = document.getElementById('submitButton');
+            
+            if (checkbox.checked) {
+                submitButton.disabled = false;
+                submitButton.classList.add('active');
+            } else {
+                submitButton.disabled = true;
+                submitButton.classList.remove('active');
+            }
+        }
 
-<form method="post" style="margin-top:12px;">
-  {% csrf_token %}
-  <button type="submit" style="color:#fff;background:#d9534f;border:none;padding:8px 12px;border-radius:6px;cursor:pointer;">
-    탈퇴하기
-  </button>
-  <a href="{% url 'mypage:profile_view' %}" style="margin-left:10px;">취소</a>
-</form>
-{% endblock %}
+        // 폼 제출 시 재확인
+        document.getElementById('withdrawForm').addEventListener('submit', function(e) {
+            if (!document.getElementById('agreeCheckbox').checked) {
+                e.preventDefault();
+                alert('동의 사항을 체크해주세요.');
+                return false;
+            }
+            
+            if (!confirm('정말로 탈퇴하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
+                e.preventDefault();
+                return false;
+            }
+        });
+    </script>
+</body>
+</html>

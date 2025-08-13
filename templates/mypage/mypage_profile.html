@@ -1,103 +1,164 @@
 {% load static %}
-
-{% block extra_css %}
-<link rel="stylesheet" href="{% static 'mypage/mypage_profile.css' %}">
-{% endblock %}
-
-{% block content %}
-<div class="profile-container">
-    <!-- 프로필 이미지 섹션 -->
-    <div class="profile-picture-section">
-        <div class="profile-picture">
-            {% if user_data.profile_image_url %}
-                <img src="{{ user_data.profile_image_url }}" alt="프로필 이미지">
-            {% else %}
-                <div class="profile-placeholder">
-                    <svg width="60" height="60" viewBox="0 0 60 60" fill="none">
-                        <path d="M30 30C35.5228 30 40 25.5228 40 20C40 14.4772 35.5228 10 30 10C24.4772 10 20 14.4772 20 20C20 25.5228 24.4772 30 30 30Z" fill="white"/>
-                        <path d="M30 35C22.268 35 16 41.268 16 49V50C16 51.1046 16.8954 52 18 52H42C43.1046 52 44 51.1046 44 50V49C44 41.268 37.732 35 30 35Z" fill="white"/>
-                    </svg>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>마이페이지</title>
+    <link rel="stylesheet" href="{% static 'mypage/mypage_profile.css' %}">
+</head>
+<body>
+    <div class="container">
+        <!-- 헤더 -->
+        <div class="header">
+            <button class="back-button" onclick="history.back()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M15 18L9 12L15 6" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+        </div>
+        
+        <div class="content">
+            <!-- 프로필 이미지 섹션 -->
+            <div class="profile-picture-section">
+                <div class="profile-picture">
+                    {% if user_data.profile_image_url %}
+                        <img src="{{ user_data.profile_image_url }}" alt="프로필 이미지">
+                    {% else %}
+                        <svg width="94" height="95" viewBox="0 0 94 95" fill="none">
+                            <g clip-path="url(#clip0_357_1027)">
+                                <path d="M47 82.75C66.468 82.75 82.25 66.968 82.25 47.5C82.25 28.032 66.468 12.25 47 12.25C27.532 12.25 11.75 28.032 11.75 47.5C11.75 66.968 27.532 82.75 47 82.75Z" fill="#180E19" stroke="#180E19" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M46.666 28.6666C54.2229 28.6668 60.3486 34.7933 60.3486 42.3502C60.3485 49.907 54.2228 56.0327 46.666 56.0328C39.1091 56.0328 32.9826 49.9071 32.9824 42.3502C32.9824 34.7932 39.109 28.6666 46.666 28.6666Z" fill="white" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M23.5 69.0416C25.6719 64.7637 28.9859 61.1707 33.0748 58.6609C37.1637 56.1511 41.8677 54.8226 46.6654 54.8226C51.4631 54.8226 56.1671 56.1511 60.256 58.6609C64.3448 61.1707 67.6589 64.7637 69.8308 69.0416" fill="white"/>
+                            </g>
+                            <defs>
+                                <clipPath id="clip0_357_1027">
+                                <rect width="94" height="94" fill="white" transform="translate(0 0.5)"/>
+                                </clipPath>
+                            </defs>
+                        </svg>
+                    {% endif %}
                 </div>
-            {% endif %}
-        </div>
-        <p class="change-picture-text">Change picture</p>
-    </div>
-
-    <!-- 사용자 정보 섹션 -->
-    <div class="user-info-section">
-        <div class="info-row">
-            <span class="info-label">닉네임</span>
-            <span class="info-value">{{ user_data.nickname }}</span>
-        </div>
-        <div class="info-row">
-            <span class="info-label">이름</span>
-            <span class="info-value">{{ user_data.user_name }}</span>
-        </div>
-        <div class="info-row">
-            <span class="info-label">나이</span>
-            <span class="info-value">{{ user_data.user_age }}</span>
-        </div>
-        <div class="info-row">
-            <span class="info-label">성별</span>
-            <span class="info-value">
-                {% if user_data.user_gender == 'M' %}남자{% else %}여자{% endif %}
-            </span>
-        </div>
-    </div>
-
-    <!-- 즐겨찾는 제품 섹션 -->
-    <div class="section">
-        <h3 class="section-title">즐겨찾는 제품</h3>
-    </div>
-
-    <!-- 계정 연동 섹션 -->
-    <div class="section">
-        <h3 class="section-title">Link Accounts</h3>
-        <div class="link-row">
-            <div class="link-content">
-                <div class="link-icon kakao-icon">TALK</div>
-                <span class="link-text">카카오톡 계정 연동하기</span>
+                <p class="change-picture-text">Change picture</p>
             </div>
-            <div class="arrow-icon">></div>
-        </div>
-        <div class="link-row">
-            <div class="link-content">
-                <div class="link-icon google-icon">G</div>
-                <span class="link-text">구글 계정 연동하기</span>
+
+            <!-- 사용자 정보 섹션 -->
+            <div class="user-info-section">
+                <div class="info-row">
+                    <span class="info-label">닉네임</span>
+                    <span class="info-value">@{{ user_data.nickname }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">이름</span>
+                    <span class="info-value">{{ user_data.user_name }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">나이</span>
+                    <span class="info-value">{{ user_data.user_age }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">성별</span>
+                    <span class="info-value">
+                        {% if user_data.user_gender == 'M' %}남자{% else %}여자{% endif %}
+                    </span>
+                </div>
             </div>
-            <div class="arrow-icon">></div>
+
+            <!-- 즐겨찾는 제품 섹션 -->
+            <div class="section">
+                <div class="link-row" onclick="window.location.href='{% url 'mypage:favorite_food_list' %}'">
+                    <div class="link-content">
+                        <h3 class="section-title">즐겨찾는 제품</h3>
+                    </div>
+                    <div class="arrow-icon">></div>
+                </div>
+            </div>
+
+            <!-- 계정 연동 섹션 -->
+            <div class="section">
+                <h3 class="section-title">Link Accounts</h3>
+                <div class="link-row">
+                    <div class="link-content">
+                        <div class="link-icon kakao-icon">TALK</div>
+                        <span class="link-text">카카오톡 계정 연동하기</span>
+                    </div>
+                    <div class="arrow-icon">></div>
+                </div>
+                <div class="link-row">
+                    <div class="link-content">
+                        <div class="link-icon google-icon">G</div>
+                        <span class="link-text">구글 계정 연동하기</span>
+                    </div>
+                    <div class="arrow-icon">></div>
+                </div>
+            </div>
+
+            <!-- 로그아웃/탈퇴 섹션 -->
+            <div class="section">
+                <h3 class="section-title" onclick="confirmLogout()">로그아웃</h3>
+                <p class="withdrawal-text" onclick="window.location.href='{% url 'mypage:account_withdraw' %}'">탈퇴하기</p>
+            </div>
+        </div>
+
+        <!-- 기존 폼 (숨김 처리) -->
+        <form method="post" style="display: none;">
+            {% csrf_token %}
+            <div>
+                <label>닉네임</label>
+                <input type="text" name="nickname" value="{{ user_data.nickname }}">
+            </div>
+            <div>
+                <label>나이</label>
+                <input type="number" name="user_age" value="{{ user_data.user_age }}">
+            </div>
+            <div>
+                <label>성별</label>
+                <select name="user_gender">
+                    <option value="M" {% if user_data.user_gender == 'M' %}selected{% endif %}>남성</option>
+                    <option value="F" {% if user_data.user_gender == 'F' %}selected{% endif %}>여성</option>
+                </select>
+            </div>
+            <div>
+                <label>프로필 이미지 URL</label>
+                <input type="url" name="profile_image_url" value="{{ user_data.profile_image_url }}">
+            </div>
+            <button type="submit">저장</button>
+        </form>
+    </div>
+
+    <!-- 로그아웃 확인 모달 -->
+    <div class="modal-overlay" id="logoutModal">
+        <div class="modal-container">
+            <div class="modal-content">
+                <p class="modal-message">로그아웃 하시겠습니까?</p>
+                <div class="modal-buttons">
+                    <button class="modal-button cancel-button" onclick="closeLogoutModal()">취소</button>
+                    <button class="modal-button confirm-button" onclick="performLogout()">확인</button>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- 로그아웃/탈퇴 섹션 -->
-    <div class="section">
-        <h3 class="section-title">로그아웃</h3>
-        <p class="withdrawal-text">탈퇴하기</p>
-    </div>
+    <script>
+        function confirmLogout() {
+            document.getElementById('logoutModal').style.display = 'flex';
+        }
 
-    <!-- 기존 폼 (숨김 처리) -->
-    <form method="post" style="display: none;">
-        {% csrf_token %}
-        <div>
-            <label>닉네임</label>
-            <input type="text" name="nickname" value="{{ user_data.nickname }}">
-        </div>
-        <div>
-            <label>나이</label>
-            <input type="number" name="user_age" value="{{ user_data.user_age }}">
-        </div>
-        <div>
-            <label>성별</label>
-            <select name="user_gender">
-                <option value="M" {% if user_data.user_gender == 'M' %}selected{% endif %}>남성</option>
-                <option value="F" {% if user_data.user_gender == 'F' %}selected{% endif %}>여성</option>
-            </select>
-        </div>
-        <div>
-            <label>프로필 이미지 URL</label>
-            <input type="url" name="profile_image_url" value="{{ user_data.profile_image_url }}">
-        </div>
-        <button type="submit">저장</button>
-    </form>
-</div>
-{% endblock %}
+        function closeLogoutModal() {
+            document.getElementById('logoutModal').style.display = 'none';
+        }
+
+        function performLogout() {
+            // Django allauth 로그아웃 URL로 이동
+            window.location.href = "{% url 'account_logout' %}";
+        }
+
+        // 모달 외부 클릭 시 닫기
+        document.getElementById('logoutModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeLogoutModal();
+            }
+        });
+    </script>
+</body>
+</html>
