@@ -282,36 +282,10 @@
             }
         });
 
-        // 프로필 페이지로 POST 요청
+        // 프로필 편집 페이지로 이동
         function goToProfilePage() {
-            // CSRF 토큰 가져오기
-            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
-                              document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-            
-            // POST 요청으로 프로필 페이지 이동
-            fetch('/accounts/profile/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'X-Requested-With': 'XMLHttpRequest',
-                },
-                body: `csrfmiddlewaretoken=${csrfToken}&action=edit_profile`
-            })
-            .then(response => {
-                if (response.ok) {
-                    // POST 요청 성공 후 프로필 페이지로 이동
-                    window.location.href = '/accounts/profile/';
-                } else {
-                    console.error('프로필 페이지 요청 실패');
-                    // 실패 시에도 GET으로 이동
-                    window.location.href = '/accounts/profile/';
-                }
-            })
-            .catch(error => {
-                console.error('오류:', error);
-                // 오류 시에도 GET으로 이동
-                window.location.href = '/accounts/profile/';
-            });
+            // 프로필 편집 페이지로 직접 이동
+            window.location.href = '/accounts/profile/edit/';
         }
     </script>
 </body>

@@ -22,7 +22,6 @@ def profile(request):
 
     elif request.method == "POST":
         try:
-            print("OK")
             profile = request.user.profile
 
             profile.nickname = request.POST.get("nickname")
@@ -31,9 +30,26 @@ def profile(request):
             # 프로필 이미지 URL은 추후 파일 업로드 처리 방식에 따라 별도 처리 가능
             profile.save()
 
-            return JsonResponse({"message": "회원 정보 수정 성공", "redirect": "/"})
+            return redirect('/mypage/')
+            # return JsonResponse({"message": "회원 정보 수정 성공", "redirect": "/"})
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=400)
+
+    return JsonResponse({"error": "Invalid request"}, status=400)
+
+# 프로필수정뷰추가
+@csrf_exempt
+@login_required(login_url='/accounts/login/')
+def profile_edit(request):
+    """
+    프로필 편집 페이지 (GET: 편집 폼 표시, POST: 편집 내용 저장)
+    """
+    if request.method == "GET":
+        # 편집 폼 렌더링
+        return render(request, 'accounts/profile_edit.html', {
+            "user": request.user,
+            "profile": request.user.profile,
+        })
 
     return JsonResponse({"error": "Invalid request"}, status=400)
 
