@@ -13,7 +13,7 @@
   <h1 class="app-title">HEALTHTANT</h1>
 
   <!-- 검색 영역 (헤더 안으로 이동) -->
-  <section class="search-container">
+  {% comment %} <section class="search-container">
     <form class="search-form" method="GET" action="#">
       <input
         type="text"
@@ -39,7 +39,20 @@
         </svg>
       </button>
     </form>
-  </section>
+  </section> {% endcomment %}
+    <div class="main-search-section">
+        <div class="main-search-container">
+            <div class="main-search-input-wrapper">
+                <input type="text" id="searchInput" class="main-search-input" placeholder="What's your daily needs?">
+                <button type="button" class="main-search-button" onclick="performSearch()">
+                    <svg class="main-search-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <circle cx="9" cy="9" r="6" stroke="#56AAB2" stroke-width="2"/>
+                        <path d="M14 14L17 17" stroke="#56AAB2" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
 </header>
 {% endblock %}
 

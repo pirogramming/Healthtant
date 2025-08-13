@@ -3,14 +3,14 @@
     --main-color: rgba(86, 170, 178, 1);
     --main-color-hover: rgba(94, 189, 198, 0.65);
 }
+
+/* 페이지별 view 스타일 오버라이드 */
 .view {
     padding-bottom: 0 !important;
 }
 
-/* base.css에서 body 스타일을 상속받으므로 여기서는 제거 */
-
+/* 페이지별 네비게이션 바 */
 .nav-bar {
-    
     height: 40px;
     display: flex;
     align-items: center;

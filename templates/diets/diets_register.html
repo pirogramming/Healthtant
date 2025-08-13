@@ -12,14 +12,17 @@
     <div class="status-bar"></div>
     <div class="search-section">
         <div class="search-container">
-            <button type="button" class="search-input" onclick="performSearch()">
-                <span class="search-placeholder">새 제품을 검색해서 찾아보세요</span>
-                <div class="search-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M9.183 3.62741C6.11475 3.62741 3.62744 6.11472 3.62744 9.18297C3.62744 12.2512 6.11475 14.7385 9.183 14.7385C10.6756 14.7385 12.0307 14.1499 13.0289 13.1921C13.0525 13.1622 13.0781 13.1334 13.1058 13.1057C13.1334 13.0781 13.1622 13.0525 13.1922 13.0289C14.1499 12.0307 14.7386 10.6756 14.7386 9.18297C14.7386 6.11472 12.2512 3.62741 9.183 3.62741ZM15.146 13.7594C16.1202 12.492 16.6993 10.9051 16.6993 9.18297C16.6993 5.03181 13.3342 1.66663 9.183 1.66663C5.03184 1.66663 1.66666 5.03181 1.66666 9.18297C1.66666 13.3341 5.03184 16.6993 9.183 16.6993C10.9052 16.6993 12.492 16.1201 13.7595 15.1459L16.6597 18.0461C17.0426 18.429 17.6633 18.429 18.0462 18.0461C18.429 17.6633 18.429 17.0425 18.0462 16.6597L15.146 13.7594Z" fill="#56AAB2"/>
-                    </svg>
-                </div>
-            </button>
+            <div class="search-input-wrapper">
+                <input type="text" id="searchInput" class="search-input" placeholder="새 제품을 검색해서 찾아보세요">
+                <button type="button" class="search-button" onclick="performSearch()">
+                    <div class="search-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <circle cx="9" cy="9" r="6" stroke="#56AAB2" stroke-width="2"/>
+                            <path d="M14 14L17 17" stroke="#56AAB2" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                </button>
+            </div>
         </div>
         <button class="cancel-btn" onclick="clearSearch()">취소</button>
     </div>
@@ -36,7 +39,7 @@
         <h2>과거에 섭취한 제품목록</h2>
         <div class="recent-foods-list">
             {% for food in recent_foods %}
-            <div class="food-card" data-food-id="{{ food.food_id }}">
+                            <div class="food-card card" data-food-id="{{ food.food_id }}">
                 <div class="food-image">
                     {% if food.food_img %}
                         <img src="{{ food.food_img }}" alt="{{ food.food_name }}">
@@ -48,7 +51,7 @@
                     <h3 class="food-name">{{ food.food_name }}</h3>
                     <p class="food-company">제조사: {{ food.company_name }}</p>
                 </div>
-                <button class="register-btn" onclick="registerFood('{{ food.food_id }}')">
+                <button class="register-btn btn btn-primary" onclick="registerFood('{{ food.food_id }}')">
                     <span class="plus-icon">+</span>
                     <span class="register-text">등록하기</span>
                 </button>
@@ -59,7 +62,7 @@
                 <div class="empty-icon">🔎</div>
                 <div class="empty-title">최근에 등록한 제품이 없어요</div>
                 <div class="empty-sub">상단의 검색을 눌러 제품을 찾아 등록해보세요.</div>
-                <button class="register-btn" type="button" onclick="performSearch()">
+                <button class="register-btn btn btn-primary" type="button" onclick="performSearch()">
                     <span class="plus-icon">+</span>
                     <span class="register-text">새 제품 검색하러 가기</span>
                 </button>
