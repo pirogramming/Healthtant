@@ -93,9 +93,9 @@ body {
 
 /* 메인 타이틀 (홈페이지용) */
 .app-title {
-  font-family: var(--font-title);
-  font-size: var(--font-size-lg);
-  color: var(--primary-color);
+  font-family: "Koulen";
+  font-size: 50px;
+  color: var(--main);
   text-align: center;
   font-weight: 400;
   margin: -5px;

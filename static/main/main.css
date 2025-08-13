@@ -42,7 +42,7 @@
 }
 
 .app-title {
-    font-family: "Koulen", Helvetica, Arial, sans-serif;
+    font-family: "Koulen";
     font-size: 50px;
     color: var(--main);
     text-align: center;

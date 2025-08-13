@@ -1,44 +1,38 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="ko" data-colors-mode="light">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{{ product.food_name }} - Healthtant</title>
-  <meta name="csrf-token" content="{{ csrf_token }}">
+
+{% block title %}{{ product.food_name }} - HEALTHTANT{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'products/product_detail.css' %}">
+{% endblock %}
+
+{% block header %}
+<header class="app-header">
+  <div class="status-bar"></div>
   
-  <!-- 폰트 로드 -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Koulen&family=Satoshi:wght@400;500;700&display=swap" rel="stylesheet">
-  
-  <!-- 기본 CSS 구조 -->
-  <link rel="stylesheet" href="{% static 'base/variables.css' %}">
-  <link rel="stylesheet" href="{% static 'base/base.css' %}">
-  <link rel="stylesheet" href="{% static 'products/product_detail.css' %}">
-</head>
-<body>
+  <!-- 뒤로가기 버튼 + 제목 -->
+  <div class="header-nav">
+    <button class="back-button" onclick="history.back()" aria-label="뒤로가기">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path d="M15 18L9 12L15 6" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <h1 class="page-title">{{ product.food_name }}</h1>
+    <button class="share-btn">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path d="M18 8C19.6569 8 21 6.65685 21 5C21 3.34315 19.6569 2 18 2C16.3431 2 15 3.34315 15 5C15 5.58835 15.1978 6.1264 15.5357 6.56066L8.46434 10.5607C8.1264 10.1978 7.58835 10 7 10C5.34315 10 4 11.3431 4 13C4 14.6569 5.34315 16 7 16C7.58835 16 8.1264 15.8022 8.46434 15.4393L15.5357 19.4393C15.1978 19.8736 15 20.4117 15 21C15 22.6569 16.3431 24 18 24C19.6569 24 21 22.6569 21 21C21 19.3431 19.6569 18 18 18C17.4117 18 16.8736 18.1978 16.4393 18.5357L9.36066 14.5357C9.69822 14.1264 9.9 13.5883 9.9 13C9.9 12.4117 9.69822 11.8736 9.36066 11.4393L16.4393 7.43934C16.8736 7.80218 17.4117 8 18 8Z" fill="currentColor"/>
+      </svg>
+    </button>
+  </div>
+</header>
+{% endblock %}
+
+{% block bottom_navigation %}{% endblock %}
+
+{% block content %}
 <div class="screen">
   <div class="view">
-    <!-- 헤더 영역 -->
-    <header class="app-header">
-      <div class="status-bar"></div>
-      
-      <!-- 뒤로가기 버튼 + 제목 -->
-      <div class="header-nav">
-        <button class="back-button" onclick="history.back()" aria-label="뒤로가기">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-            <path d="M15 18L9 12L15 6" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
-        <h1 class="page-title">{{ product.food_name }}</h1>
-        <button class="share-btn">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-            <path d="M18 8C19.6569 8 21 6.65685 21 5C21 3.34315 19.6569 2 18 2C16.3431 2 15 3.34315 15 5C15 5.58835 15.1978 6.1264 15.5357 6.56066L8.46434 10.5607C8.1264 10.1978 7.58835 10 7 10C5.34315 10 4 11.3431 4 13C4 14.6569 5.34315 16 7 16C7.58835 16 8.1264 15.8022 8.46434 15.4393L15.5357 19.4393C15.1978 19.8736 15 20.4117 15 21C15 22.6569 16.3431 24 18 24C19.6569 24 21 22.6569 21 21C21 19.3431 19.6569 18 18 18C17.4117 18 16.8736 18.1978 16.4393 18.5357L9.36066 14.5357C9.69822 14.1264 9.9 13.5883 9.9 13C9.9 12.4117 9.69822 11.8736 9.36066 11.4393L16.4393 7.43934C16.8736 7.80218 17.4117 8 18 8Z" fill="currentColor"/>
-          </svg>
-        </button>
-      </div>
-    </header>
 
     <!-- 메인 컨텐츠 -->
     <main class="product-content">
@@ -450,6 +444,75 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 </script>
+{% endblock %}
 
-</body>
-</html>
+{% block extra_js %}
+<script>
+// AJAX 좋아요 기능
+function toggleFavorite() {
+  const favoriteBtn = document.getElementById('favoriteBtn');
+  const productId = favoriteBtn.getAttribute('data-product-id');
+  const isFavorite = favoriteBtn.getAttribute('data-is-favorite') === 'true';
+  
+  // 버튼 비활성화 (중복 클릭 방지)
+  favoriteBtn.disabled = true;
+  
+  // CSRF 토큰 가져오기
+  const metaToken = document.querySelector('meta[name="csrf-token"]');
+  const inputToken = document.querySelector('[name=csrfmiddlewaretoken]');
+  const csrfToken = inputToken ? inputToken.value : (metaToken ? metaToken.getAttribute('content') : '');
+  
+  fetch(`/products/${productId}/like/`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': csrfToken,
+      'X-Requested-With': 'XMLHttpRequest'
+    },
+    credentials: 'same-origin'
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('네트워크 오류가 발생했습니다.');
+    }
+    return response.json();
+  })
+  .then(data => {
+    // UI 업데이트
+    if (data.is_favorite) {
+      favoriteBtn.classList.add('active');
+      favoriteBtn.setAttribute('data-is-favorite', 'true');
+      favoriteBtn.setAttribute('aria-pressed', 'true');
+    } else {
+      favoriteBtn.classList.remove('active');
+      favoriteBtn.setAttribute('data-is-favorite', 'false');
+      favoriteBtn.setAttribute('aria-pressed', 'false');
+    }
+    
+    // 성공 메시지 (선택사항)
+    // console.log(data.is_favorite ? '좋아요 추가!' : '좋아요 취소!');
+  })
+  .catch(error => {
+    console.error('좋아요 처리 오류:', error);
+    // 에러 메시지 표시 (선택사항)
+    // alert('좋아요 처리 중 오류가 발생했습니다.');
+  })
+  .finally(() => {
+    // 버튼 재활성화
+    favoriteBtn.disabled = false;
+  });
+}
+
+// 페이지 로드 시 실행
+document.addEventListener('DOMContentLoaded', function() {
+  // 건강 정보 생성
+  generateHealthInfo();
+  
+  // 좋아요 버튼 이벤트 리스너 추가
+  const favoriteBtn = document.getElementById('favoriteBtn');
+  if (favoriteBtn) {
+    favoriteBtn.addEventListener('click', toggleFavorite);
+  }
+});
+</script>
+{% endblock %}

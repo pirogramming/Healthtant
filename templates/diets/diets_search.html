@@ -1,33 +1,37 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>식사등록페이지 - Healthtant</title>
-    <link rel="stylesheet" href="{% static 'diets/diets_search.css' %}">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600&display=swap" rel="stylesheet">
-</head>
-<body>
-    <header class="app-header">
-        <div class="status-bar"></div>
-        <div class="search-section">
-            <div class="search-container">
-                <div class="search-input-wrapper">
-                    <input type="text" id="searchInput" class="search-input" placeholder="새 제품을 검색해서 찾아보세요">
-                    <button type="button" class="search-button" onclick="performSearch()">
-                        <div class="search-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
-                                <circle cx="9" cy="9" r="6" stroke="#56AAB2" stroke-width="2"/>
-                                <path d="M14 14L17 17" stroke="#56AAB2" stroke-width="2" stroke-linecap="round"/>
-                            </svg>
-                        </div>
-                    </button>
-                </div>
+
+{% block title %}식사등록페이지 - HEALTHTANT{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'diets/diets_search.css' %}">
+{% endblock %}
+
+{% block header %}
+<header class="app-header">
+    <div class="status-bar"></div>
+    <div class="search-section">
+        <div class="search-container">
+            <div class="search-input-wrapper">
+                <input type="text" id="searchInput" class="search-input" placeholder="새 제품을 검색해서 찾아보세요">
+                <button type="button" class="search-button" onclick="performSearch()">
+                    <div class="search-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <circle cx="9" cy="9" r="6" stroke="#56AAB2" stroke-width="2"/>
+                            <path d="M14 14L17 17" stroke="#56AAB2" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                </button>
             </div>
-            <button class="cancel-btn" onclick="clearSearch()">취소</button>
         </div>
-    </header>
+        <button class="cancel-btn" onclick="clearSearch()">취소</button>
+    </div>
+</header>
+{% endblock %}
+
+{% block bottom_navigation %}{% endblock %}
+
+{% block content %}
 <div class="meal-register-container">
 
     <!-- 검색 결과 섹션 -->
@@ -39,6 +43,9 @@
     </div>
 </div>
 
+{% endblock %}
+
+{% block extra_js %}
 <script>
 function performSearch() {
     const searchInput = document.getElementById('searchInput');
@@ -127,5 +134,4 @@ document.getElementById('searchInput').addEventListener('keypress', function(e) 
     }
 });
 </script>
-</body>
-</html>
+{% endblock %}

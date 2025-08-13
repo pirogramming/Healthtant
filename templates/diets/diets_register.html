@@ -1,14 +1,13 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>식사등록페이지 - Healthtant</title>
-    <link rel="stylesheet" href="{% static 'diets/diets_register.css' %}">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600&display=swap" rel="stylesheet">
-</head>
-<body>
+
+{% block title %}식사등록페이지 - HEALTHTANT{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'diets/diets_register.css' %}">
+{% endblock %}
+
+{% block header %}
 <header class="app-header">
     <div class="status-bar"></div>
     <div class="search-section">
@@ -25,6 +24,11 @@
         <button class="cancel-btn" onclick="clearSearch()">취소</button>
     </div>
 </header>
+{% endblock %}
+
+{% block bottom_navigation %}{% endblock %}
+
+{% block content %}
 
 <div class="meal-register-container">
     <!-- 과거 섭취 제품 목록 -->
@@ -65,6 +69,9 @@
     </div>
 </div>
 
+{% endblock %}
+
+{% block extra_js %}
 <script>
 function performSearch() {
     // 검색 페이지로 이동
@@ -92,5 +99,4 @@ function registerFood(foodId) {
     window.location.href = `/diets/upload/?food=${foodId}&date=${todayString}`;
 }
 </script>
-</body>
-</html>
+{% endblock %}

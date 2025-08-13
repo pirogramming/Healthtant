@@ -1,12 +1,27 @@
-{% extends 'analysis/analysis_base.html' %}
+{% extends 'base.html' %}
 {% load static %}
 
 {% block title %}상세 식사 분석 - HEALTHTANT{% endblock %}
-{% block page_title %}상세 식사 분석{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'analysis/analysis.css' %}">
 <link rel="stylesheet" href="{% static 'analysis/analysis_diet.css' %}">
+{% endblock %}
+
+{% block header %}
+<header class="app-header">
+  <div class="status-bar"></div>
+  
+  <!-- 뒤로가기 버튼 + 제목 -->
+  <div class="header-nav">
+    <button class="back-button" onclick="history.back()" aria-label="뒤로가기">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path d="M15 18L9 12L15 6" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <h1 class="page-title">상세 식사 분석</h1>
+  </div>
+</header>
 {% endblock %}
 
 {% block content %}
@@ -190,6 +205,8 @@
     </div>
   </div>
 </div>
+{% block bottom_navigation %}
+{% endblock %}  
 {% endblock %}
 
 {% block extra_js %}
