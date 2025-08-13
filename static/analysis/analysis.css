@@ -53,47 +53,51 @@
 }
 
 .date-range-container {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-md);
-    width: 100%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: var(--spacing-md);
+  width: 100%;
 }
 
 .date-input-group {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
 }
 
 .date-label {
-    font-size: 14px;
-    color: var(--gray-100);
-    text-align: left;
+  font-size: 14px;
+  color: var(--gray-100);
+  text-align: center;
 }
 
 .date-input {
-    padding: 14px var(--spacing-md);
-    border: 1px solid var(--gray-50);
-    border-radius: var(--border-radius-sm);
-    font-size: 16px;
-    font-family: var(--font-primary);
-    background-color: var(--white);
-    color: var(--black);
-    text-align: center;
-    transition: all 0.3s ease;
+  padding: 14px var(--spacing-md);
+  border: 1px solid var(--gray-50);
+  border-radius: var(--border-radius-sm);
+  font-size: 16px;
+  font-family: var(--font-primary);
+  background-color: var(--white);
+  color: var(--black);
+  text-align: center;
+  transition: all 0.3s ease;
+  width: 100%;
 }
 
 .date-input:focus {
-    outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 2px rgba(86, 170, 178, 0.1);
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(86, 170, 178, 0.1);
 }
 
 .date-separator {
-    font-size: 20px;
-    color: var(--gray-100);
-    margin-top: 20px;
+  font-size: 20px;
+  color: var(--gray-100);
+  margin-top: 20px;
+  flex-shrink: 0;
 }
 
 .analyze-button {
