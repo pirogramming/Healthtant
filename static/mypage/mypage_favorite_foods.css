@@ -195,7 +195,7 @@ body {
 
 /* 즐겨찾기 버튼 */
 .favorite-btn {
-    background-color: #56AAB2;
+    background-color: rgba(86, 170, 178, 1);
     color: white;
     border: none;
     border-radius: 20px;
@@ -221,7 +221,7 @@ body {
 }
 
 .favorite-btn.active {
-    background-color: #56AAB2;
+    background-color: rgba(86, 170, 178, 1);
 }
 
 .favorite-text {

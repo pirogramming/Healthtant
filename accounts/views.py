@@ -22,6 +22,7 @@ def profile(request):
 
     elif request.method == "POST":
         try:
+            print("OK")
             profile = request.user.profile
 
             profile.nickname = request.POST.get("nickname")

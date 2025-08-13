@@ -10,7 +10,8 @@ class UserProfile(models.Model):
     null=True,  # DB에 null 허용
     blank=True)
     user_age = models.IntegerField(null=True, blank=True)
-    profile_image_url = models.TextField(null=True, blank=True)
+    profile_image_url = models.TextField(null=True, blank=True)  # 기존 URL 필드 유지
+    profile_image = models.ImageField(upload_to='profile_images/', null=True, blank=True)  # 실제 이미지 파일
 
     def __str__(self):
         return self.nickname

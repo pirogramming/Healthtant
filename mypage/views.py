@@ -3,7 +3,10 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods, require_POST
 from django.contrib import messages
 from django.contrib.auth import logout
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 from foods.models import FavoriteFood
+import os
 
 @login_required
 @require_http_methods(["GET", "POST"])
@@ -45,6 +48,12 @@ def profile_view(request):
         return redirect('mypage:profile')  # url name에 맞게 변경
 
     # GET: 화면 렌더링
+    profile_image_url = ""
+    if hasattr(user, 'profile') and user.profile.profile_image:
+        profile_image_url = user.profile.profile_image.url
+    elif hasattr(user, 'profile') and user.profile.profile_image_url:
+        profile_image_url = user.profile.profile_image_url
+    
     user_data = {
         "user_id": str(user.id),
         "nickname": getattr(user, 'nickname', user.username),
@@ -52,7 +61,7 @@ def profile_view(request):
         "user_gender": getattr(user, 'user_gender', 'M'),
         "user_age": getattr(user, 'user_age', 25),
         "user_email": user.email,
-        "profile_image_url": getattr(user, 'user_image', '') or "http://example.com/default.png"
+        "profile_image_url": profile_image_url
     }
     if hasattr(user, 'profile'):
         p = user.profile
@@ -60,9 +69,58 @@ def profile_view(request):
             "nickname": getattr(p, 'nickname', user.username),
             "user_gender": getattr(p, 'user_gender', 'M'),
             "user_age": getattr(p, 'user_age', 25),
-            "profile_image_url": getattr(p, 'user_image', '') or "http://example.com/default.png"
+            "profile_image_url": profile_image_url
         })
     return render(request, 'mypage/mypage_profile.html', {'user_data': user_data})
+
+
+@login_required
+@require_POST
+def upload_profile_image(request):
+    """
+    프로필 이미지 업로드 (AJAX) - 별도 엔드포인트
+    """
+    try:
+        if 'profile_image' not in request.FILES:
+            return JsonResponse({'success': False, 'error': '이미지 파일이 없습니다.'})
+        
+        profile_image = request.FILES['profile_image']
+        
+        # 파일 검증
+        if profile_image.size > 5 * 1024 * 1024:  # 5MB 제한
+            return JsonResponse({'success': False, 'error': '파일 크기가 너무 큽니다. (최대 5MB)'})
+        
+        if not profile_image.content_type.startswith('image/'):
+            return JsonResponse({'success': False, 'error': '이미지 파일만 업로드 가능합니다.'})
+        
+        # 사용자 프로필 가져오기 또는 생성
+        user = request.user
+        if not hasattr(user, 'profile'):
+            from accounts.models import UserProfile
+            profile = UserProfile.objects.create(
+                user=user,
+                nickname=user.username,
+            )
+        else:
+            profile = user.profile
+        
+        # 기존 이미지 파일 삭제 (선택사항)
+        if profile.profile_image:
+            if os.path.exists(profile.profile_image.path):
+                os.remove(profile.profile_image.path)
+        
+        # 새 이미지 저장
+        profile.profile_image = profile_image
+        profile.save()
+        
+        return JsonResponse({
+            'success': True, 
+            'image_url': profile.profile_image.url,
+            'message': '프로필 이미지가 업데이트되었습니다.'
+        })
+        
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': f'업로드 중 오류가 발생했습니다: {str(e)}'})
 
 
 @login_required
