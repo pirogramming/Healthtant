@@ -11,7 +11,7 @@
 
 .nav-bar {
     
-    height: 62px;
+    height: 40px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -171,6 +171,7 @@
     align-items: center;
     gap: 5px;
     transition: background-color 0.2s;
+    text-decoration: none;
 }
 
 .add-meal-btn:hover {

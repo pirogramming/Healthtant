@@ -45,7 +45,7 @@ def product_detail(request, product_id):
     return render(request, "products/products_detail.html", {"product": data})
 
 
-@login_required
+@login_required(login_url='/accounts/login/')
 @require_http_methods(["POST"])
 def toggle_favorite(request, product_id):
     """

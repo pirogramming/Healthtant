@@ -171,7 +171,7 @@
           <li
             class="nav-item {% if request.resolver_match.url_name == 'profile' %}active{% endif %}"
           >
-            <a href="#" class="nav-link" aria-label="내 페이지">
+            <a href={% url 'mypage:profile_view'%} class="nav-link" aria-label="내 페이지">
               <div class="nav-icon-container">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

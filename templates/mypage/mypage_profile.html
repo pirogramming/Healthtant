@@ -1,0 +1,42 @@
+{% extends 'main/main_base.html' %}
+{% block content %}
+<h1>내 프로필</h1>
+
+<form method="post">
+  {% csrf_token %}
+  <div>
+    <label>닉네임</label>
+    <input type="text" name="nickname" value="{{ user_data.nickname }}">
+  </div>
+
+  <div>
+    <label>나이</label>
+    <input type="number" name="user_age" value="{{ user_data.user_age }}">
+  </div>
+
+  <div>
+    <label>성별</label>
+    <select name="user_gender">
+      <option value="M" {% if user_data.user_gender == 'M' %}selected{% endif %}>남성</option>
+      <option value="F" {% if user_data.user_gender == 'F' %}selected{% endif %}>여성</option>
+    </select>
+  </div>
+
+  <div>
+    <label>프로필 이미지 URL</label>
+    <input type="url" name="profile_image_url" value="{{ user_data.profile_image_url }}">
+  </div>
+
+  <button type="submit">저장</button>
+</form>
+
+<hr>
+
+<p>이름: {{ user_data.user_name }}</p>
+<p>이메일: {{ user_data.user_email }}</p>
+<img src="{{ user_data.profile_image_url }}" alt="프로필 이미지" width="100">
+
+<p style="margin-top:16px;">
+  <a href="{% url 'mypage:favorite_food_list' %}">내 즐겨찾기 보기</a>
+</p>
+{% endblock %}
