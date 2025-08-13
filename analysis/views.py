@@ -9,7 +9,7 @@ from django.http import HttpResponseBadRequest
 from statistics import pstdev
 
 # 임시 날짜 선택 페이지 뷰 (확인용)
-@login_required
+@login_required(login_url='/accounts/login/')
 def analysis_date(request):
     return render(request, 'analysis/analysis_date.html')
 

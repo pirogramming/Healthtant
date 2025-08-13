@@ -10,7 +10,7 @@ import json
 from django.http import HttpResponse
 
 #유저 식사 리스트 전달
-@login_required
+@login_required(login_url='/accounts/login/')
 def diet_main(request):
     user = request.user #GET으로 받은 유저 정보
     year = int(request.GET.get('year')) #쿼리로 받은 연도(url에 포함)

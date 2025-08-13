@@ -9,7 +9,7 @@ from .models import UserProfile
 
 
 @csrf_exempt
-@login_required
+@login_required(login_url='/accounts/login/')
 def profile(request):
     if request.method == "GET":
         if request.session.get("just_signed_up", False):
