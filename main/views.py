@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db import transaction
 from django.db.models import Avg
 import json
@@ -33,8 +34,15 @@ def main_page(request):
     return render(request, 'main/main_mainpage.html')
 
 
+def is_admin_user(user):
+    """사용자가 admin인지 확인하는 함수"""
+    return user.is_authenticated and user.is_staff
+
+
+@login_required
+@user_passes_test(is_admin_user)
 def csv_upload_page(request):
-    """CSV 업로드 페이지 뷰"""
+    """CSV 업로드 페이지 뷰 (Admin만 접근 가능)"""
     return render(request, 'main/csv_upload.html')
 
 
@@ -261,6 +269,8 @@ def db_explorer(request):
 
 @csrf_exempt
 @require_http_methods(["POST"])
+@login_required
+@user_passes_test(is_admin_user)
 def upload_csv_data(request):
     """
     CSV/XLSX 파일 업로드 및 데이터베이스 업데이트 API
@@ -339,9 +349,11 @@ def upload_csv_data(request):
 
 @csrf_exempt
 @require_http_methods(["GET"])
+@login_required
+@user_passes_test(is_admin_user)
 def get_csv_template(request):
     """
-    CSV 템플릿 다운로드 API
+    CSV 템플릿 다운로드 API (Admin만 접근 가능)
     """
     try:
         table_type = request.GET.get('table_type', 'food')
@@ -359,9 +371,11 @@ def get_csv_template(request):
 
 @csrf_exempt
 @require_http_methods(["GET"])
+@login_required
+@user_passes_test(is_admin_user)
 def get_database_stats(request):
     """
-    데이터베이스 통계 정보 조회 API
+    데이터베이스 통계 정보 조회 API (Admin만 접근 가능)
     """
     try:
         stats = get_database_stats()

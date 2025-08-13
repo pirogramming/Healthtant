@@ -69,6 +69,7 @@ AUTHENTICATION_BACKENDS = [
 
 LOGIN_REDIRECT_URL = '/accounts/profile/'
 LOGOUT_REDIRECT_URL = '/accounts/login/'
+LOGIN_URL = '/accounts/login/'  # Admin 권한 체크 실패 시 로그인 페이지로 리다이렉트
 ACCOUNT_LOGOUT_ON_GET = True
 
 MIDDLEWARE = [
