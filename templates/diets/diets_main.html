@@ -292,15 +292,43 @@
   </div>
 </div>
 
+<a href="#" id="scrollToTopBtn" class="scroll-to-top-btn" onclick="window.scrollTo(0,0)" aria-label="맨 위로 가기">
+  <svg xmlns="http://www/w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+    <path d="M12 4L4 12H9V20H15V12H20L12 4Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+</a>
+
 {% endblock %}
 
 {% block extra_js %}
 <script>
+
   function getCookie(name) {
     const v = `; ${document.cookie}`;
     const p = v.split(`; ${name}=`);
     if (p.length === 2) return p.pop().split(";").shift();
   }
+  // 맨 위로 가기 버튼 기능
+  const scrollToTopBtn = document.getElementById('scrollToTopBtn');
+
+  // 스크롤 이벤트 리스너
+  window.addEventListener('scroll', () => {
+    if (window.pageYOffset > 1) {
+      scrollToTopBtn.classList.add('show');
+    } else {
+      scrollToTopBtn.classList.remove('show');
+    }
+  });
+
+// 버튼 클릭 시 맨 위로 스크롤 (a태그용)
+  scrollToTopBtn.addEventListener('click', function(e) {
+    e.preventDefault(); // 링크 기본 동작 방지
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: 'instant' // smooth 대신 instant 사용
+    });
+  });
 
   async function deleteMeal(el) {
     const id = el.dataset.dietId;
