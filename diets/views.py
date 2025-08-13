@@ -1,3 +1,4 @@
+from math import log
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from .models import Diet
@@ -6,9 +7,10 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Case, When, Value, IntegerField
 from datetime import date
 import json
+from django.http import HttpResponse
 
 #유저 식사 리스트 전달
-@login_required
+@login_required(login_url='/accounts/login/')
 def diet_main(request):
     user = request.user #GET으로 받은 유저 정보
     year = int(request.GET.get('year')) #쿼리로 받은 연도(url에 포함)
@@ -37,13 +39,7 @@ def diet_main(request):
             'data': []
         }
         #To FE: 템플릿 작업 시작하면 지금 return문 지우고 바로 아래에 주석처리 해둔 return문 채워서 사용해주세요!!!
-        #return render(request, '템플릿 이름.html', context)
-        return JsonResponse({
-            "user_id": str(user.id),
-            "year": year,
-            "month": month,
-            "data": []
-        }, json_dumps_params={'ensure_ascii': False})
+        return render(request, 'diets/diets_main.html', context)
 
     #--------------------여기부터 API 명세 형식에 맞게 데이터 구성해서 반환하는 부분---------------------------------
     current_date = diets[0].date #diets에서 가장 앞의 데이터(가장 빠른 데이터)를 가져와 현재 날짜로 설정
@@ -81,13 +77,7 @@ def diet_main(request):
     }
     
     #To FE: 템플릿 작업 시작하면 지금 return문 지우고 바로 아래에 주석처리 해둔 return문 채워서 사용해주세요!!!
-    #return render(request, '템플릿 이름.html', context)
-    return JsonResponse({
-        "user_id": user.id,
-        "year": year,
-        "month": month,
-        "data": data_list
-    }, json_dumps_params={'ensure_ascii': False})
+    return render(request, 'diets/diets_main.html', context)
 
 @login_required
 #유저가 최근 먹은 식품 리스트 전달
@@ -107,11 +97,11 @@ def diet_list(request):
     #유저가 등록한 식단이 없을 경우 예외처리
     if not diets:
         #To FE: 템플릿 작업 시작하면 지금 return문 지우고 바로 아래에 주석처리 해둔 return문 채워서 사용해주세요!!!
-        #return render(request, '템플릿 이름.html', {"user_id": user.id, "recent_foods": []})
-        return JsonResponse({
-            "user_id": user.id,
-            "recent_foods": []
-        })
+        return render(request, 'diets/diets_register.html', {"user_id": user.id, "recent_foods": []})
+        # return JsonResponse({
+        #     "user_id": user.id,
+        #     "recent_foods": []
+        # })
     
     idx = len(diets)-1 #가장 최근의 식사부터 시작
     cnt = 0 #몇개의 제품이 append 되었는지 추적
@@ -133,11 +123,15 @@ def diet_list(request):
         idx -= 1 #다음으로 최근에 먹은 식사로 이동
 
     #To FE: 템플릿 작업 시작하면 지금 return문 지우고 바로 아래에 주석처리 해둔 return문 채워서 사용해주세요!!!
-    #return render(request, '템플릿 이름.html', {"user_id": user.id, "recent_foods": recent_foods})
-    return JsonResponse({
-        "user_id": user.id,
-        "recent_foods": recent_foods
-    })
+    return render(request, 'diets/diets_register.html', {"user_id": user.id, "recent_foods": recent_foods})
+    # return JsonResponse({
+    #     "user_id": user.id,
+    #     "recent_foods": recent_foods
+    # })
+
+@login_required
+def diet_search_page(request):
+    return render(request, 'diets/diets_search.html')
 
 @login_required
 #유저가 식품 이름으로 검색하는 기능
@@ -180,8 +174,8 @@ def diet_create(request, food_id):
     ret = {'diet_id': str(diet.diet_id), 'user_id': user.id, 'food': str(food_data), 'message': "새 식사 등록이 완료되었습니다."}
 
     #To FE: 템플릿 작업 시작하면 지금 return문 지우고 바로 아래에 주석처리 해둔 return문 채워서 사용해주세요!!!
-    #return redirect(f'/diets/?year={date.today().year}&month={date.today().month}')
-    return JsonResponse(ret, json_dumps_params={'ensure_ascii': False})
+    return redirect(f'/diets/?year={date.today().year}&month={date.today().month}')
+    # return JsonResponse(ret, json_dumps_params={'ensure_ascii': False})
 
 #식사 수정/삭제
 def diet_update(request, diet_id):
@@ -205,7 +199,130 @@ def diet_update(request, diet_id):
     elif request.method == 'DELETE':
         diet = Diet.objects.get(diet_id=diet_id)
         diet.delete()
-        return redirect('/diets/') #식사 관리 메인 페이지로 redirect
+        return HttpResponse(status=204)
     
     #Http 메소드가 PATCH, DELETE 중 무엇도 아닌 경우
     return JsonResponse({'message': "예상치 못한 오류가 발생했습니다."}, status=404)
+
+@login_required
+def diet_form(request, diet_id=None):
+    """
+    식사 등록/수정 폼을 렌더링하고 처리하는 뷰
+    diet_id가 있으면 수정 모드, 없으면 등록 모드
+    """
+    if request.method == 'POST':
+        # POST 요청 처리 (수정 또는 등록)
+        if diet_id:
+            # 수정 모드
+            try:
+                diet = Diet.objects.get(diet_id=diet_id)
+                
+                # 폼 데이터 가져오기
+                date_value = request.POST.get('date')
+                meal_value = request.POST.get('meal_kr')  # JavaScript에서 설정한 한글 끼니
+                food_id = request.POST.get('food')
+                
+                # 데이터 업데이트
+                if date_value:
+                    diet.date = date_value
+                if meal_value:
+                    diet.meal = meal_value
+                if food_id:
+                    try:
+                        food = Food.objects.get(food_id=food_id)
+                        diet.food = food
+                    except Food.DoesNotExist:
+                        pass
+                
+                diet.save()
+                
+                # 수정 완료 후 메인 페이지로 리다이렉트
+                today = date.today()
+                return redirect(f'/diets/?year={today.year}&month={today.month}')
+                
+            except Diet.DoesNotExist:
+                return JsonResponse({'message': '식사를 찾을 수 없습니다.'}, status=404)
+    
+    # GET 요청 처리 (폼 렌더링)
+    context = {
+        'date': request.GET.get('date'),
+        'meal': request.GET.get('meal'),
+        'diet_id': diet_id
+    }
+    
+    if diet_id:
+        # 수정 모드: 기존 식사 정보 가져오기
+        try:
+            diet = Diet.objects.get(diet_id=diet_id)
+            context['diet'] = diet
+            context['food'] = diet.food
+        except Diet.DoesNotExist:
+            return JsonResponse({'message': '식사를 찾을 수 없습니다.'}, status=404)
+    
+    return render(request, 'diets/diets_form.html', context)
+
+@login_required
+def diet_upload(request):
+    """
+    새 식사 등록 폼을 렌더링하고 처리하는 뷰
+    """
+    if request.method == 'POST':
+        # POST 요청 처리 (새 식사 등록)
+        user = request.user
+        date_value = request.POST.get('date')
+        meal_value = request.POST.get('meal_kr')  # JavaScript에서 설정한 한글 끼니
+        food_id = request.POST.get('food')
+        
+        # 필수 값 검증
+        if not food_id or food_id.strip() == '':
+            return JsonResponse({'message': '음식을 선택해주세요.'}, status=400)
+        
+        if not date_value:
+            return JsonResponse({'message': '날짜를 입력해주세요.'}, status=400)
+            
+        if not meal_value:
+            return JsonResponse({'message': '끼니를 선택해주세요.'}, status=400)
+        
+        try:
+            # 음식 정보 가져오기
+            food = Food.objects.get(food_id=food_id.strip())
+            
+            # 새 식사 생성
+            diet = Diet.objects.create(
+                user=user,
+                food=food,
+                meal=meal_value,
+                date=date_value
+            )
+            
+            # 등록 완료 후 메인 페이지로 리다이렉트
+            today = date.today()
+            return redirect(f'/diets/?year={today.year}&month={today.month}')
+            
+        except Food.DoesNotExist:
+            return JsonResponse({'message': f'음식을 찾을 수 없습니다. (food_id: {food_id})'}, status=404)
+        except ValueError as e:
+            return JsonResponse({'message': f'잘못된 UUID 형식입니다: {food_id}'}, status=400)
+        except Exception as e:
+            return JsonResponse({'message': f'등록 중 오류가 발생했습니다: {str(e)}'}, status=500)
+    
+    # GET 요청 처리 (폼 렌더링)
+    context = {
+        'date': request.GET.get('date'),
+        'meal': request.GET.get('meal'),
+        'food_id': request.GET.get('food')
+    }
+    
+    # food_id가 있으면 해당 음식 정보 가져오기
+    if context['food_id']:
+        try:
+            food = Food.objects.get(food_id=context['food_id'])
+            context['food'] = food
+        except Food.DoesNotExist:
+            # 음식을 찾을 수 없으면 register 페이지로 리다이렉트
+            return redirect('/diets/list/')
+    else:
+        # food_id가 없으면 register 페이지로 리다이렉트
+        return redirect('/diets/list/')
+    
+    return render(request, 'diets/diets_upload.html', context)

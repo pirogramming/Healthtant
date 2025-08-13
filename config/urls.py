@@ -24,4 +24,13 @@ urlpatterns = [
     path('accounts/', include('allauth.urls')),
     path('accounts/', include('accounts.urls')),
     path('diets/', include('diets.urls')),
+    path('analysis/', include('analysis.urls')),
+    path('products/', include('products.urls')),
+    path('mypage/', include('mypage.urls')),
 ]
+
+# 에러 핸들러 설정
+handler400 = 'main.views.bad_request_view'
+handler403 = 'main.views.permission_denied_view'
+handler404 = 'main.views.not_found_view'
+handler500 = 'main.views.server_error_view'

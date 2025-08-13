@@ -1,0 +1,296 @@
+{% extends 'analysis/analysis_base.html' %}
+{% load static %}
+
+{% block title %}영양소 상세 통계 - HEALTHTANT{% endblock %}
+{% block page_title %}영양소 상세 통계{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'analysis/analysis.css' %}">
+<link rel="stylesheet" href="{% static 'analysis/analysis_nutrients.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="nutrients-container">
+  <div class="nutrients-header">
+    <h1 class="nutrients-title">{{ request.user.username }} 님의 영양소 섭취 분석</h1>
+    <p class="nutrients-subtitle">지금까지 섭취한 식품들의 평균 영양소 함량을 분석했어요.</p>
+  </div>
+
+  <!-- 에너지 섹션 -->
+  <div class="nutrient-category">
+    <h2 class="category-title">에너지</h2>
+    <div class="nutrient-item">
+      <div class="nutrient-info-row">
+        <div class="nutrient-info">
+          <div class="nutrient-dot"></div>
+          <span class="nutrient-name">평균 열량</span>
+        </div>
+        <div class="nutrient-value">{{ avg_calorie_per_day|floatformat:1 }} kcal</div>
+      </div>
+      <div class="nutrient-bar">
+        <div class="bar-fill" style="width: {% widthratio avg_calorie_per_day 2500 100 %}%;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 다량영양소 섹션 -->
+  <div class="nutrient-category">
+    <h2 class="category-title">다량영양소</h2>
+    
+    <div class="nutrient-item">
+      <div class="nutrient-info-row">
+        <div class="nutrient-info">
+          <div class="nutrient-dot"></div>
+          <span class="nutrient-name">평균 단백질</span>
+        </div>
+        <div class="nutrient-value">{{ avg_protein_per_day|floatformat:1 }} g</div>
+      </div>
+      <div class="nutrient-bar">
+        <div class="bar-fill" style="width: {% widthratio avg_protein_per_day 100 100 %}%;"></div>
+      </div>
+    </div>
+
+    <div class="nutrient-item">
+      <div class="nutrient-info-row">
+        <div class="nutrient-info">
+          <div class="nutrient-dot"></div>
+          <span class="nutrient-name">평균 지방</span>
+        </div>
+        <div class="nutrient-value">{{ avg_fat_per_day|floatformat:1 }} g</div>
+      </div>
+      <div class="nutrient-bar">
+        <div class="bar-fill" style="width: {% widthratio avg_fat_per_day 80 100 %}%;"></div>
+      </div>
+    </div>
+
+    <div class="nutrient-item">
+      <div class="nutrient-info-row">
+        <div class="nutrient-info">
+          <div class="nutrient-dot"></div>
+          <span class="nutrient-name">평균 탄수화물</span>
+        </div>
+        <div class="nutrient-value">{{ avg_carbohydrate_per_day|floatformat:1 }} g</div>
+      </div>
+      <div class="nutrient-bar">
+        <div class="bar-fill" style="width: {% widthratio avg_carbohydrate_per_day 300 100 %}%;"></div>
+      </div>
+    </div>
+
+    <div class="nutrient-item">
+      <div class="nutrient-info-row">
+        <div class="nutrient-info">
+          <div class="nutrient-dot"></div>
+          <span class="nutrient-name">평균 당류</span>
+        </div>
+        <div class="nutrient-value">{{ avg_sugar_per_day|floatformat:1 }} g</div>
+      </div>
+      <div class="nutrient-bar">
+        <div class="bar-fill" style="width: {% widthratio avg_sugar_per_day 50 100 %}%;"></div>
+      </div>
+    </div>
+
+    <div class="nutrient-item">
+      <div class="nutrient-info-row">
+        <div class="nutrient-info">
+          <div class="nutrient-dot"></div>
+          <span class="nutrient-name">평균 식이섬유</span>
+        </div>
+        <div class="nutrient-value">{{ avg_dietary_fiber_per_day|floatformat:1 }} g</div>
+      </div>
+      <div class="nutrient-bar">
+        <div class="bar-fill" style="width: {% widthratio avg_dietary_fiber_per_day 30 100 %}%;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 무기질 섹션 -->
+  <div class="nutrient-category">
+    <h2 class="category-title">무기질</h2>
+    
+    <div class="nutrient-item">
+      <div class="nutrient-info-row">
+        <div class="nutrient-info">
+          <div class="nutrient-dot"></div>
+          <span class="nutrient-name">평균 칼슘</span>
+        </div>
+        <div class="nutrient-value">{{ avg_calcium_per_day|floatformat:1 }} mg</div>
+      </div>
+      <div class="nutrient-bar">
+        <div class="bar-fill" style="width: {% widthratio avg_calcium_per_day 1000 100 %}%;"></div>
+      </div>
+    </div>
+
+    <div class="nutrient-item">
+      <div class="nutrient-info-row">
+        <div class="nutrient-info">
+          <div class="nutrient-dot"></div>
+          <span class="nutrient-name">평균 철분</span>
+        </div>
+        <div class="nutrient-value">{{ avg_iron_content_per_day|floatformat:1 }} mg</div>
+      </div>
+      <div class="nutrient-bar">
+        <div class="bar-fill" style="width: {% widthratio avg_iron_content_per_day 15 100 %}%;"></div>
+      </div>
+    </div>
+
+    <div class="nutrient-item">
+      <div class="nutrient-info-row">
+        <div class="nutrient-info">
+          <div class="nutrient-dot"></div>
+          <span class="nutrient-name">평균 인</span>
+        </div>
+        <div class="nutrient-value">{{ avg_phosphorus_per_day|floatformat:1 }} mg</div>
+      </div>
+      <div class="nutrient-bar">
+        <div class="bar-fill" style="width: {% widthratio avg_phosphorus_per_day 1000 100 %}%;"></div>
+      </div>
+    </div>
+
+    <div class="nutrient-item">
+      <div class="nutrient-info-row">
+        <div class="nutrient-info">
+          <div class="nutrient-dot"></div>
+          <span class="nutrient-name">평균 칼륨</span>
+        </div>
+        <div class="nutrient-value">{{ avg_potassium_per_day|floatformat:1 }} mg</div>
+      </div>
+      <div class="nutrient-bar">
+        <div class="bar-fill" style="width: {% widthratio avg_potassium_per_day 3500 100 %}%;"></div>
+      </div>
+    </div>
+
+    <div class="nutrient-item">
+      <div class="nutrient-info-row">
+        <div class="nutrient-info">
+          <div class="nutrient-dot"></div>
+          <span class="nutrient-name">평균 나트륨</span>
+        </div>
+        <div class="nutrient-value">{{ avg_salt_per_day|floatformat:1 }} mg</div>
+      </div>
+      <div class="nutrient-bar">
+        <div class="bar-fill" style="width: {% widthratio avg_salt_per_day 2300 100 %}%;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 비타민 섹션 -->
+  <div class="nutrient-category">
+    <h2 class="category-title">비타민</h2>
+    
+    <div class="nutrient-item">
+      <div class="nutrient-info-row">
+        <div class="nutrient-info">
+          <div class="nutrient-dot"></div>
+          <span class="nutrient-name">평균 비타민A</span>
+        </div>
+        <div class="nutrient-value">{{ avg_VitaminA_per_day|floatformat:1 }} μg</div>
+      </div>
+      <div class="nutrient-bar">
+        <div class="bar-fill" style="width: {% widthratio avg_VitaminA_per_day 800 100 %}%;"></div>
+      </div>
+    </div>
+
+    <div class="nutrient-item">
+      <div class="nutrient-info-row">
+        <div class="nutrient-info">
+          <div class="nutrient-dot"></div>
+          <span class="nutrient-name">평균 비타민B</span>
+        </div>
+        <div class="nutrient-value">{{ avg_VitaminB_per_day|floatformat:1 }} mg</div>
+      </div>
+      <div class="nutrient-bar">
+        <div class="bar-fill" style="width: {% widthratio avg_VitaminB_per_day 2 100 %}%;"></div>
+      </div>
+    </div>
+
+    <div class="nutrient-item">
+      <div class="nutrient-info-row">
+        <div class="nutrient-info">
+          <div class="nutrient-dot"></div>
+          <span class="nutrient-name">평균 비타민C</span>
+        </div>
+        <div class="nutrient-value">{{ avg_VitaminC_per_day|floatformat:1 }} mg</div>
+      </div>
+      <div class="nutrient-bar">
+        <div class="bar-fill" style="width: {% widthratio avg_VitaminC_per_day 100 100 %}%;"></div>
+      </div>
+    </div>
+
+    <div class="nutrient-item">
+      <div class="nutrient-info-row">
+        <div class="nutrient-info">
+          <div class="nutrient-dot"></div>
+          <span class="nutrient-name">평균 비타민D</span>
+        </div>
+        <div class="nutrient-value">{{ avg_VitaminD_per_day|floatformat:1 }} μg</div>
+      </div>
+      <div class="nutrient-bar">
+        <div class="bar-fill" style="width: {% widthratio avg_VitaminD_per_day 20 100 %}%;"></div>
+      </div>
+    </div>
+
+    <div class="nutrient-item">
+      <div class="nutrient-info-row">
+        <div class="nutrient-info">
+          <div class="nutrient-dot"></div>
+          <span class="nutrient-name">평균 비타민E</span>
+        </div>
+        <div class="nutrient-value">{{ avg_VitaminE_per_day|floatformat:1 }} mg</div>
+      </div>
+      <div class="nutrient-bar">
+        <div class="bar-fill" style="width: {% widthratio avg_VitaminE_per_day 15 100 %}%;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 기타 섹션 -->
+  <div class="nutrient-category">
+    <h2 class="category-title">기타</h2>
+    
+    <div class="nutrient-item">
+      <div class="nutrient-info-row">
+        <div class="nutrient-info">
+          <div class="nutrient-dot"></div>
+          <span class="nutrient-name">평균 콜레스테롤</span>
+        </div>
+        <div class="nutrient-value">{{ avg_cholesterol_per_day|floatformat:1 }} mg</div>
+      </div>
+      <div class="nutrient-bar">
+        <div class="bar-fill" style="width: {% widthratio avg_cholesterol_per_day 300 100 %}%;"></div>
+      </div>
+    </div>
+
+    <div class="nutrient-item">
+      <div class="nutrient-info-row">
+        <div class="nutrient-info">
+          <div class="nutrient-dot"></div>
+          <span class="nutrient-name">평균 포화지방</span>
+        </div>
+        <div class="nutrient-value">{{ avg_saturated_fatty_acids_per_day|floatformat:1 }} g</div>
+      </div>
+      <div class="nutrient-bar">
+        <div class="bar-fill" style="width: {% widthratio avg_saturated_fatty_acids_per_day 20 100 %}%;"></div>
+      </div>
+    </div>
+
+    <div class="nutrient-item">
+      <div class="nutrient-info-row">
+        <div class="nutrient-info">
+          <div class="nutrient-dot"></div>
+          <span class="nutrient-name">평균 트랜스지방</span>
+        </div>
+        <div class="nutrient-value">{{ avg_trans_fatty_acids_per_day|floatformat:1 }} g</div>
+      </div>
+      <div class="nutrient-bar">
+        <div class="bar-fill" style="width: {% widthratio avg_trans_fatty_acids_per_day 2 100 %}%;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+console.log('Nutrients analysis page loaded');
+</script>
+{% endblock %}

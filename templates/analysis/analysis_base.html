@@ -1,0 +1,59 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ko" data-colors-mode="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}분석하기 - HEALTHTANT{% endblock %}</title>
+    
+    <!-- 폰트 로드 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Koulen&family=Satoshi:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- 새로운 CSS 구조 -->
+    <link rel="stylesheet" href="{% static 'base/variables.css' %}">
+    <link rel="stylesheet" href="{% static 'base/base.css' %}">
+    
+    <!-- 페이지별 CSS -->
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="screen">
+        <div class="view">
+            <!-- 헤더 영역 -->
+            <header class="app-header">
+                <div class="status-bar"></div>
+                
+                <!-- 뒤로가기 버튼 + 제목 -->
+                <div class="header-nav">
+                    <button class="back-button" onclick="history.back()" aria-label="뒤로가기">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path d="M15 18L9 12L15 6" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                    <h1 class="page-title">
+                        {% block page_title %}분석하기{% endblock %}
+                    </h1>
+                </div>
+            </header>
+            
+            <!-- 메인 콘텐츠 -->
+            <main class="analysis-content">
+                {% block content %}
+                <!-- 분석 페이지 콘텐츠가 여기에 들어갑니다 -->
+                <div class="container">
+                    <p class="text-center" style="color: var(--gray-100); margin-top: 50px;">
+                        분석 페이지 콘텐츠를 여기에 추가하세요
+                    </p>
+                </div>
+                {% endblock %}
+            </main>
+        </div>
+    </div>
+    
+    <!-- 페이지별 JavaScript -->
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

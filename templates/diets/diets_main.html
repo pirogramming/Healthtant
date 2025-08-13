@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'base/variables.css' %}" />
+    <link rel="stylesheet" href="{% static 'base/base.css' %}" />
+    <link rel="stylesheet" href="{% static 'diets/diets_main.css' %}" />
+    {% csrf_token %}
+  </head>
+  <body>
+    <div class="screen">
+      <div class="view">
+        <div class="page-title"></div>
+
+        <div class="meal-record-container">
+      <div class="nav-bar">
+        <div class="nav-left"></div>
+        <div class="nav-right"></div>
+      </div>
+
+
+      <!-- 월 네비게이션 -->
+      <div class="month-navigation">
+        <button class="back-button" onclick="window.location.href='/'" aria-label="뒤로가기">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M10.5893 3.57745C10.9147 3.90289 10.9147 4.43053 10.5893 4.75596L6.17852 9.16671H15.8333C16.2936 9.16671 16.6667 9.5398 16.6667 10C16.6667 10.4603 16.2936 10.8334 15.8333 10.8334H6.17852L10.5893 15.2441C10.9147 15.5696 10.9147 16.0972 10.5893 16.4226C10.2638 16.7481 9.73619 16.7481 9.41075 16.4226L3.57742 10.5893C3.25198 10.2639 3.25198 9.73622 3.57742 9.41079L9.41075 3.57745C9.73619 3.25201 10.2638 3.25201 10.5893 3.57745Z" fill="#1C2229"/>
+          </svg>
+        </button>
+        <div class="month-controls">
+          <button class="month-nav-btn prev-month" onclick="changeMonth(-1)" aria-label="이전 달">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <g clip-path="url(#clip0_2404_524)">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M8.293 12.707C8.10553 12.5194 8.00021 12.2651 8.00021 12C8.00021 11.7348 8.10553 11.4805 8.293 11.293L13.95 5.63598C14.0422 5.54047 14.1526 5.46428 14.2746 5.41188C14.3966 5.35947 14.5278 5.33188 14.6606 5.33073C14.7934 5.32957 14.9251 5.35487 15.048 5.40516C15.1708 5.45544 15.2825 5.52969 15.3764 5.62358C15.4703 5.71747 15.5445 5.82913 15.5948 5.95202C15.6451 6.07492 15.6704 6.2066 15.6693 6.33938C15.6681 6.47216 15.6405 6.60338 15.5881 6.72538C15.5357 6.84739 15.4595 6.95773 15.364 7.04998L10.414 12L15.364 16.95C15.5462 17.1386 15.647 17.3912 15.6447 17.6534C15.6424 17.9156 15.5372 18.1664 15.3518 18.3518C15.1664 18.5372 14.9156 18.6424 14.6534 18.6447C14.3912 18.6469 14.1386 18.5461 13.95 18.364L8.293 12.707Z" fill="black"/>
+              </g>
+              <defs>
+                <clipPath id="clip0_2404_524">
+                  <rect width="24" height="24" fill="white"/>
+                </clipPath>
+              </defs>
+            </svg>
+          </button>
+          <span class="month-text">{{ year }}년 {{ month }}월</span>
+          <button class="month-nav-btn next-month" onclick="changeMonth(1)" aria-label="다음 달">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <g clip-path="url(#clip0_2404_528)">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M15.707 11.2931C15.8945 11.4806 15.9998 11.7349 15.9998 12.0001C15.9998 12.2652 15.8945 12.5195 15.707 12.7071L10.05 18.3641C9.95776 18.4596 9.84742 18.5358 9.72541 18.5882C9.60341 18.6406 9.47219 18.6682 9.33941 18.6693C9.20663 18.6705 9.07495 18.6452 8.95205 18.5949C8.82916 18.5446 8.7175 18.4703 8.62361 18.3765C8.52972 18.2826 8.45547 18.1709 8.40519 18.048C8.3549 17.9251 8.3296 17.7934 8.33076 17.6607C8.33191 17.5279 8.3595 17.3967 8.41191 17.2747C8.46431 17.1526 8.5405 17.0423 8.63601 16.9501L13.586 12.0001L8.63601 7.05006C8.45385 6.86146 8.35305 6.60885 8.35533 6.34666C8.35761 6.08446 8.46278 5.83365 8.64819 5.64824C8.8336 5.46283 9.08441 5.35766 9.34661 5.35538C9.6088 5.35311 9.86141 5.4539 10.05 5.63606L15.707 11.2931Z" fill="black"/>
+              </g>
+              <defs>
+                <clipPath id="clip0_2404_528">
+                  <rect width="24" height="24" fill="white"/>
+                </clipPath>
+              </defs>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <!-- 헤더 섹션 -->
+      <div class="header-section">
+        <div class="section-title">
+          <span class="cutlery-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="21" height="24" viewBox="0 0 21 24" fill="none">
+              <path d="M4.25043 1.49911L4.00043 6.99911M6.75043 1.49911L7.00043 6.99911M14.6049 1.56861C16.5249 2.99461 19.2084 6.92611 19.4784 12.9976C19.5064 13.6261 19.2004 14.2216 18.6294 14.4866C18.2219 14.6756 17.6709 14.8906 16.9769 15.0736C16.8543 15.1044 16.7472 15.1793 16.6762 15.284C16.6052 15.3886 16.5752 15.5157 16.5919 15.6411L17.2049 19.9301C17.3749 21.1216 16.9084 22.1891 15.7474 22.5086C14.6624 22.8076 13.5004 22.0866 13.5004 20.9606V2.25211C13.5004 1.61011 14.0894 1.18611 14.6049 1.56861ZM9.47293 2.67811C9.70293 4.03711 10.0249 6.41161 9.99893 8.94711C9.98593 10.2556 9.11193 11.4281 7.73793 11.7361C7.45393 11.7996 7.15143 11.8571 6.83543 11.9016L7.75743 19.8916C7.89743 21.1076 7.14443 22.3001 5.93143 22.4641C5.78862 22.4846 5.64468 22.4963 5.50043 22.4991C5.37893 22.4991 5.23143 22.4861 5.06893 22.4641C3.85643 22.3001 3.10343 21.1076 3.24393 19.8916L4.16543 11.9016C3.86269 11.8586 3.56178 11.8036 3.26343 11.7366C1.88893 11.4281 1.01493 10.2551 1.00143 8.94661C0.97593 6.41161 1.29693 4.03761 1.52693 2.67861C1.64393 1.98611 2.24993 1.49911 2.95193 1.49911H8.04793C8.75043 1.49911 9.35593 1.98561 9.47293 2.67811Z" stroke="black" stroke-opacity="0.56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          식사기록
+
+        </div>
+        <button class="add-meal-btn">
+          <span class="plus-icon">+</span>
+          새 식사
+        </button>
+      </div>
+      <!-- 오늘의 식사 추가하기 -->
+      <div class="add-today-meal">
+        <div class="add-today-content">
+          <span class="plus-icon-large">+</span>
+          <span class="add-today-text">오늘의 식사 추가하기</span>
+        </div>
+      </div>
+
+      <!-- 일별 식사 기록 -->
+      <div class="daily-meals">
+        {% for date in data %}
+        <div class="day-card">
+          <div class="day-header">{{ date.date }}</div>
+
+          <!-- 아침 -->
+          {% if date.diets.breakfast %} {% for diet in date.diets.breakfast %}
+          <div class="meal-item">
+            <span class="meal-type">아침</span>
+            <span class="meal-content"> {{ diet.food_name }} </span>
+            <div class="meal-actions">
+              <button
+                class="edit-btn"
+                type="button"
+                data-diet-id="{{ diet.diet_id }}"
+                data-food-id="{{ diet.food_id }}"
+                data-food-name="{{ diet.food_name }}"
+                data-date="{{ date.date }}"
+                data-meal="아침"
+                onclick="editMeal(this)"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="15"
+                  height="15"
+                  viewBox="0 0 15 15"
+                  fill="none"
+                >
+                  <path
+                    d="M1 14.1993H3.82833L14.1993 3.82833L11.3707 1L1 11.371V14.1993Z"
+                    stroke="#B7B5B5"
+                    stroke-width="1.5"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </button>
+              <a
+                class="delete-btn"
+                data-diet-id="{{ diet.diet_id }}"
+                data-food-name="{{ diet.food_name }}"
+                onclick="deleteMeal(this)"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="14"
+                  height="16"
+                  viewBox="0 0 14 16"
+                  fill="none"
+                >
+                  <path
+                    d="M1 4.11111H12.9255M5.47205 7.22222V11.8889M8.45342 7.22222V11.8889M1.74534 4.11111L2.49068 13.4444C2.49068 13.857 2.64774 14.2527 2.92729 14.5444C3.20685 14.8361 3.58601 15 3.98137 15H9.9441C10.3395 15 10.7186 14.8361 10.9982 14.5444C11.2777 14.2527 11.4348 13.857 11.4348 13.4444L12.1801 4.11111M4.72671 4.11111V1.77778C4.72671 1.5715 4.80524 1.37367 4.94501 1.22781C5.08479 1.08194 5.27437 1 5.47205 1H8.45342C8.65109 1 8.84067 1.08194 8.98045 1.22781C9.12023 1.37367 9.19876 1.5715 9.19876 1.77778V4.11111"
+                    stroke="#B7B5B5"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </a>
+            </div>
+          </div>
+          {% endfor %} {% endif %}
+
+          <!-- 점심 -->
+          {% if date.diets.lunch %} {% for diet in date.diets.lunch %}
+          <div class="meal-item">
+            <span class="meal-type">점심</span>
+            <span class="meal-content"> {{ diet.food_name }} </span>
+            <div class="meal-actions">
+              <button
+                class="edit-btn"
+                type="button"
+                data-diet-id="{{ diet.diet_id }}"
+                data-food-id="{{ diet.food_id }}"
+                data-food-name="{{ diet.food_name }}"
+                data-date="{{ date.date }}"
+                data-meal="점심"
+                onclick="editMeal(this)"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="15"
+                  height="15"
+                  viewBox="0 0 15 15"
+                  fill="none"
+                >
+                  <path
+                    d="M1 14.1993H3.82833L14.1993 3.82833L11.3707 1L1 11.371V14.1993Z"
+                    stroke="#B7B5B5"
+                    stroke-width="1.5"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </button>
+              <a
+                class="delete-btn"
+                data-diet-id="{{ diet.diet_id }}"
+                data-food-name="{{ diet.food_name }}"
+                onclick="deleteMeal(this)"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="14"
+                  height="16"
+                  viewBox="0 0 14 16"
+                  fill="none"
+                >
+                  <path
+                    d="M1 4.11111H12.9255M5.47205 7.22222V11.8889M8.45342 7.22222V11.8889M1.74534 4.11111L2.49068 13.4444C2.49068 13.857 2.64774 14.2527 2.92729 14.5444C3.20685 14.8361 3.58601 15 3.98137 15H9.9441C10.3395 15 10.7186 14.8361 10.9982 14.5444C11.2777 14.2527 11.4348 13.857 11.4348 13.4444L12.1801 4.11111M4.72671 4.11111V1.77778C4.72671 1.5715 4.80524 1.37367 4.94501 1.22781C5.08479 1.08194 5.27437 1 5.47205 1H8.45342C8.65109 1 8.84067 1.08194 8.98045 1.22781C9.12023 1.37367 9.19876 1.5715 9.19876 1.77778V4.11111"
+                    stroke="#B7B5B5"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </a>
+            </div>
+          </div>
+          {% endfor %}{% endif %}
+
+          <!-- 저녁 -->
+          {% if date.diets.dinner %} {% for diet in date.diets.dinner %}
+          <div class="meal-item">
+            <span class="meal-type">저녁</span>
+            <span class="meal-content"> {{ diet.food_name }} </span>
+            <div class="meal-actions">
+              <button
+                class="edit-btn"
+                type="button"
+                data-diet-id="{{ diet.diet_id }}"
+                data-food-id="{{ diet.food_id }}"
+                data-food-name="{{ diet.food_name }}"
+                data-date="{{ date.date }}"
+                data-meal="저녁"
+                onclick="editMeal(this)"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="15"
+                  height="15"
+                  viewBox="0 0 15 15"
+                  fill="none"
+                >
+                  <path
+                    d="M1 14.1993H3.82833L14.1993 3.82833L11.3707 1L1 11.371V14.1993Z"
+                    stroke="#B7B5B5"
+                    stroke-width="1.5"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </button>
+              <a
+                class="delete-btn"
+                data-diet-id="{{ diet.diet_id }}"
+                data-food-name="{{ diet.food_name }}"
+                onclick="deleteMeal(this)"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="14"
+                  height="16"
+                  viewBox="0 0 14 16"
+                  fill="none"
+                >
+                  <path
+                    d="M1 4.11111H12.9255M5.47205 7.22222V11.8889M8.45342 7.22222V11.8889M1.74534 4.11111L2.49068 13.4444C2.49068 13.857 2.64774 14.2527 2.92729 14.5444C3.20685 14.8361 3.58601 15 3.98137 15H9.9441C10.3395 15 10.7186 14.8361 10.9982 14.5444C11.2777 14.2527 11.4348 13.857 11.4348 13.4444L12.1801 4.11111M4.72671 4.11111V1.77778C4.72671 1.5715 4.80524 1.37367 4.94501 1.22781C5.08479 1.08194 5.27437 1 5.47205 1H8.45342C8.65109 1 8.84067 1.08194 8.98045 1.22781C9.12023 1.37367 9.19876 1.5715 9.19876 1.77778V4.11111"
+                    stroke="#B7B5B5"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </a>
+            </div>
+          </div>
+          {% endfor %} {% endif %}
+        </div>
+        {% endfor %}
+        </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      function getCookie(name) {
+        const v = `; ${document.cookie}`;
+        const p = v.split(`; ${name}=`);
+        if (p.length === 2) return p.pop().split(";").shift();
+      }
+
+      async function deleteMeal(el) {
+        const id = el.dataset.dietId;
+        console.log(id);
+        const res = await fetch(`/diets/${id}/`, {
+          method: "DELETE",
+          headers: { "X-CSRFToken": getCookie("csrftoken") },
+        });
+        if (res.status === 204) {
+          el.closest(".meal-item")?.remove(); // 또는: location.reload();
+        } else {
+          alert(`삭제 실패 (${res.status})`);
+        }
+      }
+
+      async function editMeal(el) {
+        const dietId = el.dataset.dietId;
+        const curFood = el.dataset.foodId; // 문자열 (uuid 또는 int)
+        const curDate = el.dataset.date; // 'YYYY-MM-DD'
+        const curMeal = el.dataset.meal; // 'breakfast' | 'lunch' | 'dinner'
+        const url = `/diets/form/${dietId}/?date=${encodeURIComponent(curDate)}&meal=${encodeURIComponent(curMeal)}`;
+        window.location.href = url;
+        }
+        // 프롬프트로 새 값 입력(엔터 치면 기존값 유지)
+        function todayYMD() {
+            const d = new Date();
+            const m = String(d.getMonth() + 1).padStart(2, "0");
+            const day = String(d.getDate()).padStart(2, "0");
+            return `${d.getFullYear()}-${m}-${day}`;
+        }
+
+        // "새 식사" / "오늘의 식사 추가하기" → register 페이지로 이동
+        document.querySelector(".add-meal-btn")?.addEventListener("click", () => {
+            // 기본: 오늘 날짜만 세팅. 음식/끼니는 register 페이지에서 선택.
+            window.location.href = `/diets/list/?date=${todayYMD()}`;
+        });
+
+        document.querySelector(".add-today-meal")?.addEventListener("click", () => {
+            window.location.href = `/diets/list/?date=${todayYMD()}`;
+        });
+
+        // 월 변경 함수
+        function changeMonth(direction) {
+            // Django에서 전달받은 현재 년도와 월 사용
+            let year = {{ year }};
+            let month = {{ month }};
+            
+            month += direction;
+            
+            if (month > 12) {
+                month = 1;
+                year++;
+            } else if (month < 1) {
+                month = 12;
+                year--;
+            }
+            
+            // URL 파라미터로 년도와 월을 전달하여 페이지 새로고침
+            const currentUrl = new URL(window.location.href);
+            currentUrl.searchParams.set('year', year);
+            currentUrl.searchParams.set('month', month);
+            window.location.href = currentUrl.toString();
+        }
+    </script>
+
+        {% comment %} // PATCH 호출
+        const res = await fetch(`/diets/${dietId}/`, {
+          method: "PATCH",
+          headers: {
+            "X-CSRFToken": getCookie("csrftoken"),
+            "X-Requested-With": "XMLHttpRequest",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            food: newFood, // ✅ 뷰에서 Food.objects.get(food_id=data['food'])로 사용
+            date: newDate, // 'YYYY-MM-DD'
+            meal: newMeal, // 'breakfast'|'lunch'|'dinner'
+          }),
+        });
+
+        if (res.ok) {
+          location.reload(); // 간단히 새로고침
+        } else {
+          alert(`수정 실패 (${res.status})`);
+        }
+      } {% endcomment %}
+    
+  </body>
+</html>

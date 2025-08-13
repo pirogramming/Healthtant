@@ -1,0 +1,366 @@
+/* 식사기록페이지 전용 스타일 */
+:root {
+    --main-color: rgba(86, 170, 178, 1);
+    --main-color-hover: rgba(94, 189, 198, 0.65);
+}
+.view {
+    padding-bottom: 0 !important;
+}
+
+/* base.css에서 body 스타일을 상속받으므로 여기서는 제거 */
+
+.nav-bar {
+    
+    height: 62px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.nav-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* 페이지 제목 */
+.page-title {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    color: #2c2c2c;
+    font-size: 18px;
+    font-weight: 500;
+}
+
+/* 메인 컨테이너 */
+.meal-record-container {
+    background-color: white;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    min-height: auto;
+}
+
+/* 월 네비게이션 */
+.month-navigation {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #333;
+    position: relative;
+}
+
+.month-navigation .back-button {
+    position: absolute;
+    left: 0;
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.2s ease;
+}
+
+.month-navigation .back-button:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.month-navigation .month-text {
+    text-align: center;
+    margin: 0 -8px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.month-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.month-nav-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    min-height: 40px;
+}
+
+.month-nav-btn:hover {
+    background-color: rgba(86, 170, 178, 0.1);
+    color: var(--main-color);
+}
+
+.month-nav-btn:active {
+    transform: scale(0.95);
+}
+.month-separator {
+    height: 1px;
+    background-color: #eee;
+    margin-bottom: 15px;
+}
+/* 헤더 섹션 */
+.header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    position: sticky;
+    top: 0;
+    background-color: white;
+    z-index: 100;
+    padding: 10px 0;
+}
+.header-separator {
+    height: 1px;
+    background-color: #eee;
+    margin-bottom: 20px;
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+}
+
+.cutlery-icon {
+    display: block; 
+    margin-right: 8px;
+    color: #999;
+}
+
+/* 새 식사 버튼 */
+.add-meal-btn {
+    background-color: var(--main-color);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: background-color 0.2s;
+    text-decoration: none;
+}
+
+.add-meal-btn:hover {
+    background-color: #357abd;
+}
+
+.plus-icon {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+/* 오늘의 식사 추가하기 */
+.add-today-meal {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    height: auto;
+    min-height: 105px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px dashed rgba(94, 189, 198, 0.65);
+    border-radius: 12px;
+    background: rgba(86, 170, 178, 0.16);
+    padding: 40px 20px;
+    margin-bottom: 30px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.add-today-meal:hover {
+    background-color: #e3f2fd;
+    border-color:  rgba(94, 189, 198, 0.65);
+}
+
+.add-today-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 8px;
+}
+
+.plus-icon-large {
+    font-size: 32px;
+    color: var(--main-color);
+    font-weight: bold;
+}
+
+.add-today-text {
+    font-size: 16px;
+    color: var(--main-color);
+    font-weight: 500;
+}
+
+/* 일별 식사 기록 */
+.daily-meals {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* 일별 카드 */
+.day-card {
+    border-radius: 12px;  /* 16px에서 12px로 변경 - 더 둥글게 */
+    border: 1px solid #e0e0e0;  /* var(#E8E9EA)에서 #e0e0e0로 변경 */
+    background: #FFF;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);  /* 그림자 더 부드럽게 */
+    padding: 25px;  /* 20px에서 25px로 증가 - 더 여유롭게 */
+    margin-bottom: 20px;  /* 카드 간 간격 추가 */
+}
+
+/* 일 헤더 */
+.day-header {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #eee;
+}
+
+/* 식사 아이템 */
+.meal-item {
+    display: flex;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px solid #f8f8f8;
+    flex-direction: row;
+}
+
+.meal-item:last-child {
+    border-bottom: none;
+}
+
+.meal-type {
+    font-size: 14px;
+    font-weight: 500;
+    color: #666;
+    min-width: 60px;
+    margin-right: 20px;
+    flex-shrink: 0;
+}
+
+.meal-content {
+    flex: 1;
+    font-size: 14px;
+    color: #333;
+    line-height: 1.5;
+    min-width: 0;
+}
+
+/* 식사 액션 버튼 */
+.meal-actions {
+    display: flex;
+    gap: 12px;
+    margin-left: 20px;
+}
+
+.edit-btn, .delete-btn {
+    background: none;
+    border: none;
+    padding: 6px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.edit-btn:hover, .delete-btn:hover {
+    background-color: #f5f5f5;
+}
+
+.edit-btn svg, .delete-btn svg {
+    display: block;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .meal-record-container {
+        padding: 20px;
+    }
+    
+    .header-section {
+        flex-direction: row;
+        gap: 15px;
+        align-items: center;
+    }
+    
+    .add-meal-btn {
+        align-self: auto;
+    }
+    
+    
+    .meal-actions {
+        margin-left: 10px;
+        align-self: flex-end;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-title {
+        font-size: 16px;
+        top: 15px;
+        left: 15px;
+    }
+    
+    .meal-record-container {
+        padding: 15px;
+    }
+    
+    .month-navigation {
+        font-size: 18px;
+    }
+    
+    
+    
+    .plus-icon-large {
+        font-size: 28px;
+    }
+    
+    .add-today-text {
+        font-size: 14px;
+        color: var(—main-color);
+        font-weight: 500;
+        line-height: 1.2;
+    }
+} 

@@ -1,0 +1,27 @@
+{% extends 'main/main_base.html' %}
+{% block content %}
+<h1>내 즐겨찾기</h1>
+
+{% if favorites %}
+  <ul>
+    {% for f in favorites %}
+      <li style="margin-bottom:12px;">
+        <img src="{{ f.food_img }}" alt="{{ f.food_name }}" width="50" style="vertical-align:middle;">
+        <strong>{{ f.food_name }}</strong>
+        <span> ({{ f.company_name }}) - {{ f.calorie }} kcal</span>
+
+        <form method="post" action="{% url 'mypage:favorite_food_delete' f.food_id %}" style="display:inline; margin-left:8px;">
+          {% csrf_token %}
+          <button type="submit">즐겨찾기 취소</button>
+        </form>
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>즐겨찾는 제품이 없습니다.</p>
+{% endif %}
+
+<p style="margin-top:16px;">
+  <a href="{% url 'mypage:profile_view' %}">프로필로 돌아가기</a>
+</p>
+{% endblock %}

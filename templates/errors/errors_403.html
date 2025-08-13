@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>403 - 접근 권한 없음</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'errors/errors_403.css' %}">
+    <!-- 새로운 CSS 구조 -->
+    <link rel="stylesheet" href="{% static 'base/variables.css' %}">
+    <link rel="stylesheet" href="{% static 'base/base.css' %}">
+</head>
+<body>
+        <!-- 헤더 영역 -->
+        <header class="app-header">
+            <div class="status-bar"></div>
+            
+            <!-- 뒤로가기 버튼 + 제목 -->
+            <div class="header-nav">
+                <button class="back-button" onclick="history.back()" aria-label="뒤로가기">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+                <h1 class="page-title">
+                    {% block page_title %}오류 페이지{% endblock %}
+                </h1>
+            </div>
+        </header>
+        
+        <div class="error-content">
+            <div class="error-icon-container">
+                <div class="error-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="53" height="53" viewBox="0 0 53 53" fill="none">
+                        <path d="M24.2917 33.1251H28.7083V37.5418H24.2917V33.1251ZM24.2917 15.4584H28.7083V28.7084H24.2917V15.4584ZM26.4779 4.41675C14.2879 4.41675 4.41667 14.3101 4.41667 26.5001C4.41667 38.6901 14.2879 48.5834 26.4779 48.5834C38.69 48.5834 48.5833 38.6901 48.5833 26.5001C48.5833 14.3101 38.69 4.41675 26.4779 4.41675ZM26.5 44.1668C16.7392 44.1668 8.83334 36.2609 8.83334 26.5001C8.83334 16.7392 16.7392 8.83342 26.5 8.83342C36.2608 8.83342 44.1667 16.7392 44.1667 26.5001C44.1667 36.2609 36.2608 44.1668 26.5 44.1668Z" fill="#56AAB2"/>
+                    </svg>
+                </div>
+            </div>
+            
+            <div class="error-number">403</div>
+            <div class="error-title">접근 권한 없음</div>
+            
+            <div class="error-description">
+                <p>이 페이지에 접근할 권한이 없습니다.</p>
+                <p>로그인 후 다시 시도해 주세요.</p>
+            </div>
+            
+            <div class="button-container">
+                <button class="login-button" onclick="goToLogin()">로그인하기</button>
+                <button class="home-button" onclick="window.location.href='/'">홈으로 돌아가기</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function goToLogin() {
+            window.location.href = "{% url 'account_login' %}";
+        }
+    </script>
+</body>
+</html>

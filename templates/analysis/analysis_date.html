@@ -1,0 +1,119 @@
+{% extends 'analysis/analysis_base.html' %}
+{% load static %}
+
+{% block title %}날짜 선택 - HEALTHTANT{% endblock %}
+{% block page_title %}분석하기{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'analysis/analysis.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="analysis-date-container">
+    <h1 class="analysis-title">HEALTHTANT</h1>
+    <p class="analysis-subtitle">분석을 시작할 날짜를 알려주세요.</p>
+    
+    <form class="date-selection-form" method="get" action="/analysis/result/">
+        
+        <div class="date-range-container">
+            <div class="date-input-group">
+                <label class="date-label" for="start_date">시작일</label>
+                <input 
+                    type="date" 
+                    id="start_date" 
+                    name="start_date" 
+                    class="date-input"
+                    required
+                    max="{% now 'Y-m-d' %}"
+                >
+            </div>
+            
+            <div class="date-separator">~</div>
+            
+            <div class="date-input-group">
+                <label class="date-label" for="end_date">종료일</label>
+                <input 
+                    type="date" 
+                    id="end_date" 
+                    name="end_date" 
+                    class="date-input"
+                    required
+                    max="{% now 'Y-m-d' %}"
+                >
+            </div>
+        </div>
+        
+        <button type="submit" class="analyze-button" id="analyzeBtn">
+            분석하기
+        </button>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const startDateInput = document.getElementById('start_date');
+    const endDateInput = document.getElementById('end_date');
+    const analyzeBtn = document.getElementById('analyzeBtn');
+    
+    // 오늘 날짜 설정
+    const today = new Date().toISOString().split('T')[0];
+    
+    // 기본값을 오늘로 설정
+    endDateInput.value = today;
+    
+    // 일주일 전을 시작일로 설정
+    const weekAgo = new Date();
+    weekAgo.setDate(weekAgo.getDate() - 7);
+    startDateInput.value = weekAgo.toISOString().split('T')[0];
+    
+    // 날짜 유효성 검사
+    function validateDates() {
+        const startDate = new Date(startDateInput.value);
+        const endDate = new Date(endDateInput.value);
+        
+        if (startDate && endDate) {
+            if (startDate > endDate) {
+                analyzeBtn.disabled = true;
+                analyzeBtn.textContent = '시작일이 종료일보다 늦습니다';
+                return false;
+            } else if (endDate > new Date(today)) {
+                analyzeBtn.disabled = true;
+                analyzeBtn.textContent = '미래 날짜는 선택할 수 없습니다';
+                return false;
+            } else {
+                analyzeBtn.disabled = false;
+                analyzeBtn.textContent = '분석하기';
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    // 시작일 변경 시 종료일 최소값 설정
+    startDateInput.addEventListener('change', function() {
+        endDateInput.min = this.value;
+        validateDates();
+    });
+    
+    // 종료일 변경 시 시작일 최대값 설정
+    endDateInput.addEventListener('change', function() {
+        startDateInput.max = this.value;
+        validateDates();
+    });
+    
+    // 초기 유효성 검사
+    validateDates();
+    
+    // 폼 제출 시 추가 검증
+    document.querySelector('.date-selection-form').addEventListener('submit', function(e) {
+        if (!validateDates()) {
+            e.preventDefault();
+            alert('올바른 날짜를 선택해주세요.');
+        }
+    });
+});
+</script>
+{% endblock %}
+

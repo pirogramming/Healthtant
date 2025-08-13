@@ -35,6 +35,7 @@ class Food(models.Model):
     cholesterol = models.FloatField(null=True, blank=True)
     saturated_fatty_acids = models.FloatField(null=True, blank=True)
     trans_fatty_acids = models.FloatField(null=True, blank=True)
+    magnesium = models.FloatField(null=True, blank=True)
 
     serving_size = models.FloatField(null=True, blank=True)
     weight = models.FloatField()
@@ -56,6 +57,7 @@ class Food(models.Model):
 
     def __str__(self):
         return self.food_name
+<<<<<<< HEAD
 
 
 class Price(models.Model):
@@ -77,3 +79,33 @@ class Price(models.Model):
 
     def __str__(self):
         return f"{self.food.food_name} - {self.shop_name}: {self.price}원"
+=======
+    
+from django.contrib.auth import get_user_model
+
+User = get_user_model()  # 현재 User 모델 가져오기
+
+class FavoriteFood(models.Model):
+    favorite_id = models.BigAutoField(primary_key=True)  # PK는 BIGINT로 설정
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        db_column='user_id',
+        related_name='favorite_foods',
+    )
+    food = models.ForeignKey(
+        'Food',
+        on_delete=models.CASCADE,
+        db_column='food_id',
+        related_name='favorited_by',
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'Favorite_Food'
+        unique_together = ('user', 'food')
+        indexes = [models.Index(fields=['user', 'food'])]
+
+    def __str__(self):
+        return f'{getattr(self.user, "username", self.user_id)} ♥ {self.food_id}'
+>>>>>>> f951233ffdadc0dfc6c3c39d0499cd9473321ba2
