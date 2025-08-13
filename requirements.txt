@@ -18,9 +18,7 @@ requests-oauthlib==2.0.0
 sqlparse==0.5.3
 tzdata==2025.2
 urllib3==2.5.0
-<<<<<<< HEAD
-
-# PostgreSQL
+gunicorn==21.2.0
 psycopg2-binary==2.9.10
 
 # Data Processing
@@ -35,7 +33,4 @@ openpyxl==3.1.5
 
 # Environment Variables
 # python-decouple==3.8
-=======
-gunicorn==21.2.0
-psycopg2-binary
->>>>>>> f951233ffdadc0dfc6c3c39d0499cd9473321ba2
+
