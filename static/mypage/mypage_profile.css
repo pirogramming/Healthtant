@@ -1,0 +1,206 @@
+/* 프로필 페이지 전체 컨테이너 */
+.profile-container {
+    background-color: white;
+    min-height: 100vh;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* 프로필 이미지 섹션 */
+.profile-picture-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px 30px 20px;
+}
+
+.profile-picture {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background-color: black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+    overflow: hidden;
+}
+
+.profile-picture img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.profile-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.change-picture-text {
+    color: black;
+    font-size: 14px;
+    font-weight: 400;
+    margin: 0;
+}
+
+/* 사용자 정보 섹션 */
+.user-info-section {
+    padding: 0 20px;
+    margin-bottom: 30px;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0;
+    border-bottom: 1px solid #E5E5E5;
+}
+
+.info-row:last-child {
+    border-bottom: none;
+}
+
+.info-label {
+    color: #666;
+    font-size: 16px;
+    font-weight: 400;
+}
+
+.info-value {
+    color: black;
+    font-size: 16px;
+    font-weight: 400;
+}
+
+/* 섹션 공통 스타일 */
+.section {
+    padding: 0 20px;
+    margin-bottom: 30px;
+}
+
+.section-title {
+    color: black;
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0 0 20px 0;
+    text-align: left;
+}
+
+/* 계정 연동 섹션 */
+.link-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0;
+    border-bottom: 1px solid #E5E5E5;
+}
+
+.link-row:last-child {
+    border-bottom: none;
+}
+
+.link-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.link-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    color: white;
+}
+
+.kakao-icon {
+    background-color: #FEE500;
+    color: black;
+    font-size: 10px;
+}
+
+.google-icon {
+    background-color: #4285F4;
+    color: white;
+    font-size: 14px;
+}
+
+.link-text {
+    color: black;
+    font-size: 16px;
+    font-weight: 400;
+}
+
+.arrow-icon {
+    color: #999;
+    font-size: 18px;
+    font-weight: 300;
+}
+
+/* 로그아웃/탈퇴 섹션 */
+.withdrawal-text {
+    color: #999;
+    font-size: 16px;
+    font-weight: 400;
+    margin: 0;
+    padding: 20px 0;
+    border-bottom: 1px solid #E5E5E5;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 480px) {
+    .profile-picture {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .info-label,
+    .info-value,
+    .link-text {
+        font-size: 14px;
+    }
+    
+    .section-title {
+        font-size: 16px;
+    }
+}
+
+/* 상태바 스타일 (모바일 환경 고려) */
+.status-bar {
+    height: 44px;
+    background-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    font-size: 14px;
+    font-weight: 600;
+    color: black;
+}
+
+/* 헤더 뒤로가기 버튼 */
+.back-button {
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    color: black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.back-button svg {
+    width: 24px;
+    height: 24px;
+}
