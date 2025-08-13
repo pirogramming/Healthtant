@@ -1,16 +1,18 @@
-/* 식사기록페이지 전용 스타일 */
+식사기록페이지 전용 스타일
 :root {
     --main-color: rgba(86, 170, 178, 1);
     --main-color-hover: rgba(94, 189, 198, 0.65);
 }
+.screen, .view {
+    overflow: visible; /* hidden이면 스크롤 안됨 */
+}
+/* 페이지별 view 스타일 오버라이드 */
 .view {
     padding-bottom: 0 !important;
 }
 
-/* base.css에서 body 스타일을 상속받으므로 여기서는 제거 */
-
+/* 페이지별 네비게이션 바 */
 .nav-bar {
-    
     height: 40px;
     display: flex;
     align-items: center;
@@ -364,3 +366,55 @@
         line-height: 1.2;
     }
 } 
+
+.scroll-to-top-btn {
+    position: fixed;
+    bottom: 20px; /* 하단 네비게이션 위에 위치 */
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    background-color: #56AAB2;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(86, 170, 178, 0.3);
+    transition: all 0.3s ease;
+    z-index: 999999;
+}
+  
+.scroll-to-top-btn:hover {
+background-color: var(--main);
+transform: translateY(-2px);
+box-shadow: 0 6px 16px rgba(86, 170, 178, 0.4);
+}
+
+.scroll-to-top-btn:active {
+transform: translateY(0);
+}
+
+.scroll-to-top-btn svg {
+width: 20px;
+height: 20px;
+}
+
+/* 버튼이 보일 때 애니메이션 */
+.scroll-to-top-btn.show {
+display: flex;
+animation: fadeInUp 0.3s ease;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
