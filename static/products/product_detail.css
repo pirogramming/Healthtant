@@ -349,6 +349,7 @@
 .add-meal-btn {
   flex: 1;
   height: 48px;
+  display: flex;
   background: #56AAB2;
   color: white;
   border: none;
@@ -357,6 +358,9 @@
   font-weight: 600;
   cursor: pointer;
   transition: background 0.2s;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
 }
 
 .add-meal-btn:hover {

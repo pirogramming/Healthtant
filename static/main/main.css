@@ -35,14 +35,14 @@
 }
 
 .status-bar {
-    height: 61px;
+    height: 41px;
     background-color: #ffffff;
     width: 100%;
     
 }
 
 .app-title {
-    font-family: "Koulen", Helvetica, Arial, sans-serif;
+    font-family: "Koulen";
     font-size: 50px;
     color: var(--main);
     text-align: center;
@@ -56,12 +56,12 @@
 }
 
 /* 검색 폼 - 헤더 안에 위치 */
-.search-container {
+.main-search-section {
     padding: 0px 16px 10px 16px;
     position: relative;
 }
 
-.search-form {
+.main-search-container {
     display: flex;
     align-items: center;
     padding: 16px;
@@ -72,8 +72,16 @@
     gap: 8px;
 }
 
-.search-input {
+.main-search-input-wrapper {
     flex: 1;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.main-search-input {
+    width: 100%;
     border: none;
     background: transparent;
     font-size: 16px;
@@ -82,11 +90,11 @@
     outline: none;
 }
 
-.search-input::placeholder {
+.main-search-input::placeholder {
     color: var(--neutralslate-blackslate-black-100);
 }
 
-.search-button {
+.main-search-button {
     background: none;
     border: none;
     padding: 0;
@@ -95,11 +103,9 @@
     align-items: center;
     justify-content: center;
 }
-
-.search-icon {
+.main-search-icon {
     width: 20px;
     height: 20px;
-    fill: var(--neutralslate-blackslate-black-100);
 }
 
 /* 추천 제품 영역 */
