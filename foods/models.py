@@ -2,11 +2,11 @@ from django.db import models
 import uuid
 
 class Food(models.Model):
-    food_id = models.UUIDField(
-        primary_key=True,
-        default=uuid.uuid4,
-        editable=False
-    )
+    food_id = models.CharField(
+    primary_key=True,
+    max_length=50,
+    unique=True
+)
     food_img = models.CharField(max_length=255, null=True, blank=True)
 
     food_name = models.CharField(max_length=255)
@@ -39,7 +39,7 @@ class Food(models.Model):
     cholesterol = models.FloatField(null=True, blank=True)
     saturated_fatty_acids = models.FloatField(null=True, blank=True)
     trans_fatty_acids = models.FloatField(null=True, blank=True)
-    magnesium = models.FloatField(null=True, blank=True)
+    #magnesium = models.FloatField(null=True, blank=True)
 
     serving_size = models.FloatField(null=True, blank=True)
     weight = models.FloatField()
@@ -49,6 +49,7 @@ class Food(models.Model):
     nutrition_score = models.FloatField(null=True, blank=True, help_text="0-26 영양 점수")
     nutri_score_grade = models.CharField(max_length=1, null=True, blank=True, help_text="A-E 등급")
     nrf_index = models.FloatField(null=True, blank=True, help_text="NRF 지수")
+
 
     # 시간 필드
     created_at = models.DateTimeField(auto_now_add=True)

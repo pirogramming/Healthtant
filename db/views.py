@@ -36,10 +36,10 @@ def is_admin_user(user):
 
 
 @login_required
-@user_passes_test(is_admin_user)
+#@user_passes_test(is_admin_user)
 def csv_upload_page(request):
     """CSV 업로드 페이지 뷰 (Admin만 접근 가능)"""
-    return render(request, 'main/csv_upload.html')
+    return render(request, 'db/csv_upload.html')
 
 
 
@@ -266,7 +266,7 @@ def db_explorer(request):
 @csrf_exempt
 @require_http_methods(["POST"])
 @login_required
-@user_passes_test(is_admin_user)
+#@user_passes_test(is_admin_user)
 def upload_csv_data(request):
     """
     CSV/XLSX 파일 업로드 및 데이터베이스 업데이트 API (실시간 진행상황 추적)
@@ -404,7 +404,7 @@ def upload_csv_data(request):
 @csrf_exempt
 @require_http_methods(["GET"])
 @login_required
-@user_passes_test(is_admin_user)
+#@user_passes_test(is_admin_user)
 def get_upload_progress(request):
     """
     파일 업로드 진행상황 조회 API (Admin만 접근 가능)
@@ -444,7 +444,7 @@ def get_upload_progress(request):
 @csrf_exempt
 @require_http_methods(["GET"])
 @login_required
-@user_passes_test(is_admin_user)
+#@user_passes_test(is_admin_user)
 def get_csv_template(request):
     """
     CSV 템플릿 다운로드 API (Admin만 접근 가능)
@@ -466,7 +466,7 @@ def get_csv_template(request):
 @csrf_exempt
 @require_http_methods(["GET"])
 @login_required
-@user_passes_test(is_admin_user)
+#@user_passes_test(is_admin_user)
 def get_database_stats(request):
     """
     데이터베이스 통계 정보 조회 API (Admin만 접근 가능)

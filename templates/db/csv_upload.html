@@ -120,7 +120,7 @@
         // 통계 로드
         async function loadStats() {
             try {
-                const response = await fetch('/db-stats/');
+                const response = await fetch("{% url 'db:get_database_stats' %}");
                 const data = await response.json();
 
                 if (data.success) {
@@ -164,7 +164,7 @@
             hideResult();
 
             try {
-                const response = await fetch('/upload-csv/', {
+                const response = await fetch("{% url 'db:upload_csv_data' %}", {
                     method: 'POST',
                     body: formData
                 });
@@ -481,31 +481,44 @@
         // 템플릿 다운로드
         async function downloadTemplate(tableType) {
             try {
-                const response = await fetch(`/csv-template/?table_type=${tableType}`);
-                const data = await response.json();
+                const url = `{% url 'db:get_csv_template' %}?table_type=${encodeURIComponent(tableType)}`;
+                const response = await fetch(url, {
+                method: 'GET',
+                credentials: 'same-origin',                   
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                });
 
+                if (response.redirected) {
+                throw new Error('로그인이 필요합니다. 다시 로그인 후 시도해주세요.');
+                }
+                if (!response.ok) {
+                const text = await response.text();
+                try {
+                    const data = JSON.parse(text);
+                    throw new Error(data.message || `HTTP ${response.status}`);
+                } catch {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                }
+
+                const data = await response.json();
                 if (data.success) {
-                    const template = data.data;
-                    const csvContent = [template.columns.join(','), template.sample_data.join(',')].join('\n');
-                    
-                    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-                    const link = document.createElement('a');
-                    const url = URL.createObjectURL(blob);
-                    
-                    link.setAttribute('href', url);
-                    link.setAttribute('download', `${tableType}_template.csv`);
-                    link.style.visibility = 'hidden';
-                    
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
+                const template = data.data;
+                const csvContent = [template.columns.join(','), template.sample_data.join(',')].join('\n');
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = `${tableType}_template.csv`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
                 } else {
-                    alert('템플릿 다운로드 실패: ' + data.message);
+                alert('템플릿 다운로드 실패: ' + data.message);
                 }
             } catch (error) {
                 alert('템플릿 다운로드 중 오류가 발생했습니다: ' + error.message);
             }
-        }
+            }
     </script>
 </body>
 </html> 

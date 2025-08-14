@@ -125,7 +125,7 @@ def process_food_data(df, upload_mode):
                        'calcium', 'iron_content', 'phosphorus', 'potassium', 'salt',
                        'VitaminA', 'VitaminB', 'VitaminC', 'VitaminD', 'VitaminE',
                        'cholesterol', 'saturated_fatty_acids', 'trans_fatty_acids',
-                       'magnesium', 'serving_size', 'weight', 'company_name',
+                        'serving_size', 'weight', 'company_name',
                        'nutrition_score', 'nutri_score_grade', 'nrf_index'],
                 batch_size=100  # 1000 → 100으로 줄임
             )
@@ -522,7 +522,7 @@ def process_food_data_with_progress(df, upload_mode, session, progress_key):
                        'calcium', 'iron_content', 'phosphorus', 'potassium', 'salt',
                        'VitaminA', 'VitaminB', 'VitaminC', 'VitaminD', 'VitaminE',
                        'cholesterol', 'saturated_fatty_acids', 'trans_fatty_acids',
-                       'magnesium', 'serving_size', 'weight', 'company_name',
+                        'serving_size', 'weight', 'company_name',
                        'nutrition_score', 'nutri_score_grade', 'nrf_index'],
                 batch_size=100
             )
