@@ -2,10 +2,11 @@ from django.db import models
 import uuid
 
 class Food(models.Model):
-    food_id = models.UUIDField(
+    food_id = models.CharField(
         primary_key=True,
-        default=uuid.uuid4,
-        editable=False
+        max_length=50,
+        unique=True,
+        default=uuid.uuid4
     )
     food_img = models.CharField(max_length=255, null=True, blank=True)
 
@@ -15,7 +16,7 @@ class Food(models.Model):
 
     # 기준량과 기본 영양소
     nutritional_value_standard_amount = models.BigIntegerField()
-    calorie = models.BigIntegerField()
+    calorie = models.FloatField()
     moisture = models.FloatField()
     protein = models.FloatField()
     fat = models.FloatField()
@@ -28,7 +29,7 @@ class Food(models.Model):
     iron_content = models.FloatField(null=True, blank=True)
     phosphorus = models.FloatField(null=True, blank=True)
     potassium = models.FloatField(null=True, blank=True)
-    salt = models.BigIntegerField(null=True, blank=True)  # 나트륨은 mg 단위이므로 BigInt 유지
+    salt = models.FloatField(null=True, blank=True)  # 나트륨은 mg 단위이므로 BigInt 유지
 
     VitaminA = models.FloatField(null=True, blank=True)
     VitaminB = models.FloatField(null=True, blank=True)
@@ -46,7 +47,7 @@ class Food(models.Model):
     company_name = models.CharField(max_length=255)
 
     # 영양 점수 관련 필드 추가
-    nutrition_score = models.FloatField(null=True, blank=True, help_text="0-10 영양 점수")
+    nutrition_score = models.FloatField(null=True, blank=True, help_text="0-26 영양 점수")
     nutri_score_grade = models.CharField(max_length=1, null=True, blank=True, help_text="A-E 등급")
     nrf_index = models.FloatField(null=True, blank=True, help_text="NRF 지수")
 
@@ -61,6 +62,8 @@ class Food(models.Model):
 
     def __str__(self):
         return self.food_name
+    
+
 class Price(models.Model):
     price_id = models.CharField(max_length=255, primary_key=True)  # P20240001 형태
     food = models.ForeignKey(Food, on_delete=models.CASCADE, related_name='prices')

@@ -4,6 +4,6 @@ from .views import product_detail, toggle_favorite
 app_name = "products"
 
 urlpatterns = [
-    path("<uuid:product_id>/", product_detail, name="product-detail"),
-    path("<uuid:product_id>/like/", toggle_favorite, name="product-like"),
+    path("<str:product_id>/", product_detail, name="product-detail"),
+    path("<str:product_id>/like/", toggle_favorite, name="product-like"),
 ]

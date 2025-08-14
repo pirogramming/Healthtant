@@ -150,9 +150,9 @@ def make_evaluation(name, avg, min, max, essential=0):
 
 # 실제로 food를 1회 섭취했을 때 얻을 수 있는 영양소의 양을 반환하는 함수
 def get_real_nutrient(food, nutrient_name):
-    serving_size = getattr(food, "serving_size", getattr(food, "weight", 100)) #1회 섭취참고량이 없다면 식품 중량을 기준으로, 식품 중량도 없다면 100g(ml)를 섭취하는 것으로 계산함
-    nutritional_value_standard_amount = getattr(food, "nutritional_value_standard_amount", 100) #model 설계 시 null=False 로 설정이지만... 혹시 모르니 100g(ml)를 기본으로 설정
-    nutrient = getattr(food, nutrient_name, 0) #null인 영양소 필드도 존재함
+    serving_size = getattr(food, "serving_size", getattr(food, "weight", 100)) or 100#1회 섭취참고량이 없다면 식품 중량을 기준으로, 식품 중량도 없다면 100g(ml)를 섭취하는 것으로 계산함
+    nutritional_value_standard_amount = getattr(food, "nutritional_value_standard_amount", 100) or 100 #model 설계 시 null=False 로 설정이지만... 혹시 모르니 100g(ml)를 기본으로 설정
+    nutrient = getattr(food, nutrient_name, 0) or 0 #null인 영양소 필드도 존재함
     weight = getattr(food, "weight") #model 설계시 null=False 로 설정
     
     if nutrient == 0:

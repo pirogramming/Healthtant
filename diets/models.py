@@ -5,9 +5,9 @@ from django.conf import settings
 class Diet(models.Model):
     # 선택할 수 있는 끼니 종류
     MEAL_CHOICES = [
-        ('B', '아침'),
-        ('L', '점심'),
-        ('D', '저녁'),
+        ('아침', '아침'),
+        ('점심', '점심'),
+        ('저녁', '저녁'),
     ]
 
     # UUID로 정의되는 PK
@@ -19,7 +19,7 @@ class Diet(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     food = models.ForeignKey('foods.Food', on_delete=models.CASCADE)
     date = models.DateField()
-    meal = models.CharField(max_length=1, choices=MEAL_CHOICES)
+    meal = models.CharField(max_length=2, choices=MEAL_CHOICES)
 
     # 시간 필드
     created_at = models.DateTimeField(auto_now_add=True)
