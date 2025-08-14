@@ -3,6 +3,7 @@ from django.shortcuts import get_object_or_404, render
 from django.views.decorators.http import require_GET, require_http_methods
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
+from common import nutrition_score
 
 from foods.models import Food, FavoriteFood
 
@@ -18,6 +19,11 @@ def _product_dict(food, is_favorite: bool):
         "carbohydrate": food.carbohydrate,
         "sodium": food.salt,
         "nutrition_score": None,
+        "letter_grade": None,
+        "sugar_level": None,
+        "saturated_fatty_acids_level": None,
+        "salt_level": None,
+        "protein_level": None,
         "is_favorite": is_favorite,
     }
 
@@ -31,6 +37,14 @@ def product_detail(request, product_id):
     )
 
     data = _product_dict(food, is_fav)
+
+    data["nutrition_score"] = nutrition_score.NutritionalScore(food) # 0 ~ 26점 반환
+    data["letter_grade"] = nutrition_score.letterGrade(food) #A, B, C, D, E
+    
+    data["sugar_level"] = nutrition_score.get_level("sugar", food) # ex) {"level": "낮음", "class": "GOOD"}
+    data["saturated_fatty_acids_level"]= nutrition_score.get_level("saturated_fatty_acids", food) # ex) {"level": "낮음", "class": "GOOD"}
+    data["salt_level"] = nutrition_score.get_level("salt", food) # ex) {"level": "낮음", "class": "GOOD"}
+    data["protein_level"] = nutrition_score.get_level("protein", food) # ex) {"level": "낮음", "class": "GOOD"}
 
     # JSON이 필요하면 명시적으로 응답
     wants_json = (
