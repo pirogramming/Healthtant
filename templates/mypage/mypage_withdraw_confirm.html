@@ -50,33 +50,8 @@
         </div>
     </div>
 
-    <script>
-        function toggleSubmitButton() {
-            const checkbox = document.getElementById('agreeCheckbox');
-            const submitButton = document.getElementById('submitButton');
-            
-            if (checkbox.checked) {
-                submitButton.disabled = false;
-                submitButton.classList.add('active');
-            } else {
-                submitButton.disabled = true;
-                submitButton.classList.remove('active');
-            }
-        }
-
-        // 폼 제출 시 재확인
-        document.getElementById('withdrawForm').addEventListener('submit', function(e) {
-            if (!document.getElementById('agreeCheckbox').checked) {
-                e.preventDefault();
-                alert('동의 사항을 체크해주세요.');
-                return false;
-            }
-            
-            if (!confirm('정말로 탈퇴하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
-                e.preventDefault();
-                return false;
-            }
-        });
-    </script>
+    {% block extra_js %}
+    <script type="module" defer src="{% static 'mypage/js/mypage.js' %}"></script>
+    {% endblock %}
 </body>
 </html>

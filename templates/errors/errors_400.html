@@ -52,5 +52,8 @@
             </div>
         </div>
     </div>
+    {% block extra_js %}
+    <script type="module" defer src="{% static 'errors/js/errors.js' %}"></script>
+    {% endblock %}
 </body>
 </html>

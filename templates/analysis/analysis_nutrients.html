@@ -308,7 +308,5 @@
 
 
 {% block extra_js %}
-<script>
-console.log('Nutrients analysis page loaded');
-</script>
+<script type="module" defer src="{% static 'analysis/js/analysis.js' %}"></script>
 {% endblock %}

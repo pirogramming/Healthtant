@@ -52,10 +52,8 @@
         </div>
     </div>
 
-    <script>
-        function goToLogin() {
-            window.location.href = "{% url 'account_login' %}";
-        }
-    </script>
+    {% block extra_js %}
+    <script type="module" defer src="{% static 'errors/js/errors.js' %}"></script>
+    {% endblock %}
 </body>
 </html>

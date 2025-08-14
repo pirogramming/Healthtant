@@ -51,13 +51,8 @@
             </div>
         </div>
     </div>
-    <script>
-        function retryPage() {
-            // 잠시 대기 후 페이지 새로고침 (서버 오류가 일시적일 수 있음)
-            setTimeout(function() {
-                location.reload();
-            }, 2000);
-        }
-    </script>
+    {% block extra_js %}
+    <script type="module" defer src="{% static 'errors/js/errors.js' %}"></script>
+    {% endblock %}
 </body>
 </html>

@@ -60,46 +60,8 @@
         </div>
     </div>
 
-    <script>
-        function performSearch() {
-            const searchInput = document.getElementById('searchInput');
-            const keyword = searchInput.value.trim();
-            
-            if (!keyword) {
-                alert('검색어를 입력해주세요.');
-                return;
-            }
-            
-            // 실제 검색 기능 구현 시 여기에 AJAX 요청 추가
-            console.log('검색어:', keyword);
-        }
-
-        function toggleFavorite(foodId, button) {
-            // 즐겨찾기 토글 기능
-            if (button.classList.contains('active')) {
-                // 즐겨찾기 해제
-                if (confirm('즐겨찾기에서 제거하시겠습니까?')) {
-                    // 즐겨찾기 제거 요청
-                    window.location.href = `/mypage/food/like/${foodId}/`;
-                }
-            } else {
-                // 즐겨찾기 추가
-                button.classList.add('active');
-                button.querySelector('.favorite-text').textContent = '+ 등록하기';
-            }
-        }
-
-        function goBack() {
-            // 마이페이지로 돌아가기
-            window.location.href = '/mypage/';
-        }
-
-        // Enter 키로도 검색 가능하도록
-        document.getElementById('searchInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                performSearch();
-            }
-        });
-    </script>
+    {% block extra_js %}
+    <script type="module" defer src="{% static 'mypage/js/mypage.js' %}"></script>
+    {% endblock %}
 </body>
 </html>

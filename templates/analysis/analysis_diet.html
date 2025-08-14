@@ -213,109 +213,19 @@
 <!-- Chart.js CDN -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-  const ctx = document.getElementById('calorieChart').getContext('2d');
-  
-  // 그라디언트 생성
-  const gradient = ctx.createLinearGradient(0, 0, 0, 280);
-  gradient.addColorStop(0, '#56AAB2');
-  gradient.addColorStop(1, 'rgba(217, 217, 217, 0)');
-  
-  // Django 템플릿에서 데이터 가져오기
-  const chartData = {
-    labels: [
-      {% for data in calorie_trend.daily_data|slice:":8" %}
-        '{{ data.date|date:"m/d" }}'{% if not forloop.last %},{% endif %}
-      {% endfor %}
-    ],
-    datasets: [{
-      label: '칼로리 섭취량',
-      data: [
-        {% for data in calorie_trend.daily_data|slice:":8" %}
-          {{ data.calorie|floatformat:0 }}{% if not forloop.last %},{% endif %}
-        {% endfor %}
-      ],
-      borderColor: '#56AAB2',
-      backgroundColor: gradient,
-      borderWidth: 3,
-      fill: true,
-      tension: 0.4,
-      pointBackgroundColor: function(context) {
-        const value = context.parsed.y;
-        const minValue = {{ calorie_trend.min_data.calorie|floatformat:0 }};
-        const maxValue = {{ calorie_trend.max_data.calorie|floatformat:0 }};
-        
-        if (value === minValue) return '#56AAB2';
-        if (value === maxValue) return '#EF4444';
-        return '#56AAB2';
-      },
-      pointBorderColor: '#ffffff',
-      pointBorderWidth: 2,
-      pointRadius: 6,
-      pointHoverRadius: 8
-    }]
-  };
-
-  const config = {
-    type: 'line',
-    data: chartData,
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          display: false
-        },
-        tooltip: {
-          backgroundColor: 'rgba(0, 0, 0, 0.8)',
-          titleColor: '#ffffff',
-          bodyColor: '#ffffff',
-          borderColor: '#7CC7C2',
-          borderWidth: 1,
-          callbacks: {
-            label: function(context) {
-              return context.parsed.y + ' kcal';
-            }
-          }
-        }
-      },
-      scales: {
-        x: {
-          grid: {
-            color: '#f0f0f0',
-            drawBorder: false
-          },
-          ticks: {
-            font: {
-              size: 12
-            },
-            color: '#666'
-          }
-        },
-        y: {
-          grid: {
-            color: '#f0f0f0',
-            drawBorder: false
-          },
-          ticks: {
-            font: {
-              size: 12
-            },
-            color: '#666',
-            callback: function(value) {
-              return value + ' kcal';
-            }
-          }
-        }
-      },
-      interaction: {
-        intersect: false,
-        mode: 'index'
-      }
-    }
-  };
-
-  new Chart(ctx, config);
-});
+// Django 템플릿에서 차트 데이터를 JavaScript로 전달
+window.calorieChartLabels = [
+  {% for data in calorie_trend.daily_data|slice:":8" %}
+    '{{ data.date|date:"m/d" }}'{% if not forloop.last %},{% endif %}
+  {% endfor %}
+];
+window.calorieChartData = [
+  {% for data in calorie_trend.daily_data|slice:":8" %}
+    {{ data.calorie|floatformat:0 }}{% if not forloop.last %},{% endif %}
+  {% endfor %}
+];
+window.calorieChartMin = {{ calorie_trend.min_data.calorie|floatformat:0 }};
+window.calorieChartMax = {{ calorie_trend.max_data.calorie|floatformat:0 }};
 </script>
+<script type="module" defer src="{% static 'analysis/js/analysis.js' %}"></script>
 {% endblock %}
