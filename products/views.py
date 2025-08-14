@@ -33,7 +33,6 @@ def _product_dict(food, is_favorite: bool):
         "cholesterol": food.cholesterol,
         "saturated_fatty_acids": food.saturated_fatty_acids,
         "trans_fatty_acids": food.trans_fatty_acids,
-        "magnesium": food.magnesium,
         "nutritional_value_standard_amount": food.nutritional_value_standard_amount,
         "weight": food.weight,
         "company_name": food.company_name,

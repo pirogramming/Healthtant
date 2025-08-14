@@ -187,7 +187,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 		['콜레스테롤', p.cholesterol, 'mg'],
 		['포화지방산', p.saturated_fatty_acids, 'g'],
 		['트랜스지방산', p.trans_fatty_acids, 'g'],
-		['마그네슘', p.magnesium, 'mg'],
 	  ];
   
 	  let html = '';

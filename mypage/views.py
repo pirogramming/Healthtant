@@ -110,7 +110,7 @@ def favorite_food_list(request):
     for f in favorites:
         food = f.food
         favorite_foods.append({
-            "favorite_id": f.id,
+            "favorite_id": str(f.pk),
             "food_id": str(food.food_id),
             "food_name": food.food_name,
             "food_img": getattr(food, 'food_img', '') or "http://example.com/default_food.png",
