@@ -15,7 +15,7 @@ def search_page(request):
     )
 
     context = {foods_sorted}
-
+    
     return render(request, "search_page.html", context)
 
 
