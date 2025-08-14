@@ -25,27 +25,36 @@
                 프로필 정보를 수정하세요.
             </div>
 
-            <form method="POST" action="/accounts/profile/">
+            <form method="POST" action="/accounts/profile/" enctype="multipart/form-data">
                 {% csrf_token %}
                 
                 <div class="profile-section">
-                    <div class="profile-picture">
-                        {% if profile.profile_image %}
-                            <img src="{{ profile.profile_image.url }}" alt="프로필 이미지" style="width: 94px; height: 94px; border-radius: 50%; object-fit: cover;">
-                        {% else %}
-                            <svg xmlns="http://www.w3.org/2000/svg" width="94" height="95" viewBox="0 0 94 95" fill="none">
-                                <g clip-path="url(#clip0_357_1027)">
-                                    <path d="M47 82.75C66.468 82.75 82.25 66.968 82.25 47.5C82.25 28.032 66.468 12.25 47 12.25C27.532 12.25 11.75 28.032 11.75 47.5C11.75 66.968 27.532 82.75 47 82.75Z" fill="#180E19" stroke="#180E19" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                    <path d="M46.666 28.6666C54.2229 28.6668 60.3486 34.7933 60.3486 42.3502C60.3485 49.907 54.2228 56.0327 46.666 56.0328C39.1091 56.0328 32.9826 49.9071 32.9824 42.3502C32.9824 34.7932 39.109 28.6666 46.666 28.6666Z" fill="white" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                    <path d="M23.5 69.0416C25.6719 64.7637 28.9859 61.1707 33.0748 58.6609C37.1637 56.1511 41.8677 54.8226 46.6654 54.8226C51.4631 54.8226 56.1671 56.1511 60.256 58.6609C64.3448 61.1707 67.6589 64.7637 69.8308 69.0416" fill="white"/>
-                                </g>
-                                <defs>
-                                    <clipPath id="clip0_357_1027">
-                                        <rect width="94" height="94" fill="white" transform="translate(0 0.5)"/>
-                                    </clipPath>
-                                </defs>
+                    <div class="profile-picture-container">
+                        <div class="profile-picture" id="profile-picture">
+                            {% if profile.profile_image_url and profile.profile_image_url != 'default.png' and profile.profile_image_url != 'None' %}
+                                <img src="{{ profile.profile_image_url }}" alt="프로필 이미지" style="width: 94px; height: 94px; border-radius: 50%; object-fit: cover;">
+                            {% else %}
+                                <svg xmlns="http://www.w3.org/2000/svg" width="94" height="95" viewBox="0 0 94 95" fill="none">
+                                    <g clip-path="url(#clip0_357_1027)">
+                                        <path d="M47 82.75C66.468 82.75 82.25 66.968 82.25 47.5C82.25 28.032 66.468 12.25 47 12.25C27.532 12.25 11.75 28.032 11.75 47.5C11.75 66.968 27.532 82.75 47 82.75Z" fill="black" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M46.666 28.6666C54.2229 28.6668 60.3486 34.7933 60.3486 42.3502C60.3485 49.907 54.2228 56.0327 46.666 56.0328C39.1091 56.0328 32.9826 49.9071 32.9824 42.3502C32.9824 34.7932 39.109 28.6666 46.666 28.6666Z" fill="white" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M23.5 69.0416C25.6719 64.7637 28.9859 61.1707 33.0748 58.6609C37.1637 56.1511 41.8677 54.8226 46.6654 54.8226C51.4631 54.8226 56.1671 56.1511 60.256 58.6609C64.3448 61.1707 67.6589 64.7637 69.8308 69.0416" fill="white"/>
+                                    </g>
+                                    <defs>
+                                        <clipPath id="clip0_357_1027">
+                                            <rect width="94" height="94" fill="white" transform="translate(0 0.5)"/>
+                                        </clipPath>
+                                    </defs>
+                                </svg>
+                            {% endif %}
+                        </div>
+                        <div class="camera-icon" onclick="document.getElementById('profile-image-input').click()">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <path d="M16.25 5.625H14.375L13.125 3.75H6.875L5.625 5.625H3.75C3.08696 5.625 2.45107 5.88828 1.98223 6.35723C1.51339 6.82617 1.25 7.46196 1.25 8.125V15C1.25 15.663 1.51339 16.2988 1.98223 16.7678C2.45107 17.2367 3.08696 17.5 3.75 17.5H16.25C16.913 17.5 17.5489 17.2367 18.0178 16.7678C18.4866 16.2988 18.75 15.663 18.75 15V8.125C18.75 7.46196 18.4866 6.82617 18.0178 6.35723C17.5489 5.88828 16.913 5.625 16.25 5.625Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M10 13.75C11.3807 13.75 12.5 12.6307 12.5 11.25C12.5 9.86929 11.3807 8.75 10 8.75C8.61929 8.75 7.5 9.86929 7.5 11.25C7.5 12.6307 8.61929 13.75 10 13.75Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
-                        {% endif %}
+                        </div>
+                        <input type="file" id="profile-image-input" name="profile_image" accept="image/*" style="display: none;" onchange="handleImageUpload(this)">
                     </div>
                 </div>
 
@@ -94,6 +103,43 @@
         .nav-center {
             flex: 1;
             text-align: center;
+        }
+        
+        /* 프로필 이미지 컨테이너 */
+        .profile-picture-container {
+            position: relative;
+            display: inline-block;
+            margin: 20px 0;
+        }
+        
+        .profile-picture {
+            width: 94px;
+            height: 94px;
+            border-radius: 50%;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .camera-icon {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            width: 32px;
+            height: 32px;
+            background-color: rgba(0, 0, 0, 0.6);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .camera-icon:hover {
+            background-color: rgba(0, 0, 0, 0.8);
+            transform: scale(1.05);
         }
         
         .form-section {
@@ -164,5 +210,87 @@
             background-color: #e5e5e5;
         }
     </style>
+
+    <script>
+        // 프로필 이미지 업로드 처리 (로컬 미리보기 + 서버 업로드)
+        function handleImageUpload(input) {
+            const file = input.files[0];
+            if (file) {
+                // 파일 크기 체크 (5MB 제한)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('파일 크기가 너무 큽니다. 5MB 이하의 이미지를 선택해주세요.');
+                    return;
+                }
+
+                // 이미지 파일 형식 체크
+                if (!file.type.startsWith('image/')) {
+                    alert('이미지 파일만 업로드 가능합니다.');
+                    return;
+                }
+
+                // 1. 즉시 로컬 미리보기 표시
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const profilePicture = document.getElementById('profile-picture');
+                    profilePicture.innerHTML = `<img src="${e.target.result}" alt="프로필 이미지" style="width: 94px; height: 94px; border-radius: 50%; object-fit: cover;">`;
+                };
+                reader.readAsDataURL(file);
+
+                // 2. 서버에 실제 업로드
+                uploadProfileImageToServer(file);
+            }
+        }
+
+        // 서버에 프로필 이미지 업로드
+        function uploadProfileImageToServer(file) {
+            const formData = new FormData();
+            formData.append('profile_image', file);
+
+            // CSRF 토큰 가져오기
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
+                              document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            
+            if (csrfToken) {
+                formData.append('csrfmiddlewaretoken', csrfToken);
+            }
+
+            fetch('/mypage/upload-image/', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('✅ 프로필 이미지가 서버에 성공적으로 저장되었습니다.');
+                    console.log('서버 이미지 URL:', data.image_url);
+                    
+                    // 서버 이미지로 업데이트
+                    const profilePicture = document.getElementById('profile-picture');
+                    profilePicture.innerHTML = `<img src="${data.image_url}" alt="프로필 이미지" style="width: 94px; height: 94px; border-radius: 50%; object-fit: cover;">`;
+                } else {
+                    console.error('❌ 서버 업로드 실패:', data.error);
+                    alert('서버 업로드에 실패했습니다: ' + (data.error || '알 수 없는 오류'));
+                }
+            })
+            .catch(error => {
+                console.error('❌ 업로드 오류:', error);
+                alert('이미지 업로드 중 오류가 발생했습니다.');
+            });
+        }
+
+        // 페이지 로드 시 서버 이미지 우선 표시
+        document.addEventListener('DOMContentLoaded', function() {
+            // 서버에서 제공된 이미지가 있으면 그것을 사용
+            const serverImageUrl = '{{ profile.profile_image_url }}';
+            const profilePicture = document.getElementById('profile-picture');
+            
+            if (serverImageUrl && serverImageUrl.trim() !== '' && serverImageUrl !== 'default.png' && serverImageUrl !== 'None') {
+                profilePicture.innerHTML = `<img src="${serverImageUrl}" alt="프로필 이미지" style="width: 94px; height: 94px; border-radius: 50%; object-fit: cover;">`;
+            }
+        });
+    </script>
 </body>
 </html>

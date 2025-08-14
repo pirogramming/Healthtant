@@ -5,13 +5,26 @@ from .models import Diet
 from foods.models import Food
 from django.contrib.auth.decorators import login_required
 from django.db.models import Case, When, Value, IntegerField
-from datetime import date
+from datetime import date, datetime
 import json
 from django.http import HttpResponse
 
 #유저 식사 리스트 전달
-@login_required(login_url='/accounts/login/')
 def diet_main(request):
+    # 로그인 상태 확인
+    if not request.user.is_authenticated:
+        # 로그인 안 된 경우 빈 데이터로 렌더링
+        year = int(request.GET.get('year', datetime.now().year))
+        month = int(request.GET.get('month', datetime.now().month))
+        context = {
+            "user_id": "",
+            "year": year,
+            "month": month,
+            "data": []
+        }
+        return render(request, 'diets/diets_main.html', context)
+    
+    # 로그인된 경우 기존 로직 실행
     user = request.user #GET으로 받은 유저 정보
     year = int(request.GET.get('year')) #쿼리로 받은 연도(url에 포함)
     month = int(request.GET.get('month')) #쿼리로 받은 월(url에 포함)
