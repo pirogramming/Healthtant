@@ -207,3 +207,28 @@ document.addEventListener('DOMContentLoaded', async () => {
 	  console.error(e);
 	}
   });
+
+// letter_grade를 가져와서 brand-tag 업데이트
+document.addEventListener('DOMContentLoaded', async () => {
+	const brandTag = document.querySelector('.brand-tag');
+	const btn = document.getElementById('favoriteBtn');
+	if (!brandTag || !btn) return;
+  
+	const pid = btn.getAttribute('data-product-id');
+	try {
+	  const res = await fetch(`/products/${pid}/?format=json`, { credentials: 'same-origin' });
+	  if (!res.ok) return;
+	  const p = await res.json();
+  
+	  // letter_grade가 있으면 brand-tag 업데이트
+	  if (p.letter_grade) {
+		brandTag.textContent = p.letter_grade;
+		
+		// 등급에 따른 색상 클래스 추가 (선택사항)
+		// brandTag.className = 'brand-tag';
+		// brandTag.classList.add(`grade-${p.letter_grade.toLowerCase()}`);
+	  }
+	} catch (e) {
+	  console.error('등급 정보를 불러오는 중 오류:', e);
+	}
+  });
