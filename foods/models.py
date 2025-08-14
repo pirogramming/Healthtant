@@ -111,4 +111,3 @@ class FavoriteFood(models.Model):
 
     def __str__(self):
         return f'{getattr(self.user, "username", self.user_id)} ♥ {self.food_id}'
-
