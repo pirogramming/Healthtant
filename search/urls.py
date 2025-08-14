@@ -5,4 +5,5 @@ app_name = 'main'
 
 urlpatterns = [
     path('', views.search_page, name='search_page'),
+    path('search/', views.normal_search, name='normal_search'),
 ]
