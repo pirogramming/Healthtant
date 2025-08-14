@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>크롤링 관리 - Healthtant</title>
+</head>
+<body>
+    <h1>쿠팡 크롤링 관리</h1>
+    
+    <!-- 크롤링 통계 -->
+    <div>
+        <h2>크롤링 현황</h2>
+        <div id="crawlingStats">
+            <div>총 가격 정보: <span id="totalPrices">-</span></div>
+            <div>대기 중: <span id="pendingPrices">-</span></div>
+            <div>크롤링 중: <span id="inProgressPrices">-</span></div>
+            <div>성공: <span id="successPrices">-</span></div>
+            <div>실패: <span id="failedPrices">-</span></div>
+            <div>제품 없음: <span id="notFoundPrices">-</span></div>
+        </div>
+        <button onclick="loadCrawlingStats()">통계 새로고침</button>
+    </div>
+    
+    <!-- 크롤링 제어 -->
+    <div class="crawling-controls">
+        <div class="input-group">
+            <label for="foodIds">식품 ID 목록 (쉼표로 구분):</label>
+            <input type="text" id="foodIds" placeholder="F20240001, F20240002, F20240003">
+        </div>
+        
+        <div class="checkbox-group">
+            <input type="checkbox" id="headless" checked>
+            <label for="headless">백그라운드 실행 (브라우저 창 숨김)</label>
+        </div>
+        
+        <div class="button-group">
+            <button onclick="startCrawling()" class="btn btn-primary">크롤링 시작</button>
+            <button onclick="startAllCrawling()" class="btn btn-success">전체 크롤링 시작</button>
+            <button onclick="retryFailedCrawling()" class="btn btn-warning">실패 항목 재시도</button>
+        </div>
+    </div>
+    
+    <!-- 최근 크롤링 결과 -->
+    <div>
+        <h2>최근 크롤링 결과</h2>
+        <div id="recentResults">로딩 중...</div>
+    </div>
+    
+    <!-- 크롤링 로그 -->
+    <div>
+        <h2>크롤링 로그</h2>
+        <div id="crawlingLog" style="height: 300px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; background-color: #f9f9f9;">
+            크롤링 로그가 여기에 표시됩니다...
+        </div>
+    </div>
+    
+    <script>
+        // 페이지 로드 시 통계 로드
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCrawlingStats();
+            loadRecentResults();
+        });
+        
+        // 크롤링 통계 로드
+        async function loadCrawlingStats() {
+            try {
+                const response = await fetch('/api/crawling-status/');
+                const data = await response.json();
+                
+                if (data.success) {
+                    const stats = data.data.statistics;
+                    document.getElementById('totalPrices').textContent = stats.total;
+                    document.getElementById('pendingPrices').textContent = stats.pending;
+                    document.getElementById('inProgressPrices').textContent = stats.in_progress;
+                    document.getElementById('successPrices').textContent = stats.success;
+                    document.getElementById('failedPrices').textContent = stats.failed;
+                    document.getElementById('notFoundPrices').textContent = stats.not_found;
+                    
+                    addLog('통계 정보를 새로고침했습니다.');
+                }
+            } catch (error) {
+                console.error('통계 로드 실패:', error);
+                addLog('통계 로드 실패: ' + error.message);
+            }
+        }
+        
+        // 최근 크롤링 결과 로드
+        async function loadRecentResults() {
+            try {
+                const response = await fetch('/api/crawling-status/');
+                const data = await response.json();
+                
+                if (data.success) {
+                    const recent = data.data.recent_crawled;
+                    const container = document.getElementById('recentResults');
+                    
+                    if (recent.length === 0) {
+                        container.innerHTML = '<p>아직 크롤링된 제품이 없습니다.</p>';
+                        return;
+                    }
+                    
+                    let html = '<table border="1" style="width: 100%; border-collapse: collapse;">';
+                    html += '<tr><th>제품명</th><th>회사</th><th>가격</th><th>상태</th><th>크롤링 시간</th></tr>';
+                    
+                    recent.forEach(item => {
+                        const statusColor = getStatusColor(item.crawling_status);
+                        const crawledTime = item.crawled_at ? new Date(item.crawled_at).toLocaleString() : '-';
+                        
+                        html += `<tr>
+                            <td>${item.food_name}</td>
+                            <td>${item.company_name}</td>
+                            <td>${item.price ? item.price.toLocaleString() + '원' : '-'}</td>
+                            <td style="color: ${statusColor};">${getStatusText(item.crawling_status)}</td>
+                            <td>${crawledTime}</td>
+                        </tr>`;
+                    });
+                    
+                    html += '</table>';
+                    container.innerHTML = html;
+                }
+            } catch (error) {
+                console.error('최근 결과 로드 실패:', error);
+                addLog('최근 결과 로드 실패: ' + error.message);
+            }
+        }
+        
+        // 크롤링 시작
+        async function startCrawling() {
+            const foodIdsText = document.getElementById('foodIds').value.trim();
+            const headless = document.getElementById('headless').checked;
+            
+            if (!foodIdsText) {
+                addLog('❌ 크롤링할 식품 ID를 입력해주세요.', 'error');
+                return;
+            }
+            
+            const foodIds = foodIdsText.split(',').map(id => id.trim()).filter(id => id);
+            
+            try {
+                addLog('🚀 크롤링을 시작합니다...', 'info');
+                
+                const response = await fetch('/api/start-crawling/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify({
+                        food_ids: foodIds,
+                        headless: headless
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    addLog(`✅ ${result.message}`, 'success');
+                    addLog(`📊 총 ${result.data.total_foods}개 식품 크롤링 시작됨`, 'info');
+                    
+                    // 통계 새로고침
+                    loadCrawlingStats();
+                    loadRecentResults();
+                } else {
+                    addLog(`❌ ${result.message}`, 'error');
+                }
+                
+            } catch (error) {
+                addLog(`❌ 크롤링 시작 실패: ${error.message}`, 'error');
+            }
+        }
+        
+        async function startAllCrawling() {
+            const headless = document.getElementById('headless').checked;
+            
+            try {
+                addLog('🚀 전체 크롤링을 시작합니다...', 'info');
+                addLog('⚠️ Food DB의 모든 식품을 크롤링합니다. 시간이 오래 걸릴 수 있습니다.', 'warning');
+                
+                const response = await fetch('/api/start-all-crawling/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify({
+                        headless: headless
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    addLog(`✅ ${result.message}`, 'success');
+                    addLog(`📊 총 ${result.data.total_foods}개 식품 전체 크롤링 시작됨`, 'info');
+                    
+                    // 통계 새로고침
+                    loadCrawlingStats();
+                    loadRecentResults();
+                } else {
+                    addLog(`❌ ${result.message}`, 'error');
+                }
+                
+            } catch (error) {
+                addLog(`❌ 전체 크롤링 시작 실패: ${error.message}`, 'error');
+            }
+        }
+        
+        // 실패 항목 재시도
+        async function retryFailedCrawling() {
+            try {
+                addLog('실패 항목 재시도 시작...');
+                
+                const response = await fetch('/api/retry-crawling/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    addLog(`✅ ${result.message}`);
+                    
+                    // 5초 후 통계 새로고침
+                    setTimeout(() => {
+                        loadCrawlingStats();
+                        loadRecentResults();
+                    }, 5000);
+                } else {
+                    addLog(`❌ 재시도 실패: ${result.message}`);
+                }
+                
+            } catch (error) {
+                console.error('재시도 실패:', error);
+                addLog('❌ 재시도 실패: ' + error.message);
+            }
+        }
+        
+        // 로그 추가
+        function addLog(message, type = 'info') {
+            const logElement = document.getElementById('crawlingLog');
+            const timestamp = new Date().toLocaleTimeString();
+            let logEntry = `[${timestamp}] ${message}\n`;
+            
+            switch (type) {
+                case 'success':
+                    logEntry = `[${timestamp}] ✅ ${message}\n`;
+                    break;
+                case 'error':
+                    logEntry = `[${timestamp}] ❌ ${message}\n`;
+                    break;
+                case 'warning':
+                    logEntry = `[${timestamp}] ⚠️ ${message}\n`;
+                    break;
+                case 'info':
+                    logEntry = `[${timestamp}] ℹ️ ${message}\n`;
+                    break;
+                default:
+                    logEntry = `[${timestamp}] ${message}\n`;
+            }
+            
+            logElement.textContent += logEntry;
+            logElement.scrollTop = logElement.scrollHeight;
+        }
+        
+        // 상태별 색상 반환
+        function getStatusColor(status) {
+            switch (status) {
+                case 'success': return '#28a745';
+                case 'failed': return '#dc3545';
+                case 'not_found': return '#ffc107';
+                case 'in_progress': return '#17a2b8';
+                case 'pending': return '#6c757d';
+                default: return '#000000';
+            }
+        }
+        
+        // 상태별 텍스트 반환
+        function getStatusText(status) {
+            switch (status) {
+                case 'success': return '성공';
+                case 'failed': return '실패';
+                case 'not_found': return '제품 없음';
+                case 'in_progress': return '진행 중';
+                case 'pending': return '대기 중';
+                default: return status;
+            }
+        }
+        
+        // 자동 새로고침 (30초마다)
+        setInterval(() => {
+            loadCrawlingStats();
+            loadRecentResults();
+        }, 30000);
+
+        // CSRF Token 가져오기
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    </script>
+</body>
+</html>

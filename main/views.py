@@ -25,8 +25,12 @@ from .csv_processor import (
     read_csv_file, read_excel_file, get_csv_template_data,
     process_food_data_with_progress, process_price_data_with_progress
 )
+from main.crawler import batch_crawl_food_prices, CoupangCrawler
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+from django.db.models import Count, Q
 from foods.models import Food, Price
-from accounts.models import UserProfile
 from diets.models import Diet
 
 # Create your views here.
@@ -496,6 +500,220 @@ def get_database_stats(request):
         
     except Exception as e:
         return create_error_response(f'서버 오류가 발생했습니다: {str(e)}', 500)
+
+
+@login_required
+@user_passes_test(is_admin_user)
+def start_crawling(request):
+    """크롤링 시작 API"""
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            food_ids = data.get('food_ids', [])
+            headless = data.get('headless', True)
+            
+            if not food_ids:
+                return JsonResponse({
+                    'success': False,
+                    'message': '크롤링할 식품 ID 목록이 필요합니다.'
+                })
+            
+            print(f"[CRAWLING] 크롤링 시작: {len(food_ids)}개 식품")
+            
+            # 비동기 크롤링 실행 (백그라운드에서 실행)
+            import threading
+            thread = threading.Thread(
+                target=batch_crawl_food_prices,
+                args=(food_ids, headless)
+            )
+            thread.daemon = True
+            thread.start()
+            
+            return JsonResponse({
+                'success': True,
+                'message': f'{len(food_ids)}개 식품의 크롤링이 시작되었습니다.',
+                'data': {
+                    'total_foods': len(food_ids),
+                    'status': 'started'
+                }
+            })
+            
+        except Exception as e:
+            print(f"[CRAWLING] 크롤링 시작 실패: {str(e)}")
+            return JsonResponse({
+                'success': False,
+                'message': f'크롤링 시작 실패: {str(e)}'
+            })
+    
+    return JsonResponse({
+        'success': False,
+        'message': 'POST 요청만 허용됩니다.'
+    })
+
+
+@login_required
+@user_passes_test(is_admin_user)
+def start_all_crawling(request):
+    """전체 Food DB 크롤링 시작 API"""
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            headless = data.get('headless', True)
+            
+            # Food DB의 모든 식품 ID 가져오기
+            all_food_ids = list(Food.objects.values_list('food_id', flat=True))
+            
+            if not all_food_ids:
+                return JsonResponse({
+                    'success': False,
+                    'message': 'Food DB에 크롤링할 식품이 없습니다.'
+                })
+            
+            print(f"[CRAWLING] 전체 크롤링 시작: {len(all_food_ids)}개 식품")
+            
+            # 비동기 크롤링 실행 (백그라운드에서 실행)
+            import threading
+            thread = threading.Thread(
+                target=batch_crawl_food_prices,
+                args=(all_food_ids, headless)
+            )
+            thread.daemon = True
+            thread.start()
+            
+            return JsonResponse({
+                'success': True,
+                'message': f'Food DB의 모든 식품({len(all_food_ids)}개) 크롤링이 시작되었습니다.',
+                'data': {
+                    'total_foods': len(all_food_ids),
+                    'status': 'all_crawling_started'
+                }
+            })
+            
+        except Exception as e:
+            print(f"[CRAWLING] 전체 크롤링 시작 실패: {str(e)}")
+            return JsonResponse({
+                'success': False,
+                'message': f'전체 크롤링 시작 실패: {str(e)}'
+            })
+    
+    return JsonResponse({
+        'success': False,
+        'message': 'POST 요청만 허용됩니다.'
+    })
+
+
+@login_required
+@user_passes_test(is_admin_user)
+def get_crawling_status(request):
+    """크롤링 상태 조회 API"""
+    try:
+        # Price 테이블의 크롤링 상태 통계
+        from django.db.models import Count, Q
+        
+        total_prices = Price.objects.count()
+        pending_prices = Price.objects.filter(crawling_status='pending').count()
+        in_progress_prices = Price.objects.filter(crawling_status='in_progress').count()
+        success_prices = Price.objects.filter(crawling_status='success').count()
+        failed_prices = Price.objects.filter(crawling_status='failed').count()
+        not_found_prices = Price.objects.filter(crawling_status='not_found').count()
+        
+        # 최근 크롤링된 제품들
+        recent_crawled = Price.objects.filter(
+            crawled_at__isnull=False
+        ).order_by('-crawled_at')[:10]
+        
+        recent_data = []
+        for price in recent_crawled:
+            recent_data.append({
+                'food_name': price.food.food_name,
+                'company_name': price.food.company_name,
+                'price': price.price,
+                'crawling_status': price.crawling_status,
+                'crawled_at': price.crawled_at.isoformat() if price.crawled_at else None
+            })
+        
+        return JsonResponse({
+            'success': True,
+            'data': {
+                'statistics': {
+                    'total': total_prices,
+                    'pending': pending_prices,
+                    'in_progress': in_progress_prices,
+                    'success': success_prices,
+                    'failed': failed_prices,
+                    'not_found': not_found_prices
+                },
+                'recent_crawled': recent_data
+            }
+        })
+        
+    except Exception as e:
+        print(f"[CRAWLING] 상태 조회 실패: {str(e)}")
+        return JsonResponse({
+            'success': False,
+            'message': f'상태 조회 실패: {str(e)}'
+        })
+
+
+@login_required
+@user_passes_test(is_admin_user)
+def retry_failed_crawling(request):
+    """실패한 크롤링 재시도 API"""
+    if request.method == 'POST':
+        try:
+            # 실패한 크롤링 항목들 조회
+            failed_prices = Price.objects.filter(
+                crawling_status__in=['failed', 'not_found']
+            )
+            
+            if not failed_prices.exists():
+                return JsonResponse({
+                    'success': True,
+                    'message': '재시도할 실패 항목이 없습니다.'
+                })
+            
+            # 재시도할 식품 ID 목록
+            food_ids = [price.food.food_id for price in failed_prices]
+            
+            print(f"[CRAWLING] 실패 항목 재시도: {len(food_ids)}개")
+            
+            # 비동기 재시도 실행
+            import threading
+            thread = threading.Thread(
+                target=batch_crawl_food_prices,
+                args=(food_ids, True)
+            )
+            thread.daemon = True
+            thread.start()
+            
+            return JsonResponse({
+                'success': True,
+                'message': f'{len(food_ids)}개 실패 항목의 재시도가 시작되었습니다.',
+                'data': {
+                    'retry_count': len(food_ids),
+                    'status': 'retry_started'
+                }
+            })
+            
+        except Exception as e:
+            print(f"[CRAWLING] 재시도 실패: {str(e)}")
+        return JsonResponse({
+            'success': False,
+                'message': f'재시도 실패: {str(e)}'
+            })
+    
+        return JsonResponse({
+            'success': False,
+        'message': 'POST 요청만 허용됩니다.'
+    })
+
+
+@login_required
+@user_passes_test(is_admin_user)
+def crawling_management_page(request):
+    """크롤링 관리 페이지"""
+    return render(request, 'main/crawling_management.html')
+
 def permission_denied_view(request, exception=None):
     """403 에러 페이지 뷰"""
     return render(request, 'errors/errors_403.html', status=403)

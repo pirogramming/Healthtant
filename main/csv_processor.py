@@ -250,7 +250,7 @@ def process_price_data(df, upload_mode):
                 
             elif upload_mode == 'upsert':
                 if existing_price:
-                    # 기존 데이터 업데이트
+                # 기존 데이터 업데이트
                     update_price_object(existing_price, row)
                     prices_to_update.append(existing_price)
                     updated_rows += 1

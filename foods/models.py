@@ -1,11 +1,10 @@
 from django.db import models
-import uuid
 
 class Food(models.Model):
-    food_id = models.UUIDField(
+    food_id = models.CharField(
+        max_length=255,
         primary_key=True,
-        default=uuid.uuid4,
-        editable=False
+        help_text="식품 고유 ID (예: P101-405000400-4180)"
     )
     food_img = models.CharField(max_length=255, null=True, blank=True)
 
