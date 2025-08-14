@@ -30,6 +30,7 @@ urlpatterns = [
     path('products/', include('products.urls')),
     path('mypage/', include('mypage.urls')),
     path('db/', include('db.urls')),
+    path('search/', include('search.urls')),
 ]
 
 # 에러 핸들러 설정
