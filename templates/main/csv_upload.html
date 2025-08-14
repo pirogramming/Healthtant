@@ -204,10 +204,22 @@
 
         // 진행상황 추적 시작
         function startProgressTracking(progressKey) {
-            console.log('진행상황 추적 시작:', progressKey);
+            console.log('=== 진행상황 추적 시작 ===');
+            console.log('진행상황 키:', progressKey);
+            console.log('현재 시간:', new Date().toLocaleTimeString());
             
-            // 초기 진행상황 표시
-            document.getElementById('progressLog').innerHTML = '진행상황 추적을 시작했습니다...';
+            // 초기 진행상황 표시 - 서버 콘솔과 동일한 형식
+            document.getElementById('progressLog').innerHTML = `
+                <div style="margin: 5px 0; padding: 8px; background-color: #e8f5e8; border-radius: 5px; border-left: 4px solid #4caf50;">
+                    <strong>✅ 진행상황 추적을 시작했습니다</strong>
+                </div>
+                <div style="margin: 3px 0; padding: 5px; background-color: #e3f2fd; border-radius: 3px; border-left: 3px solid #2196f3;">
+                    진행상황 키: ${progressKey}
+                </div>
+                <div style="margin: 3px 0; padding: 5px; background-color: #fff3e0; border-radius: 3px; border-left: 3px solid #ff9800;">
+                    시작 시간: ${new Date().toLocaleTimeString()}
+                </div>
+            `;
             document.getElementById('currentStep').textContent = '데이터 처리 준비 중...';
             
             let retryCount = 0;
@@ -215,27 +227,56 @@
             
             const progressInterval = setInterval(async () => {
                 try {
-                    console.log('진행상황 조회 중... (시도:', retryCount + 1, ')');
+                    console.log(`[${new Date().toLocaleTimeString()}] 진행상황 조회 시도 ${retryCount + 1}/${maxRetries}`);
+                    console.log('요청 URL:', `/upload-progress/?progress_key=${progressKey}`);
+                    
                     const response = await fetch(`/upload-progress/?progress_key=${progressKey}`);
+                    
+                    console.log('응답 상태:', response.status, response.statusText);
+                    console.log('응답 헤더:', Object.fromEntries(response.headers.entries()));
                     
                     if (!response.ok) {
                         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                     }
                     
                     const data = await response.json();
-                    console.log('진행상황 응답:', data);
+                    console.log('진행상황 응답 데이터:', data);
 
                     if (data.success) {
                         const progress = data.data;
                         retryCount = 0; // 성공 시 재시도 카운트 리셋
                         
+                        console.log('진행상황 상세:', {
+                            status: progress.status,
+                            current_step: progress.current_step,
+                            progress_percentage: progress.progress_percentage,
+                            processed_rows: progress.processed_rows,
+                            total_rows: progress.total_rows
+                        });
+                        
                         // 진행상황이 실제로 업데이트되었는지 확인
                         if (progress.current_step && progress.current_step !== '초기화 중...') {
+                            console.log('진행상황 UI 업데이트 실행');
                             updateProgressUI(progress);
                         } else {
+                            console.log('아직 초기화 상태 - 대기 중...');
                             // 아직 초기화 상태라면 더 구체적인 메시지 표시
                             document.getElementById('currentStep').textContent = '데이터 처리 준비 중... 잠시만 기다려주세요.';
-                            document.getElementById('progressLog').innerHTML = '백엔드에서 데이터 처리를 시작하고 있습니다...';
+                            
+                            // 진행상황 로그에 대기 상태 표시
+                            const logElement = document.getElementById('progressLog');
+                            const waitingMessage = `
+                                <div style="margin: 5px 0; padding: 8px; background-color: #fff3e0; border-radius: 5px; border-left: 4px solid #ff9800;">
+                                    <strong>⏳ 백엔드에서 데이터 처리를 시작하고 있습니다...</strong>
+                                </div>
+                                <div style="margin: 3px 0; padding: 5px; background-color: #fafafa; border-radius: 3px; font-size: 0.9em; color: #666;">
+                                    잠시만 기다려주세요. 대용량 파일 처리 시 시간이 걸릴 수 있습니다.
+                                </div>
+                            `;
+                            
+                            // 기존 로그에 대기 메시지 추가
+                            logElement.innerHTML += waitingMessage;
+                            logElement.scrollTop = logElement.scrollHeight;
                         }
 
                         // 완료 또는 오류 상태인 경우 추적 중단
@@ -275,42 +316,94 @@
                         resetUploadUI();
                     }
                 }
-            }, 2000); // 2초마다 진행상황 조회 (1초 → 2초로 변경)
+            }, 2000); // 2초마다 진행상황 조회
+            
+            console.log('진행상황 추적 인터벌 설정 완료');
             
             // 60초 후에도 진행상황이 없으면 타임아웃 처리
             setTimeout(() => {
                 clearInterval(progressInterval);
                 const currentStep = document.getElementById('currentStep').textContent;
                 if (currentStep === '데이터 처리 준비 중...' || currentStep === '초기화 중...') {
+                    console.log('타임아웃 발생 - 진행상황 추적 중단');
                     showResult('데이터 처리 시작이 지연되고 있습니다. 잠시 후 다시 시도해주세요.', 'error');
                     resetUploadUI();
                 }
-            }, 60000); // 30초 → 60초로 변경
+            }, 60000);
         }
 
         // 진행상황 UI 업데이트
         function updateProgressUI(progress) {
+            console.log('UI 업데이트 실행:', progress);
+            
             // 진행률 바 업데이트
             document.getElementById('progressBar').style.width = progress.progress_percentage + '%';
             document.getElementById('progressText').textContent = progress.progress_percentage + '%';
             
-            // 현재 단계 업데이트
-            document.getElementById('currentStep').textContent = progress.current_step;
+            // 현재 단계 업데이트 - 서버 콘솔과 동일한 메시지 표시
+            if (progress.current_step) {
+                document.getElementById('currentStep').textContent = progress.current_step;
+            }
             
             // 처리된 행 수 업데이트
-            document.getElementById('processedRows').textContent = progress.processed_rows;
-            document.getElementById('totalRows').textContent = progress.total_rows;
+            if (progress.processed_rows !== undefined) {
+                document.getElementById('processedRows').textContent = progress.processed_rows;
+            }
+            if (progress.total_rows !== undefined) {
+                document.getElementById('totalRows').textContent = progress.total_rows;
+            }
             
             // 예상 남은 시간 업데이트
-            document.getElementById('estimatedTime').textContent = progress.estimated_time || '계산 중...';
-            
-            // 진행상황 로그 업데이트
-            if (progress.details && progress.details.length > 0) {
-                const logElement = document.getElementById('progressLog');
-                logElement.innerHTML = progress.details.map(detail => 
-                    `<div style="margin: 5px 0; padding: 5px; background-color: white; border-radius: 3px;">${detail}</div>`
-                ).join('');
+            if (progress.estimated_time) {
+                document.getElementById('estimatedTime').textContent = progress.estimated_time;
             }
+            
+            // 진행상황 로그 업데이트 - 서버 콘솔과 동일한 형식
+            const logElement = document.getElementById('progressLog');
+            let logContent = '';
+            
+            // 현재 단계를 로그에 추가
+            if (progress.current_step) {
+                logContent += `<div style="margin: 5px 0; padding: 8px; background-color: #e3f2fd; border-radius: 5px; border-left: 4px solid #2196f3;">
+                    <strong>${progress.current_step}</strong>
+                </div>`;
+            }
+            
+            // 진행률 정보 추가
+            if (progress.progress_percentage !== undefined) {
+                logContent += `<div style="margin: 3px 0; padding: 5px; background-color: #f1f8e9; border-radius: 3px; border-left: 3px solid #4caf50;">
+                    진행률: ${progress.progress_percentage}%
+                </div>`;
+            }
+            
+            // 처리된 행 정보 추가
+            if (progress.processed_rows !== undefined && progress.total_rows !== undefined) {
+                logContent += `<div style="margin: 3px 0; padding: 5px; background-color: #fff3e0; border-radius: 3px; border-left: 3px solid #ff9800;">
+                    처리된 행: ${progress.processed_rows} / ${progress.total_rows}
+                </div>`;
+            }
+            
+            // 예상 시간 정보 추가
+            if (progress.estimated_time && progress.estimated_time !== '계산 중...') {
+                logContent += `<div style="margin: 3px 0; padding: 5px; background-color: #fce4ec; border-radius: 3px; border-left: 3px solid #e91e63;">
+                    예상 남은 시간: ${progress.estimated_time}
+                </div>`;
+            }
+            
+            // 상세 정보 추가 (서버에서 전송하는 details)
+            if (progress.details && progress.details.length > 0) {
+                progress.details.forEach(detail => {
+                    logContent += `<div style="margin: 2px 0; padding: 4px; background-color: #fafafa; border-radius: 3px; font-size: 0.9em; color: #666;">
+                        ${detail}
+                    </div>`;
+                });
+            }
+            
+            // 로그 업데이트
+            logElement.innerHTML = logContent;
+            
+            // 로그를 항상 최하단으로 스크롤
+            logElement.scrollTop = logElement.scrollHeight;
         }
 
         // 최종 결과 표시
@@ -353,14 +446,14 @@
             loading.style.display = 'none';
             progressContainer.style.display = 'none';
             
-            // 진행상황 초기화
+            // 진행상황 초기화 - 더 명확한 메시지
             document.getElementById('progressBar').style.width = '0%';
             document.getElementById('progressText').textContent = '0%';
-            document.getElementById('currentStep').textContent = '초기화 중...';
+            document.getElementById('currentStep').textContent = '업로드 대기 중...';
             document.getElementById('processedRows').textContent = '0';
             document.getElementById('totalRows').textContent = '0';
             document.getElementById('estimatedTime').textContent = '계산 중...';
-            document.getElementById('progressLog').innerHTML = '진행상황을 확인하는 중...';
+            document.getElementById('progressLog').innerHTML = '새로운 업로드를 기다리는 중...';
         }
 
         // 결과 표시

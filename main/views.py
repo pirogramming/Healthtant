@@ -421,19 +421,28 @@ def get_upload_progress(request):
             return create_error_response('진행상황 키가 필요합니다.', 400)
         
         print(f"[PROGRESS] 진행상황 조회: {progress_key}")
+        print(f"[PROGRESS] 현재 세션 키: {request.session.session_key}")
+        print(f"[PROGRESS] 세션 데이터: {dict(request.session)}")
+        
         progress_data = request.session.get(progress_key, {})
+        print(f"[PROGRESS] 진행상황 데이터: {progress_data}")
+        
         if not progress_data:
             print(f"[PROGRESS] 진행상황을 찾을 수 없음: {progress_key}")
             return create_error_response('진행상황을 찾을 수 없습니다.', 404)
         
         current_step = progress_data.get('current_step', '알 수 없음')
         progress_percentage = progress_data.get('progress_percentage', 0)
-        print(f"[PROGRESS] 진행상황 반환: {progress_key} - {current_step} ({progress_percentage}%)")
+        status = progress_data.get('status', 'unknown')
+        
+        print(f"[PROGRESS] 진행상황 반환: {progress_key} - {current_step} ({progress_percentage}%) - 상태: {status}")
         
         return create_success_response('진행상황 정보입니다.', progress_data)
         
     except Exception as e:
         print(f"[PROGRESS] 오류 발생: {e}")
+        import traceback
+        traceback.print_exc()
         return create_error_response(f'서버 오류가 발생했습니다: {str(e)}', 500)
 
 
