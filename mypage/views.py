@@ -1,9 +1,13 @@
 from django.shortcuts import render, redirect
+import os
+from uuid import uuid4
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods, require_POST
 from django.contrib import messages
 from django.contrib.auth import logout
 from django.http import JsonResponse
+from django.core.files.storage import default_storage
 from accounts.models import UserProfile
 from foods.models import FavoriteFood
 
@@ -49,27 +53,35 @@ def profile_view(request):
     }
     return render(request, 'mypage/mypage_profile.html', {'user_data': user_data})
 
+MAX_MB = 5
+
+def _save_image_and_get_url(file, user_id):
+    ext = os.path.splitext(file.name)[1].lower()
+    path = f"profiles/{user_id}/{uuid4()}{ext}"
+    saved = default_storage.save(path, file)         
+    return getattr(default_storage, "url", None)(saved) if hasattr(default_storage, "url") \
+           else f"{settings.MEDIA_URL}{saved}"
+
 @login_required(login_url='/accounts/login/')
 @require_POST
 def upload_profile_image(request):
-    try:
-        profile_image_url = request.POST.get('profile_image_url')
-        if not profile_image_url:
-            return JsonResponse({'success': False, 'error': '프로필 이미지 URL이 없습니다.'})
+    f = request.FILES.get("profile_image")
+    if not f:
+        return JsonResponse({"success": False, "error": "파일이 없습니다."}, status=400)
+    if not str(f.content_type).startswith("image/"):
+        return JsonResponse({"success": False, "error": "이미지 파일만 허용됩니다."}, status=400)
+    if f.size > MAX_MB * 1024 * 1024:
+        return JsonResponse({"success": False, "error": f"{MAX_MB}MB 이하만 업로드 가능합니다."}, status=400)
 
-        profile, _ = UserProfile.objects.get_or_create(
-            user=request.user, defaults={'nickname': request.user.username}
-        )
-        profile.profile_image_url = profile_image_url
-        profile.save()
+    image_url = _save_image_and_get_url(f, request.user.id)
 
-        return JsonResponse({
-            'success': True,
-            'image_url': profile.profile_image_url,
-            'message': '프로필 이미지가 업데이트되었습니다.'
-        })
-    except Exception as e:
-        return JsonResponse({'success': False, 'error': f'업데이트 중 오류: {str(e)}'})
+    profile, _ = UserProfile.objects.get_or_create(
+        user=request.user, defaults={"nickname": request.user.username}
+    )
+    profile.profile_image_url = image_url
+    profile.save(update_fields=["profile_image_url"])
+
+    return JsonResponse({"success": True, "image_url": image_url})
 
 
 @login_required(login_url='/accounts/login/')
@@ -113,14 +125,10 @@ def favorite_food_delete(request, food_id):
 @login_required(login_url='/accounts/login/')
 @require_http_methods(["GET", "POST"])
 def account_withdraw(request):
-    """
-    회원 탈퇴 (GET 확인 페이지, POST 실제 탈퇴) // 렌더링 전용
-    """
     if request.method == 'POST':
-        user = request.user
-        user.is_active = False
-        user.save()
-        logout(request)
+        # 현재 로그인한 유저 완전 삭제
+        request.user.delete()
+        logout(request)  # 삭제 후 세션 종료
         messages.success(request, '회원 탈퇴가 완료되었습니다.')
         return redirect('main:main_page')
     return render(request, 'mypage/mypage_withdraw_confirm.html', {'user': request.user})
