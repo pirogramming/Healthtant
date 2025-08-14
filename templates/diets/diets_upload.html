@@ -9,9 +9,22 @@
 {% endblock %}
 
 {% block header %}
-<header class="topbar">
+{% comment %} <header class="topbar">
   <button type="button" class="back-btn" onclick="history.back()">←</button>
   <h1 class="title">등록하기</h1>
+</header> {% endcomment %}
+<header class="app-header">
+  <div class="status-bar"></div>
+  
+  <!-- 뒤로가기 버튼 + 제목 -->
+  <div class="header-nav">
+    <button class="back-button" onclick="history.back()" aria-label="뒤로가기">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path d="M15 18L9 12L15 6" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <h1 class="page-title">등록하기</h1>
+  </div>
 </header>
 {% endblock %}
 
