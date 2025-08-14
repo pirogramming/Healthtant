@@ -26,10 +26,13 @@ pandas >= 2.3
 numpy >= 2
 openpyxl==3.1.5
 
-# Web Scraping (추후 설치 예정)
-# beautifulsoup4==4.12.2
-# selenium==4.15.2
-# lxml==4.9.3
+# Web Scraping & Crawling
+beautifulsoup4==4.13.4
+selenium==4.35.0
+webdriver-manager==4.0.2
+fake-useragent==2.2.0
+retry==0.9.2
+lxml==6.0.0
 
 # Environment Variables
 # python-decouple==3.8

@@ -64,6 +64,24 @@ class Price(models.Model):
     price = models.BigIntegerField()
     discount_price = models.BigIntegerField(null=True, blank=True)
     is_available = models.BooleanField(default=True)
+    
+    # 크롤링 관련 필드 추가
+    product_image_url = models.URLField(max_length=500, null=True, blank=True, help_text="크롤링된 제품 이미지 URL")
+    product_url = models.URLField(max_length=500, null=True, blank=True, help_text="크롤링된 제품 상세 페이지 URL")
+    crawled_at = models.DateTimeField(null=True, blank=True, help_text="크롤링 수행 시간")
+    crawling_status = models.CharField(
+        max_length=20, 
+        choices=[
+            ('pending', '대기 중'),
+            ('in_progress', '크롤링 중'),
+            ('success', '성공'),
+            ('failed', '실패'),
+            ('not_found', '제품 없음')
+        ],
+        default='pending',
+        help_text="크롤링 상태"
+    )
+    crawling_error = models.TextField(null=True, blank=True, help_text="크롤링 오류 메시지")
 
     # 시간 필드
     created_at = models.DateTimeField(auto_now_add=True)
