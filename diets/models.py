@@ -11,7 +11,11 @@ class Diet(models.Model):
     ]
 
     # UUID로 정의되는 PK
-    diet_id = models.CharField(max_length=255, primary_key=True)  # D20240001 형태
+    diet_id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False
+    )
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     food = models.ForeignKey('foods.Food', on_delete=models.CASCADE)
     date = models.DateField()
