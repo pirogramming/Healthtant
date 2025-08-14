@@ -15,7 +15,7 @@ class Food(models.Model):
 
     # 기준량과 기본 영양소
     nutritional_value_standard_amount = models.BigIntegerField()
-    calorie = models.BigIntegerField()
+    calorie = models.FloatField()
     moisture = models.FloatField()
     protein = models.FloatField()
     fat = models.FloatField()
@@ -46,7 +46,7 @@ class Food(models.Model):
     company_name = models.CharField(max_length=255)
 
     # 영양 점수 관련 필드 추가
-    nutrition_score = models.FloatField(null=True, blank=True, help_text="0-10 영양 점수")
+    nutrition_score = models.FloatField(null=True, blank=True, help_text="0-26 영양 점수")
     nutri_score_grade = models.CharField(max_length=1, null=True, blank=True, help_text="A-E 등급")
     nrf_index = models.FloatField(null=True, blank=True, help_text="NRF 지수")
 
@@ -61,6 +61,8 @@ class Food(models.Model):
 
     def __str__(self):
         return self.food_name
+    
+
 class Price(models.Model):
     price_id = models.CharField(max_length=255, primary_key=True)  # P20240001 형태
     food = models.ForeignKey(Food, on_delete=models.CASCADE, related_name='prices')
