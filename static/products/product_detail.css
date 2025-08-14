@@ -179,23 +179,8 @@
 }
 
 /* 건강 정보 */
-.health-info {
+ .health-info {
   margin: 32px 0;
-}
-
-.health-group {
-  margin-bottom: 16px;
-}
-
-.health-item {
-  display: flex;
-  align-items: center;
-  margin-bottom: 8px;
-  gap: 8px;
-}
-
-.health-item.indent {
-  margin-left: 46px; /* 배지보다 더 많이 들여쓰기 */
 }
 
 .health-badge {
@@ -204,11 +189,39 @@
   font-size: 10px;
   font-weight: 600;
   text-transform: uppercase;
+} 
+
+.health-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
 }
 
+.health-item .left {
+  flex-shrink: 0;
+  width: 60px;
+}
+
+.health-item .right {
+  flex: 1;
+}
+
+.health-item.indent .left {
+  width: 60px; /* badge 공간만큼 */
+}
+
+
 .health-group.good .health-badge {
-  background-color: #d4edda;
-  color: #155724;
+  border-radius: 15px;
+  background: #56AAB2;
+  box-shadow: 0 1px 2px 0 rgba(99, 99, 99, 0.25);
+  color: #FFF;
+  
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 20px;
+  letter-spacing: 0.11px;
 }
 
 .health-group.natural .health-badge {
@@ -225,7 +238,7 @@
   font-size: 11px;
   font-style: normal;
   font-weight: 600;
-  line-height: 20px; /* 181.818% */
+  line-height: 20px;
   letter-spacing: 0.11px;
 }
 
@@ -235,19 +248,33 @@
   font-size: 13px;
   font-style: normal;
   font-weight: 600;
-  line-height: 20px; /* 153.846% */
-  letter-spacing: 0.13px;
-}
-
-.highlight {
-  color: var(--bad-icon, #B25658);
-  font-family: Inter;
-  font-size: 13px;
-  font-style: normal;
-  font-weight: 600;
   line-height: 20px;
   letter-spacing: 0.13px;
 }
+.health-group.good .health-text .highlight { color: #56AAB2; font-weight: 800; }
+.health-group.bad  .health-text .highlight { color: #B25658; font-weight: 800; }
+
+/* NEUTRAL 배지 색상 */
+.health-group.neutral .health-badge {
+  /* background-color: #FFE32A; */
+  background-color: #D1D73D;
+  border-radius: 15px;
+  color: white;
+  box-shadow: 0 1px 2px 0 rgba(99, 99, 99, 0.25);
+  
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 20px;
+  letter-spacing: 0.11px;
+}
+
+/* NEUTRAL 하이라이트 색상 */
+.health-group.neutral .health-text .highlight {
+  color: #B2AC56;  /* 배지와 동일한 색상 */
+  font-weight: 800;
+}
+
 
 /* 상세 정보 섹션 */
 .detail-section {
@@ -265,8 +292,6 @@
 .nutrition-table-container {
   background: #ffffff;
 }
-
-/* 스크롤바 스타일링 제거 (스크롤 기능 사용 안함) */
 
 /* 영양소 테이블 */
 .nutrition-table {
@@ -332,19 +357,18 @@
 /* 좋아요(하트) 아이콘 상태 */
 .favorite-btn svg { width: 35px; height: 33px; }
 .favorite-btn .heart-path {
-  fill: transparent;          /* 기본: 비워진 하트 */
-  stroke: #9E9E9E;            /* 기본: 회색 선 */
+  fill: transparent;          
+  stroke: #9E9E9E;            
   stroke-width: 2px;
   stroke-linecap: round;
   stroke-linejoin: round;
   transition: fill .2s ease, stroke .2s ease;
 }
 .favorite-btn:hover { background: #f8f9fa; }
-/* .favorite-btn.active { box-shadow: 0 6px 14px rgba(255,92,97,.25); } */
 .favorite-btn.active .heart-path {
-  fill: #EB5757;              /* 활성화: 빨간색 채움 */
-  stroke: #EB5757;            /* 활성화: 선도 빨강 */
-}
+  fill: #EB5757;              
+  stroke: #EB5757;
+}           
 
 .add-meal-btn {
   flex: 1;

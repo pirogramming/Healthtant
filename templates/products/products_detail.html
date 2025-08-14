@@ -47,12 +47,12 @@
   <!-- 제품 정보 -->
   <div class="product-info">
     <!-- 브랜드 태그 -->
-    <div class="brand-tag">A</div>
+    <div class="brand-tag">등급 계산 중...</div>
     
     <!-- 제품명과 가격 -->
     <div class="product-title-section">
       <h1 class="product-name">{{ product.food_name }}</h1>
-      <div class="product-price">3,500<span class="currency">원</span></div>
+      {% comment %} <div class="product-price">3,500<span class="currency">원</span></div> {% endcomment %}
     </div>
 
     <!-- 영양 정보 아이콘 -->
@@ -102,7 +102,7 @@
         </div>
         <div class="nutrition-text">
           <span class="nutrition-label">나트륨</span>
-          <span class="nutrition-value">{{ product.salt|floatformat:0 }}mg</span>
+          <span class="nutrition-value">{{ product.sodium|floatformat:0 }}mg</span>
         </div>
       </div>
 
@@ -122,28 +122,10 @@
 
     <!-- 구분선 -->
     <div class="section-divider"></div>
-
-    <!-- 건강 정보 --> 
-    {% comment %} 여기부분 어떻게 수정해야할지 고민입니다.. js로 해볼까요? {% endcomment %}
-    <div class="health-info">
-      <div class="health-group good">
-        <div class="health-item">
-          <span class="health-badge">GOOD</span>
-          <span class="health-text">이 제품은 <span class="highlight">당류가 낮은</span> 제품입니다.</span>
-        </div>
-        <div class="health-item">
-          <span class="health-text">이 제품은 <span class="highlight">포화지방이 낮은</span> 제품입니다.</span>
-        </div>
-      </div>
-      
-      <div class="health-group bad">
-        <div class="health-item">
-          <span class="health-badge">BAD</span>
-          <span class="health-text">이 제품은 <span class="highlight">나트륨이 많은</span> 제품입니다.</span>
-        </div>
-      </div>
-  </div>
-
+    <!-- 건강 정보 -->
+    <div class="health-info" aria-live="polite">
+      <div class="health-item"><span class="health-text">영양 정보를 불러오는 중…</span></div>
+    </div>
     <!-- 구분선 -->
     <div class="section-divider"></div>
 
@@ -154,32 +136,10 @@
       <!-- 영양소 테이블 -->
       <div class="nutrition-table-container">
         <div class="nutrition-table">
-          <div class="nutrition-row">
-            <span class="nutrition-name">열량</span>
-            <span class="nutrition-amount">{{ product.calorie|floatformat:0 }}kcal</span>
-          </div>
           
-          <div class="nutrition-row divider">
-            <span class="nutrition-name">단백질</span>
-            <span class="nutrition-amount">{{ product.protein|floatformat:0 }}g</span>
-          </div>
-          
-          <div class="nutrition-row divider">
-            <span class="nutrition-name">지방</span>
-            <span class="nutrition-amount">{{ product.fat|floatformat:0 }}g</span>
-          </div>
-          
-          <div class="nutrition-row divider">
-            <span class="nutrition-name">탄수화물</span>
-            <span class="nutrition-amount">{{ product.carbohydrate|floatformat:0 }}g</span>
-          </div>
-          
-          <div class="nutrition-row divider">
-          <span class="nutrition-name">나트륨</span>
-          <span class="nutrition-amount">{{ product.salt|floatformat:0 }}mg</span>
-          </div>
         </div>
       </div>
+
     </div>
   </div>
 

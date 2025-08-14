@@ -75,31 +75,5 @@
 {% endblock %}
 
 {% block extra_js %}
-<script>
-function performSearch() {
-    // 검색 페이지로 이동
-    window.location.href = '/diets/search/page/';
-}
-
-function clearSearch() {
-    // diets_main.html로 이동 (오늘 날짜로)
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = today.getMonth() + 1;
-    
-    window.location.href = `/diets/?year=${year}&month=${month}`;
-}
-
-function registerFood(foodId) {
-    // 오늘 날짜 생성
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, '0');
-    const day = String(today.getDate()).padStart(2, '0');
-    const todayString = `${year}-${month}-${day}`;
-    
-    // diets_upload.html로 이동 (food_id와 오늘 날짜를 파라미터로 전달)
-    window.location.href = `/diets/upload/?food=${foodId}&date=${todayString}`;
-}
-</script>
+<script src="{% static 'diets/js/diets_main.js' %}"></script>
 {% endblock %}
