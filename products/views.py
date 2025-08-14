@@ -29,8 +29,8 @@ def _product_dict(food, is_favorite: bool):
 
 
 @require_GET
-def product_detail(request, product_id):
-    food = get_object_or_404(Food, pk=product_id)
+def product_detail(request, food_id):
+    food = get_object_or_404(Food, pk=food_id)
     is_fav = (
         request.user.is_authenticated
         and FavoriteFood.objects.filter(user_id=request.user.id, food=food).exists()
@@ -61,11 +61,11 @@ def product_detail(request, product_id):
 
 @login_required(login_url='/accounts/login/')
 @require_http_methods(["POST"])
-def toggle_favorite(request, product_id):
+def toggle_favorite(request, food_id):
     """
-    POST /products/<uuid>/like/
+    POST /products/<food_id>/like/
     """
-    food = get_object_or_404(Food, pk=product_id)
+    food = get_object_or_404(Food, pk=food_id)
     fav_qs = FavoriteFood.objects.filter(user_id=request.user.id, food=food)
 
     if fav_qs.exists():
