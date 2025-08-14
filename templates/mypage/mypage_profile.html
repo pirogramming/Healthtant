@@ -216,6 +216,64 @@
             // 프로필 편집 페이지로 직접 이동
             window.location.href = '/accounts/profile/edit/';
         }
+
+        // 로그인 상태 확인 함수
+        function checkLoginStatus() {
+            return {{ user.is_authenticated|yesno:"true,false" }};
+        }
+
+        // 로그인이 필요한 기능에 적용할 함수
+        function requireLogin(callback) {
+            if (checkLoginStatus()) {
+                // 로그인된 경우 원래 기능 실행
+                if (callback) callback();
+            } else {
+                // 로그인되지 않은 경우 모달 표시
+                showLoginModal();
+            }
+        }
+
+        // 마이페이지 접근 시 로그인 체크
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!checkLoginStatus()) {
+                showLoginModal();
+            }
+        });
+    </script>
+
+
+    <script>
+    // 로그인 모달 표시
+    function showLoginModal() {
+        const modal = document.getElementById('loginModal');
+        modal.style.display = 'flex';
+    }
+
+    // 로그인 모달 숨기기
+    function hideLoginModal() {
+        const modal = document.getElementById('loginModal');
+        modal.style.display = 'none';
+    }
+
+    // 로그인 페이지로 이동
+    function goToLogin() {
+        window.location.href = '/accounts/login/';
+    }
+
+    // 회원가입 페이지로 이동
+    function goToSignup() {
+        window.location.href = '/accounts/signup/';
+    }
+
+    // 모달 외부 클릭 시 로그인 페이지로 이동
+    document.addEventListener('DOMContentLoaded', function() {
+        const modal = document.getElementById('loginModal');
+        modal.addEventListener('click', function(e) {
+            if (e.target === this) {
+                window.location.href = '/accounts/login/';
+            }
+        });
+    });
     </script>
 </body>
 </html>

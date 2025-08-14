@@ -78,6 +78,14 @@ body {
     font-weight: 400;
     color: #56AAB2;
     letter-spacing: 2px;
+    cursor: pointer !important;
+    transition: color 0.3s ease;
+    user-select: none;
+}
+
+.brand-name:hover {
+    color: #4A9AA2;
+    cursor: pointer !important;
 }
 
 .login-form {
