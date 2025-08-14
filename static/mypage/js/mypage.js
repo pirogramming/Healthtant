@@ -140,52 +140,58 @@ function performSearch() {
     console.log('검색어:', keyword);
 }
 
-// // 즐겨찾기 토글 함수
+// 즐겨찾기 토글 함수
 // function toggleFavorite(foodId, button) {
 //     // 즐겨찾기 토글 기능
 //     if (button.classList.contains('active')) {
 //         // 즐겨찾기 해제
 //         if (confirm('즐겨찾기에서 제거하시겠습니까?')) {
 //             // 즐겨찾기 제거 요청
-//             // window.location.href = `/mypage/food/like/${foodId}/`;
-//             window.location.href = '/mypage/food/like/';
+//             window.location.href = `/mypage/food/like/${foodId}/`;
 //         }
-//     } 
+//     }
 //     // else {
 //     //     // 즐겨찾기 추가
 //     //     button.classList.add('active');
-//     //     button.querySelector('.favorite-text').textContent = '';
+//     //     button.querySelector('.favorite-text').textContent = '+ 등록하기';
 //     // }
 // }
-// CSRF 토큰 가져오기 함수 (없다면 추가)
+
+// mypage.js
+//혹시 수정하고 싶다면 여기 toggleFavorite 함수 수정하면 됨
+//이름만 잘 지정하면 돌아갈거임~
+function toggleFavorite(foodId, button) {
+    if (button.classList.contains('active')) {
+        if (confirm('즐겨찾기에서 제거하시겠습니까?')) {
+            // POST 요청으로 변경
+            fetch(`/mypage/food/like/${foodId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => {
+                if (response.ok) {
+                    // 성공 시 페이지 새로고침 또는 이동
+                    window.location.href = '/mypage/profile/';
+                } else {
+                    alert('즐겨찾기 제거에 실패했습니다.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('즐겨찾기 제거 중 오류가 발생했습니다.');
+            });
+        }
+    } 
+}
+
+// CSRF 토큰 가져오기
 function getCookie(name) {
     const v = `; ${document.cookie}`;
     const p = v.split(`; ${name}=`);
     if (p.length === 2) return p.pop().split(";").shift();
-}
-// 즐겨찾기 토글 함수
-function toggleFavorite(foodId, button) {
-    // 즐겨찾기 토글 기능
-    if (button.classList.contains('active')) {
-        // 즐겨찾기 해제
-        if (confirm('즐겨찾기에서 제거하시겠습니까?')) {
-            // form을 생성해서 POST 요청
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = `/mypage/food/delete/${foodId}/`;
-            
-            // CSRF 토큰 추가
-            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-            const csrfInput = document.createElement('input');
-            csrfInput.type = 'hidden';
-            csrfInput.name = 'csrfmiddlewaretoken';
-            csrfInput.value = csrfToken;
-            form.appendChild(csrfInput);
-            
-            document.body.appendChild(form);
-            form.submit();
-        }
-    } 
 }
 
 // 뒤로가기 함수

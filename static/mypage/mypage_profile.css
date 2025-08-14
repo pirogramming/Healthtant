@@ -1,54 +1,18 @@
-/* 전체 리셋 */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background-color: #F8F9FA;
-    overflow-x: hidden;
-}
-
-/* 컨테이너 */
-.container {
-    max-width: 414px;
-    margin: 0 auto;
-    background-color: #F8F9FA;
-    min-height: 100vh;
-    position: relative;
-}
-
-
-
-/* 헤더 */
-.header {
-    height: 44px;
-    display: flex;
-    align-items: center;
-    padding: 0 20px;
-    background-color: #F8F9FA;
-    border-bottom: none;
-    margin-top: 40px;
-}
-
-.back-button {
-    background: none;
-    border: none;
-    padding: 8px;
-    cursor: pointer;
-    color: black;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
 /* 메인 컨텐츠 */
+.main-content {
+    padding: 0 !important;
+}
+
 .content {
     padding: 0;
-    background-color: #F8F9FA;
 }
+
+/* base.html 검색 영역 숨기기 */
+.search-container {
+    display: none !important;
+}
+
+
 
 /* 프로필 이미지 섹션 */
 .profile-picture-section {
@@ -56,7 +20,7 @@ body {
     flex-direction: column;
     align-items: center;
     padding: 60px 20px 40px 20px;
-    background-color: #F8F9FA;
+    
 }
 
 .profile-picture-container {
@@ -133,7 +97,6 @@ body {
 .user-info-section {
     padding: 0 20px;
     margin-bottom: 40px;
-    background-color: #F8F9FA;
 }
 
 .info-row {
@@ -164,7 +127,7 @@ body {
 .section {
     padding: 0 20px;
     margin-bottom: 40px;
-    background-color: #F8F9FA;
+    
 }
 
 .section-title {
@@ -177,7 +140,6 @@ body {
 
 /* 즐겨찾는 제품 카드 */
 .favorite-card {
-    background-color: #F8F9FA;
     border-radius: 16px;
     padding: 20px;
     display: flex;
