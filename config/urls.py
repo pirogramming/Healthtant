@@ -16,6 +16,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
 from accounts import views
 
 urlpatterns = [
@@ -26,6 +28,7 @@ urlpatterns = [
     path('diets/', include('diets.urls')),
     path('analysis/', include('analysis.urls')),
     path('products/', include('products.urls')),
+    path('mypage/', include('mypage.urls')),
 ]
 
 # 에러 핸들러 설정
@@ -33,3 +36,7 @@ handler400 = 'main.views.bad_request_view'
 handler403 = 'main.views.permission_denied_view'
 handler404 = 'main.views.not_found_view'
 handler500 = 'main.views.server_error_view'
+
+# 미디어 파일 서빙 (개발 환경에서만)
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

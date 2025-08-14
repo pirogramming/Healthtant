@@ -1,0 +1,295 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>마이페이지</title>
+    <link rel="stylesheet" href="{% static 'mypage/mypage_profile.css' %}">
+</head>
+<body>
+    <div class="container">
+        <!-- 헤더 -->
+        <div class="header">
+            <button class="back-button" onclick="window.location.href='{% url 'main:main_page' %}'">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M15 18L9 12L15 6" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+        </div>
+        
+        <div class="content">
+            <!-- 프로필 이미지 섹션 -->
+            <div class="profile-picture-section">
+                <div class="profile-picture-container">
+                    <div class="profile-picture">
+                        {% if user_data.profile_image_url %}
+                            <img src="{{ user_data.profile_image_url }}" alt="프로필 이미지">
+                        {% else %}
+                            <div class="profile-placeholder">
+                                <span class="profile-text">프로필<br>사진</span>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="camera-icon" onclick="document.getElementById('profile-image-input').click()">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M16.25 5.625H14.375L13.125 3.75H6.875L5.625 5.625H3.75C3.08696 5.625 2.45107 5.88828 1.98223 6.35723C1.51339 6.82617 1.25 7.46196 1.25 8.125V15C1.25 15.663 1.51339 16.2988 1.98223 16.7678C2.45107 17.2367 3.08696 17.5 3.75 17.5H16.25C16.913 17.5 17.5489 17.2367 18.0178 16.7678C18.4866 16.2988 18.75 15.663 18.75 15V8.125C18.75 7.46196 18.4866 6.82617 18.0178 6.35723C17.5489 5.88828 16.913 5.625 16.25 5.625Z" stroke="#666" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M10 13.75C11.3807 13.75 12.5 12.6307 12.5 11.25C12.5 9.86929 11.3807 8.75 10 8.75C8.61929 8.75 7.5 9.86929 7.5 11.25C7.5 12.6307 8.61929 13.75 10 13.75Z" stroke="#666" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <!-- 숨겨진 파일 입력 -->
+                    <input type="file" id="profile-image-input" accept="image/*" style="display: none;" onchange="handleImageUpload(this)">
+                </div>
+                <button class="edit-profile-button" onclick="goToProfilePage()">수정하기</button>
+            </div>
+
+            <!-- 사용자 정보 섹션 -->
+            <div class="user-info-section">
+                <div class="info-row">
+                    <span class="info-label">닉네임</span>
+                    <span class="info-value">@{{ user_data.nickname }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">이름</span>
+                    <span class="info-value">{{ user_data.user_name }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">나이</span>
+                    <span class="info-value">{{ user_data.user_age }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">성별</span>
+                    <span class="info-value">
+                        {% if user_data.user_gender == 'M' %}남자{% else %}여자{% endif %}
+                    </span>
+                </div>
+            </div>
+
+            <!-- 즐겨찾는 제품 섹션 -->
+            <div class="section">
+                <div class="favorite-card" onclick="window.location.href='{% url 'mypage:favorite_food_list' %}'">
+                    <div class="favorite-content">
+                        <div class="favorite-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <path d="M12 21.35L10.55 20.03C5.4 15.36 2 12.28 2 8.5C2 5.42 4.42 3 7.5 3C9.24 3 10.91 3.81 12 5.09C13.09 3.81 14.76 3 16.5 3C19.58 3 22 5.42 22 8.5C22 12.28 18.6 15.36 13.45 20.04L12 21.35Z" fill="white"/>
+                            </svg>
+                        </div>
+                        <div class="favorite-info">
+                            <h3 class="favorite-title">즐겨찾는 제품</h3>
+                            <p class="favorite-subtitle">나만의 건강한 식품들</p>
+                        </div>
+                    </div>
+                    <div class="favorite-arrow">
+                        <span class="arrow-text">보기</span>
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M7.5 15L12.5 10L7.5 5" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 계정 연동 섹션 -->
+            <div class="section">
+                <h3 class="section-title">Link Accounts</h3>
+                <div class="link-row">
+                    <div class="link-content">
+                        <div class="link-icon kakao-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="14" viewBox="0 0 16 14" fill="none">
+                                <path d="M8 0C12.4194 0 16 2.67874 16 5.98173C16 9.28472 12.4194 11.9635 8 11.9635C7.51389 11.9635 7.03889 11.9318 6.57778 11.8686C6.11667 12.1768 3.45 13.9521 3.19722 13.9863C3.19722 13.9863 3.09444 14.0232 3.00556 13.9758C2.91667 13.9284 2.93333 13.7993 2.93333 13.7993C2.96111 13.6255 3.62778 11.4498 3.75 11.0468C1.49722 9.99062 0 8.11524 0 5.97909C0 2.67611 3.58056 0 8 0ZM2.39444 4.19327C2.14444 4.19327 1.94167 4.38555 1.94167 4.6226C1.94167 4.85966 2.14444 5.05194 2.39444 5.05194H3.11389V7.65166C3.11389 7.88345 3.32222 8.07046 3.575 8.07046C3.82778 8.07046 4.03611 7.88345 4.03611 7.65166V5.05194H4.75556C5.00556 5.05194 5.20833 4.85966 5.20833 4.6226C5.20833 4.38555 5.00556 4.19327 4.75556 4.19327H2.39167H2.39444ZM6.30556 4.19327C6.00556 4.19854 5.76944 4.41452 5.69167 4.62524L4.58889 7.38036C4.45 7.79389 4.57222 7.94666 4.69722 8.00198C4.78611 8.04149 4.88889 8.06256 4.99167 8.06256C5.18333 8.06256 5.33056 7.98881 5.375 7.87028L5.60278 7.30134H7.01111L7.23889 7.86764C7.28333 7.98617 7.43056 8.05992 7.62222 8.05992C7.725 8.05992 7.825 8.03885 7.91667 7.99934C8.04444 7.94403 8.16667 7.79126 8.025 7.37773L6.92222 4.62524C6.84444 4.41452 6.60833 4.19854 6.30556 4.19327ZM11.3306 4.19327C11.075 4.19327 10.8694 4.39081 10.8694 4.63051V7.62532C10.8694 7.86764 11.0778 8.06256 11.3306 8.06256C11.5833 8.06256 11.7917 7.86501 11.7917 7.62532V6.67183L11.9528 6.51906L13.0333 7.87818C13.1222 7.98881 13.2556 8.05202 13.4028 8.05202C13.5028 8.05202 13.6 8.02305 13.6806 7.9651C13.7778 7.89398 13.8417 7.79126 13.8583 7.67537C13.875 7.55947 13.8444 7.44358 13.7694 7.35139L12.6333 5.92378L13.6861 4.92814C13.7583 4.85966 13.7944 4.76484 13.7889 4.66211C13.7833 4.55939 13.7333 4.46193 13.6528 4.38555C13.5667 4.30389 13.45 4.25648 13.3361 4.25648C13.2361 4.25648 13.1472 4.29072 13.0806 4.35394L11.7944 5.5761V4.63577C11.7944 4.39345 11.5861 4.19854 11.3333 4.19854L11.3306 4.19327ZM8.79445 4.19327C8.53611 4.19327 8.325 4.39081 8.325 4.63051V7.60161C8.325 7.82287 8.52222 8.00198 8.76667 8.00461H10.2472C10.4917 8.00461 10.6889 7.82287 10.6889 7.60161C10.6889 7.38036 10.4889 7.20125 10.2472 7.20125H9.26667V4.63051C9.26667 4.38818 9.05556 4.19327 8.79445 4.19327ZM6.76667 6.52696H5.84444L6.30556 5.28636L6.76667 6.52696Z" fill="black"/>
+                            </svg>
+                        </div>
+                        <span class="link-text">카카오톡 계정 연동하기</span>
+                    </div>
+                    <div class="arrow-icon">></div>
+                </div>
+                <div class="link-row">
+                    <div class="link-content">
+                        <div class="link-icon google-icon">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <g clip-path="url(#clip0_2422_548)">
+                              <path d="M5.57386 0.52637C3.97522 1.08096 2.59654 2.13358 1.64035 3.52962C0.684163 4.92567 0.200854 6.59155 0.261418 8.28258C0.321982 9.9736 0.923226 11.6006 1.97684 12.9247C3.03045 14.2488 4.48089 15.2001 6.11511 15.6389C7.44002 15.9807 8.82813 15.9958 10.1601 15.6826C11.3668 15.4116 12.4823 14.8318 13.3976 14.0001C14.3502 13.1081 15.0417 11.9732 15.3976 10.7176C15.7845 9.35221 15.8534 7.91629 15.5989 6.52012H8.15886V9.60637H12.4676C12.3815 10.0986 12.197 10.5684 11.9251 10.9877C11.6531 11.4069 11.2994 11.767 10.8851 12.0464C10.359 12.3944 9.76586 12.6286 9.14387 12.7339C8.52005 12.8499 7.88019 12.8499 7.25636 12.7339C6.6241 12.6031 6.02599 12.3422 5.50011 11.9676C4.6553 11.3696 4.02096 10.52 3.68762 9.54012C3.34863 8.54186 3.34863 7.45963 3.68762 6.46137C3.9249 5.76164 4.31716 5.12454 4.83511 4.59762C5.42785 3.98355 6.17828 3.54462 7.00406 3.32896C7.82984 3.11331 8.69906 3.12928 9.51637 3.37512C10.1548 3.57111 10.7387 3.91354 11.2214 4.37512C11.7072 3.89179 12.1922 3.4072 12.6764 2.92137C12.9264 2.66012 13.1989 2.41137 13.4451 2.14387C12.7083 1.45822 11.8435 0.924691 10.9001 0.57387C9.18224 -0.049893 7.30259 -0.066656 5.57386 0.52637Z" fill="white"/>
+                              <path d="M5.57372 0.526245C7.3023 -0.067184 9.18196 -0.0508623 10.9 0.572495C11.8435 0.925699 12.708 1.46179 13.4437 2.14999C13.1937 2.41749 12.93 2.66749 12.675 2.92749C12.19 3.41166 11.7054 3.89416 11.2212 4.37499C10.7385 3.91342 10.1547 3.57098 9.51622 3.37499C8.69919 3.1283 7.82999 3.1114 7.00399 3.32617C6.178 3.54094 5.42711 3.97907 4.83372 4.59249C4.31576 5.11941 3.9235 5.75652 3.68622 6.45624L1.09497 4.44999C2.02248 2.6107 3.62841 1.20377 5.57372 0.526245Z" fill="#E33629"/>
+                              <path d="M0.407438 6.43745C0.546714 5.74719 0.777942 5.07873 1.09494 4.44995L3.68619 6.4612C3.34721 7.45946 3.34721 8.54169 3.68619 9.53995C2.82285 10.2066 1.9591 10.8766 1.09494 11.55C0.301376 9.97035 0.0593537 8.17058 0.407438 6.43745Z" fill="#F8BD00"/>
+                              <path d="M8.15876 6.5188H15.5988C15.8533 7.91496 15.7844 9.35088 15.3975 10.7163C15.0416 11.9719 14.3501 13.1067 13.3975 13.9988C12.5613 13.3463 11.7213 12.6988 10.885 12.0463C11.2996 11.7666 11.6535 11.4062 11.9254 10.9865C12.1973 10.5668 12.3817 10.0965 12.4675 9.6038H8.15876C8.15751 8.5763 8.15876 7.54755 8.15876 6.5188Z" fill="#587DBD"/>
+                              <path d="M1.09375 11.55C1.95792 10.8834 2.82167 10.2134 3.685 9.54004C4.01901 10.5203 4.65426 11.3699 5.5 11.9675C6.02751 12.3404 6.62691 12.5992 7.26 12.7275C7.88382 12.8435 8.52368 12.8435 9.1475 12.7275C9.76949 12.6223 10.3626 12.3881 10.8888 12.04C11.725 12.6925 12.565 13.34 13.4012 13.9925C12.4861 14.8247 11.3705 15.4049 10.1637 15.6763C8.83176 15.9894 7.44365 15.9744 6.11875 15.6325C5.07088 15.3528 4.09209 14.8595 3.24375 14.1838C2.34583 13.4709 1.61244 12.5725 1.09375 11.55Z" fill="#319F43"/>
+                            </g>
+                            <defs>
+                              <clipPath id="clip0_2422_548">
+                                <rect width="16" height="16" fill="white"/>
+                              </clipPath>
+                            </defs>
+                          </svg>
+                        </div>
+                        <span class="link-text">구글 계정 연동하기</span>
+                    </div>
+                    <div class="arrow-icon">></div>
+                </div>
+            </div>
+
+            <!-- 로그아웃/탈퇴 섹션 -->
+            <div class="section">
+                <h3 class="section-title" onclick="confirmLogout()">로그아웃</h3>
+                <p class="withdrawal-text"
+                    onclick="window.location.href='{% url 'mypage:account_withdraw' %}'">
+                    탈퇴하기
+                </p>
+            </div>
+        </div>
+
+        <!-- 기존 폼 (숨김 처리) -->
+        <form method="post" style="display: none;">
+  {% csrf_token %}
+  <div>
+    <label>닉네임</label>
+    <input type="text" name="nickname" value="{{ user_data.nickname }}">
+  </div>
+  <div>
+    <label>나이</label>
+    <input type="number" name="user_age" value="{{ user_data.user_age }}">
+  </div>
+  <div>
+    <label>성별</label>
+    <select name="user_gender">
+      <option value="M" {% if user_data.user_gender == 'M' %}selected{% endif %}>남성</option>
+      <option value="F" {% if user_data.user_gender == 'F' %}selected{% endif %}>여성</option>
+    </select>
+  </div>
+  <div>
+    <label>프로필 이미지 URL</label>
+    <input type="url" name="profile_image_url" value="{{ user_data.profile_image_url }}">
+  </div>
+  <button type="submit">저장</button>
+</form>
+    </div>
+
+    <!-- 로그아웃 확인 모달 -->
+    <div class="modal-overlay" id="logoutModal">
+        <div class="modal-container">
+            <div class="modal-content">
+                <p class="modal-message">로그아웃 하시겠습니까?</p>
+                <div class="modal-buttons">
+                    <button class="modal-button cancel-button" onclick="closeLogoutModal()">취소</button>
+                    <button class="modal-button confirm-button" onclick="performLogout()">확인</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function confirmLogout() {
+            document.getElementById('logoutModal').style.display = 'flex';
+        }
+
+        function closeLogoutModal() {
+            document.getElementById('logoutModal').style.display = 'none';
+        }
+
+        function performLogout() {
+            // Django allauth 로그아웃 URL로 이동
+            window.location.href = "{% url 'account_logout' %}";
+        }
+
+        // 모달 외부 클릭 시 닫기
+        document.getElementById('logoutModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeLogoutModal();
+            }
+        });
+
+        // 프로필 이미지 업로드 처리 (로컬 미리보기 + 서버 업로드)
+        function handleImageUpload(input) {
+            const file = input.files[0];
+            if (file) {
+                // 파일 크기 체크 (5MB 제한)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('파일 크기가 너무 큽니다. 5MB 이하의 이미지를 선택해주세요.');
+                    return;
+                }
+
+                // 이미지 파일 형식 체크
+                if (!file.type.startsWith('image/')) {
+                    alert('이미지 파일만 업로드 가능합니다.');
+                    return;
+                }
+
+                // 1. 즉시 로컬 미리보기 표시
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const profilePicture = document.querySelector('.profile-picture');
+                    profilePicture.innerHTML = `<img src="${e.target.result}" alt="프로필 이미지" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+                };
+                reader.readAsDataURL(file);
+
+                // 2. 서버에 실제 업로드
+                uploadProfileImageToServer(file);
+            }
+        }
+
+        // 서버에 프로필 이미지 업로드
+        function uploadProfileImageToServer(file) {
+            const formData = new FormData();
+            formData.append('profile_image', file);
+
+            // CSRF 토큰 가져오기
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
+                              document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            
+            if (csrfToken) {
+                formData.append('csrfmiddlewaretoken', csrfToken);
+            }
+
+            fetch('{% url "mypage:upload_profile_image" %}', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('✅ 프로필 이미지가 서버에 성공적으로 저장되었습니다.');
+                    console.log('서버 이미지 URL:', data.image_url);
+                    
+                    // 로컬 스토리지 클리어 (서버에 저장되었으므로)
+                    localStorage.removeItem('profile_image_preview');
+                    
+                    // 서버 이미지로 업데이트
+                    const profilePicture = document.querySelector('.profile-picture');
+                    profilePicture.innerHTML = `<img src="${data.image_url}" alt="프로필 이미지" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+                } else {
+                    console.error('❌ 서버 업로드 실패:', data.error);
+                    alert('서버 업로드에 실패했습니다: ' + (data.error || '알 수 없는 오류'));
+                }
+            })
+            .catch(error => {
+                console.error('❌ 업로드 오류:', error);
+                alert('이미지 업로드 중 오류가 발생했습니다.');
+            });
+        }
+
+        // 페이지 로드 시 서버 이미지 우선 표시
+        document.addEventListener('DOMContentLoaded', function() {
+            // 서버에서 제공된 이미지가 있으면 그것을 사용
+            const serverImageUrl = '{{ user_data.profile_image_url }}';
+            const profilePicture = document.querySelector('.profile-picture');
+            
+            if (serverImageUrl && serverImageUrl.trim() !== '') {
+                profilePicture.innerHTML = `<img src="${serverImageUrl}" alt="프로필 이미지" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+            } else {
+                // 서버 이미지가 없으면 로컬 스토리지 확인
+                const savedImage = localStorage.getItem('profile_image_preview');
+                if (savedImage && !profilePicture.querySelector('img')) {
+                    profilePicture.innerHTML = `<img src="${savedImage}" alt="프로필 이미지" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+                }
+            }
+        });
+
+        // 프로필 편집 페이지로 이동
+        function goToProfilePage() {
+            // 프로필 편집 페이지로 직접 이동
+            window.location.href = '/accounts/profile/edit/';
+        }
+    </script>
+</body>
+</html>

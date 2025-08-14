@@ -1,44 +1,39 @@
+{% extends 'base/base.html' %}
+
 {% load static %}
-<!DOCTYPE html>
-<html lang="ko" data-colors-mode="light">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{{ product.food_name }} - Healthtant</title>
-  <meta name="csrf-token" content="{{ csrf_token }}">
+
+{% block title %}{{ product.food_name }} - HEALTHTANT{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'products/product_detail.css' %}">
+{% endblock %}
+
+{% block header %}
+<header class="app-header">
+  <div class="status-bar"></div>
   
-  <!-- 폰트 로드 -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Koulen&family=Satoshi:wght@400;500;700&display=swap" rel="stylesheet">
-  
-  <!-- 기본 CSS 구조 -->
-  <link rel="stylesheet" href="{% static 'base/variables.css' %}">
-  <link rel="stylesheet" href="{% static 'base/base.css' %}">
-  <link rel="stylesheet" href="{% static 'products/product_detail.css' %}">
-</head>
-<body>
+  <!-- 뒤로가기 버튼 + 제목 -->
+  <div class="header-nav">
+    <button class="back-button" onclick="history.back()" aria-label="뒤로가기">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path d="M15 18L9 12L15 6" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <h1 class="page-title">{{ product.food_name }}</h1>
+    <button class="share-btn">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path d="M18 8C19.6569 8 21 6.65685 21 5C21 3.34315 19.6569 2 18 2C16.3431 2 15 3.34315 15 5C15 5.58835 15.1978 6.1264 15.5357 6.56066L8.46434 10.5607C8.1264 10.1978 7.58835 10 7 10C5.34315 10 4 11.3431 4 13C4 14.6569 5.34315 16 7 16C7.58835 16 8.1264 15.8022 8.46434 15.4393L15.5357 19.4393C15.1978 19.8736 15 20.4117 15 21C15 22.6569 16.3431 24 18 24C19.6569 24 21 22.6569 21 21C21 19.3431 19.6569 18 18 18C17.4117 18 16.8736 18.1978 16.4393 18.5357L9.36066 14.5357C9.69822 14.1264 9.9 13.5883 9.9 13C9.9 12.4117 9.69822 11.8736 9.36066 11.4393L16.4393 7.43934C16.8736 7.80218 17.4117 8 18 8Z" fill="currentColor"/>
+      </svg>
+    </button>
+  </div>
+</header>
+{% endblock %}
+
+{% block bottom_navigation %}{% endblock %}
+
+{% block content %}
 <div class="screen">
   <div class="view">
-    <!-- 헤더 영역 -->
-    <header class="app-header">
-      <div class="status-bar"></div>
-      
-      <!-- 뒤로가기 버튼 + 제목 -->
-      <div class="header-nav">
-        <button class="back-button" onclick="history.back()" aria-label="뒤로가기">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-            <path d="M15 18L9 12L15 6" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
-        <h1 class="page-title">{{ product.food_name }}</h1>
-        <button class="share-btn">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-            <path d="M18 8C19.6569 8 21 6.65685 21 5C21 3.34315 19.6569 2 18 2C16.3431 2 15 3.34315 15 5C15 5.58835 15.1978 6.1264 15.5357 6.56066L8.46434 10.5607C8.1264 10.1978 7.58835 10 7 10C5.34315 10 4 11.3431 4 13C4 14.6569 5.34315 16 7 16C7.58835 16 8.1264 15.8022 8.46434 15.4393L15.5357 19.4393C15.1978 19.8736 15 20.4117 15 21C15 22.6569 16.3431 24 18 24C19.6569 24 21 22.6569 21 21C21 19.3431 19.6569 18 18 18C17.4117 18 16.8736 18.1978 16.4393 18.5357L9.36066 14.5357C9.69822 14.1264 9.9 13.5883 9.9 13C9.9 12.4117 9.69822 11.8736 9.36066 11.4393L16.4393 7.43934C16.8736 7.80218 17.4117 8 18 8Z" fill="currentColor"/>
-          </svg>
-        </button>
-      </div>
-    </header>
 
     <!-- 메인 컨텐츠 -->
     <main class="product-content">
@@ -82,7 +77,7 @@
         </div>
         <div class="nutrition-text">
           <span class="nutrition-label">당류</span>
-          <span class="nutrition-value">{{ product.protein|floatformat:0 }}g</span>
+          <span class="nutrition-value">{{ product.sugar|floatformat:0 }}g</span>
         </div>
       </div>
 
@@ -94,7 +89,7 @@
         </div>
         <div class="nutrition-text">
           <span class="nutrition-label">단백질</span>
-          <span class="nutrition-value">{{ product.carbohydrate|floatformat:0 }}g</span>
+          <span class="nutrition-value">{{ product.protein|floatformat:0 }}g</span>
         </div>
       </div>
 
@@ -107,7 +102,7 @@
         </div>
         <div class="nutrition-text">
           <span class="nutrition-label">나트륨</span>
-          <span class="nutrition-value">{{ product.sodium|floatformat:0 }}mg</span>
+          <span class="nutrition-value">{{ product.salt|floatformat:0 }}mg</span>
         </div>
       </div>
 
@@ -154,7 +149,7 @@
 
     <!-- 상세 정보 페이지 -->
     <div class="detail-section">
-      <h3 class="detail-title">상세 정보 페이지</h3>
+      <h3 class="detail-title">상세 정보</h3>
       
       <!-- 영양소 테이블 -->
       <div class="nutrition-table-container">
@@ -180,8 +175,8 @@
           </div>
           
           <div class="nutrition-row divider">
-            <span class="nutrition-name">나트륨</span>
-            <span class="nutrition-amount">{{ product.sodium|floatformat:0 }}mg</span>
+          <span class="nutrition-name">나트륨</span>
+          <span class="nutrition-amount">{{ product.salt|floatformat:0 }}mg</span>
           </div>
         </div>
       </div>
@@ -191,13 +186,14 @@
     </main>
     
     <!-- 하단 버튼 -->
-    <div class="bottom-actions">
-      <button id="favoriteBtn" class="favorite-btn {% if product.is_favorite %}active{% endif %}" data-product-id="{{ product.food_id }}" data-is-favorite="{{ product.is_favorite|yesno:'true,false' }}">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-          <path d="M20.84 4.61C20.3292 4.099 19.7228 3.69364 19.0554 3.41708C18.3879 3.14052 17.6725 2.99817 16.95 2.99817C16.2275 2.99817 15.5121 3.14052 14.8446 3.41708C14.1772 3.69364 13.5708 4.099 13.06 4.61L12 5.67L10.94 4.61C9.9083 3.5783 8.50903 2.9987 7.05 2.9987C5.59096 2.9987 4.19169 3.5783 3.16 4.61C2.1283 5.6417 1.5487 7.04097 1.5487 8.5C1.5487 9.95903 2.1283 11.3583 3.16 12.39L12 21.23L20.84 12.39C21.351 11.8792 21.7563 11.2728 22.0329 10.6053C22.3095 9.93789 22.4518 9.22248 22.4518 8.5C22.4518 7.77752 22.3095 7.06211 22.0329 6.39467C21.7563 5.72723 21.351 5.12087 20.84 4.61V4.61Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <div class="bottom-actions">
+      <button id="favoriteBtn" class="favorite-btn {% if product.is_favorite %}active{% endif %}" data-product-id="{{ product.food_id }}" data-is-favorite="{{ product.is_favorite|yesno:'true,false' }}" type="button" aria-pressed="{{ product.is_favorite|yesno:'true,false' }}" aria-label="즐겨찾기">
+        <!-- 기본: 비워진 하트, 활성화 시 CSS로 채움 -->
+        <svg xmlns="http://www.w3.org/2000/svg" width="35" height="33" viewBox="0 0 35 33" fill="none" aria-hidden="true" focusable="false">
+          <path class="heart-path" d="M17.5009 8.65503C20.2022 6.37317 24.3767 6.44891 26.9791 8.90171C29.5803 11.3556 29.67 15.2636 27.2505 17.8127L17.4986 27.0007L7.74912 17.8127C5.32957 15.2636 5.42042 11.3491 8.02052 8.90171C10.6252 6.45216 14.7916 6.36993 17.5009 8.65503Z"/>
         </svg>
       </button>
-      <button class="add-meal-btn">식사로 등록하기</button>
+      <a href="/diets/upload/?food={{ product.food_id }}" class="add-meal-btn">식사로 등록하기</a>
     </div>
   </div>
 </div>
@@ -392,8 +388,9 @@ function toggleFavorite() {
   favoriteBtn.disabled = true;
   
   // CSRF 토큰 가져오기
-  const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
-                   document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+  const metaToken = document.querySelector('meta[name="csrf-token"]');
+  const inputToken = document.querySelector('[name=csrfmiddlewaretoken]');
+  const csrfToken = inputToken ? inputToken.value : (metaToken ? metaToken.getAttribute('content') : '');
   
   fetch(`/products/${productId}/like/`, {
     method: 'POST',
@@ -415,9 +412,11 @@ function toggleFavorite() {
     if (data.is_favorite) {
       favoriteBtn.classList.add('active');
       favoriteBtn.setAttribute('data-is-favorite', 'true');
+      favoriteBtn.setAttribute('aria-pressed', 'true');
     } else {
       favoriteBtn.classList.remove('active');
       favoriteBtn.setAttribute('data-is-favorite', 'false');
+      favoriteBtn.setAttribute('aria-pressed', 'false');
     }
     
     // 성공 메시지 (선택사항)
@@ -446,6 +445,75 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 </script>
+{% endblock %}
 
-</body>
-</html>
+{% block extra_js %}
+<script>
+// AJAX 좋아요 기능
+function toggleFavorite() {
+  const favoriteBtn = document.getElementById('favoriteBtn');
+  const productId = favoriteBtn.getAttribute('data-product-id');
+  const isFavorite = favoriteBtn.getAttribute('data-is-favorite') === 'true';
+  
+  // 버튼 비활성화 (중복 클릭 방지)
+  favoriteBtn.disabled = true;
+  
+  // CSRF 토큰 가져오기
+  const metaToken = document.querySelector('meta[name="csrf-token"]');
+  const inputToken = document.querySelector('[name=csrfmiddlewaretoken]');
+  const csrfToken = inputToken ? inputToken.value : (metaToken ? metaToken.getAttribute('content') : '');
+  
+  fetch(`/products/${productId}/like/`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': csrfToken,
+      'X-Requested-With': 'XMLHttpRequest'
+    },
+    credentials: 'same-origin'
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('네트워크 오류가 발생했습니다.');
+    }
+    return response.json();
+  })
+  .then(data => {
+    // UI 업데이트
+    if (data.is_favorite) {
+      favoriteBtn.classList.add('active');
+      favoriteBtn.setAttribute('data-is-favorite', 'true');
+      favoriteBtn.setAttribute('aria-pressed', 'true');
+    } else {
+      favoriteBtn.classList.remove('active');
+      favoriteBtn.setAttribute('data-is-favorite', 'false');
+      favoriteBtn.setAttribute('aria-pressed', 'false');
+    }
+    
+    // 성공 메시지 (선택사항)
+    // console.log(data.is_favorite ? '좋아요 추가!' : '좋아요 취소!');
+  })
+  .catch(error => {
+    console.error('좋아요 처리 오류:', error);
+    // 에러 메시지 표시 (선택사항)
+    // alert('좋아요 처리 중 오류가 발생했습니다.');
+  })
+  .finally(() => {
+    // 버튼 재활성화
+    favoriteBtn.disabled = false;
+  });
+}
+
+// 페이지 로드 시 실행
+document.addEventListener('DOMContentLoaded', function() {
+  // 건강 정보 생성
+  generateHealthInfo();
+  
+  // 좋아요 버튼 이벤트 리스너 추가
+  const favoriteBtn = document.getElementById('favoriteBtn');
+  if (favoriteBtn) {
+    favoriteBtn.addEventListener('click', toggleFavorite);
+  }
+});
+</script>
+{% endblock %}
