@@ -29,6 +29,7 @@ urlpatterns = [
     path('analysis/', include('analysis.urls')),
     path('products/', include('products.urls')),
     path('mypage/', include('mypage.urls')),
+    path('db/', include('db.urls')),
 ]
 
 # 에러 핸들러 설정
