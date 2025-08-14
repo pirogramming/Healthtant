@@ -22,7 +22,8 @@ from .orm_utils import (
 )
 from .csv_processor import (
     process_food_data, process_price_data, validate_file_upload,
-    read_csv_file, read_excel_file, get_csv_template_data
+    read_csv_file, read_excel_file, get_csv_template_data,
+    process_food_data_with_progress, process_price_data_with_progress
 )
 from foods.models import Food, Price
 from accounts.models import UserProfile
@@ -273,59 +274,117 @@ def db_explorer(request):
 @user_passes_test(is_admin_user)
 def upload_csv_data(request):
     """
-    CSV/XLSX 파일 업로드 및 데이터베이스 업데이트 API
+    CSV/XLSX 파일 업로드 및 데이터베이스 업데이트 API (실시간 진행상황 추적)
     """
     try:
+        print(f"[UPLOAD] 새로운 파일 업로드 요청 시작")
+        
         # 파일 업로드 확인
         if 'csv_file' not in request.FILES:
+            print(f"[UPLOAD] 오류: 파일이 업로드되지 않음")
             return create_error_response('파일이 업로드되지 않았습니다.', 400)
         
         csv_file = request.FILES['csv_file']
+        print(f"[UPLOAD] 파일 수신: {csv_file.name} ({csv_file.size / 1024 / 1024:.2f} MB)")
         
         # 파일 유효성 검사
         table_type = request.POST.get('table_type', 'food')
         upload_mode = request.POST.get('upload_mode', 'upsert')
+        print(f"[UPLOAD] 테이블 타입: {table_type}, 업로드 모드: {upload_mode}")
         
         try:
             validate_file_upload(csv_file, table_type, upload_mode)
+            print(f"[UPLOAD] 파일 유효성 검사 통과")
         except ValueError as validation_error:
+            print(f"[UPLOAD] 유효성 검사 실패: {validation_error}")
             return create_error_response(str(validation_error), 400)
         
         # 파일 읽기 (CSV 또는 XLSX)
         try:
+            print(f"[UPLOAD] 파일 읽기 시작: {csv_file.name}")
             if csv_file.name.endswith('.csv'):
                 df = read_csv_file(csv_file)
+                print(f"[UPLOAD] CSV 파일 읽기 완료: {len(df)}행")
             elif csv_file.name.endswith('.xlsx'):
                 df = read_excel_file(csv_file)
+                print(f"[UPLOAD] XLSX 파일 읽기 완료: {len(df)}행")
             else:
-                    return create_error_response('지원하지 않는 파일 형식입니다.', 400)
+                print(f"[UPLOAD] 지원하지 않는 파일 형식: {csv_file.name}")
+                return create_error_response('지원하지 않는 파일 형식입니다.', 400)
                     
         except ValueError as file_error:
-                return create_error_response(str(file_error), 400)
+            print(f"[UPLOAD] 파일 읽기 오류 (ValueError): {file_error}")
+            return create_error_response(str(file_error), 400)
         except Exception as file_error:
+            print(f"[UPLOAD] 파일 읽기 오류 (Exception): {file_error}")
             return create_error_response(f'파일 읽기 중 오류가 발생했습니다: {str(file_error)}', 400)
+        
+        # 진행상황 추적을 위한 세션 키 생성
+        import uuid
+        progress_key = f"upload_progress_{uuid.uuid4().hex[:8]}"
+        print(f"[UPLOAD] 진행상황 키 생성: {progress_key}")
+        
+        # 초기 진행상황 설정
+        request.session[progress_key] = {
+            'status': 'processing',
+            'total_rows': len(df),
+            'processed_rows': 0,
+            'current_step': '데이터 검증 중...',
+            'progress_percentage': 0,
+            'start_time': time.time(),
+            'estimated_time': '계산 중...',
+            'details': []
+        }
+        print(f"[UPLOAD] 초기 진행상황 설정 완료: {len(df)}행, 상태: processing")
         
         # 데이터 검증 및 처리
         start_time = time.time()
+        print(f"[UPLOAD] 데이터베이스 처리 시작: {table_type} 테이블, {upload_mode} 모드")
         
         try:
             with transaction.atomic():
+                print(f"[UPLOAD] 트랜잭션 시작")
                 if table_type == 'food':
-                    result = process_food_data(df, upload_mode)
+                    print(f"[UPLOAD] Food 테이블 처리 시작: {len(df)}행")
+                    result = process_food_data_with_progress(df, upload_mode, request.session, progress_key)
                 elif table_type == 'price':
-                    result = process_price_data(df, upload_mode)
+                    print(f"[UPLOAD] Price 테이블 처리 시작: {len(df)}행")
+                    result = process_price_data_with_progress(df, upload_mode, request.session, progress_key)
                 else:
+                    print(f"[UPLOAD] 지원하지 않는 테이블 타입: {table_type}")
                     return create_error_response('지원하지 않는 테이블 타입입니다.', 400)
                 
+                print(f"[UPLOAD] 데이터 처리 완료: {result['processed_rows']}행 처리됨")
+                
         except Exception as db_error:
+            # 오류 발생 시 진행상황 업데이트
+            print(f"[UPLOAD] 데이터베이스 처리 오류: {db_error}")
+            request.session[progress_key]['status'] = 'error'
+            request.session[progress_key]['current_step'] = f'오류 발생: {str(db_error)}'
             return create_error_response(f'데이터베이스 처리 중 오류가 발생했습니다: {str(db_error)}', 500)
         
         execution_time = time.time() - start_time
+        print(f"[UPLOAD] 전체 처리 시간: {execution_time:.3f}초")
+        
+        # 완료 상태로 진행상황 업데이트
+        request.session[progress_key].update({
+            'status': 'completed',
+            'processed_rows': result['processed_rows'],
+            'current_step': '처리 완료!',
+            'progress_percentage': 100,
+            'execution_time': round(execution_time, 3),
+            'final_result': result
+        })
+        print(f"[UPLOAD] 진행상황 완료 상태로 업데이트: {progress_key}")
         
         # 결과 반환
+        print(f"[UPLOAD] 업로드 완료! 결과 반환 중...")
+        print(f"[UPLOAD] 최종 결과: {result['processed_rows']}행 중 {result['inserted_rows']}개 생성, {result['updated_rows']}개 수정")
+        
         return create_success_response(
             f'{table_type} 테이블 데이터 업로드가 완료되었습니다.',
             {
+                'progress_key': progress_key,
                 'table_type': table_type,
                 'upload_mode': upload_mode,
                 'execution_time': round(execution_time, 3),
@@ -344,6 +403,46 @@ def upload_csv_data(request):
         )
         
     except Exception as e:
+        return create_error_response(f'서버 오류가 발생했습니다: {str(e)}', 500)
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+@login_required
+@user_passes_test(is_admin_user)
+def get_upload_progress(request):
+    """
+    파일 업로드 진행상황 조회 API (Admin만 접근 가능)
+    """
+    try:
+        progress_key = request.GET.get('progress_key')
+        if not progress_key:
+            print(f"[PROGRESS] 오류: 진행상황 키가 없음")
+            return create_error_response('진행상황 키가 필요합니다.', 400)
+        
+        print(f"[PROGRESS] 진행상황 조회: {progress_key}")
+        print(f"[PROGRESS] 현재 세션 키: {request.session.session_key}")
+        print(f"[PROGRESS] 세션 데이터: {dict(request.session)}")
+        
+        progress_data = request.session.get(progress_key, {})
+        print(f"[PROGRESS] 진행상황 데이터: {progress_data}")
+        
+        if not progress_data:
+            print(f"[PROGRESS] 진행상황을 찾을 수 없음: {progress_key}")
+            return create_error_response('진행상황을 찾을 수 없습니다.', 404)
+        
+        current_step = progress_data.get('current_step', '알 수 없음')
+        progress_percentage = progress_data.get('progress_percentage', 0)
+        status = progress_data.get('status', 'unknown')
+        
+        print(f"[PROGRESS] 진행상황 반환: {progress_key} - {current_step} ({progress_percentage}%) - 상태: {status}")
+        
+        return create_success_response('진행상황 정보입니다.', progress_data)
+        
+    except Exception as e:
+        print(f"[PROGRESS] 오류 발생: {e}")
+        import traceback
+        traceback.print_exc()
         return create_error_response(f'서버 오류가 발생했습니다: {str(e)}', 500)
 
 
@@ -378,7 +477,20 @@ def get_database_stats(request):
     데이터베이스 통계 정보 조회 API (Admin만 접근 가능)
     """
     try:
-        stats = get_database_stats()
+        from django.db.models import Avg
+        
+        stats = {
+            'food': {
+                'total_count': Food.objects.count(),
+                'categories': list(Food.objects.values_list('food_category', flat=True).distinct()),
+                'companies': list(Food.objects.values_list('company_name', flat=True).distinct())
+            },
+            'price': {
+                'total_count': Price.objects.count(),
+                'shops': list(Price.objects.values_list('shop_name', flat=True).distinct()),
+                'avg_price': Price.objects.aggregate(avg_price=Avg('price'))['avg_price'] or 0
+            }
+        }
         
         return create_success_response('데이터베이스 통계 정보입니다.', stats)
         
