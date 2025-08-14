@@ -11,12 +11,26 @@ from django.core.files.storage import default_storage
 from accounts.models import UserProfile
 from foods.models import FavoriteFood
 
-@login_required(login_url='/accounts/login/')
 @require_http_methods(["GET", "POST"])
 def profile_view(request):
     """
     회원 정보 조회(GET) + 수정(POST)  // 렌더링 전용
     """
+    # 로그인 상태 확인
+    if not request.user.is_authenticated:
+        # 로그인 안 된 경우 빈 데이터로 렌더링
+        user_data = {
+            "user_id": "",
+            "nickname": "",
+            "user_name": "",
+            "user_gender": "M",
+            "user_age": 25,
+            "user_email": "",
+            "profile_image_url": "",
+        }
+        return render(request, 'mypage/mypage_profile.html', {'user_data': user_data})
+    
+    # 로그인된 경우 기존 로직 실행
     user = request.user
     profile, _ = UserProfile.objects.get_or_create(
         user=user, defaults={"nickname": user.username}

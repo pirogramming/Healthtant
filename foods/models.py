@@ -2,7 +2,11 @@ from django.db import models
 import uuid
 
 class Food(models.Model):
-    food_id = models.CharField(max_length=255, primary_key=True)  # F20240001 형태
+    food_id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False
+    )
     food_img = models.CharField(max_length=255, null=True, blank=True)
 
     food_name = models.CharField(max_length=255)

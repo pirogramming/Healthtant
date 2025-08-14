@@ -5,21 +5,9 @@ from foods.models import Food
 def sodium_into_salt(sodium):
     return sodium*2.5/1000
 
-#100kcal에 함유된 nutrient의 양을 반환하는 함수
-def get_100kcal_nutrient(food, nutrient):
-    calorie = getattr(food, "calorie")
-    #제로 음식인 경우
-    if calorie == 0 or calorie == None:
-        return 0
-    
-    nutirent_100kcal = getattr(food, nutrient, 0)/calorie * 100
-    return nutirent_100kcal
-
-def NRFgoodNutrient(nutrient, require):
-    return min(100, nutrient/require*100)
-
-def NRFbadNutrient(nutrient, require):
-    return nutrient/require * 100
+# food가 nutrient를 얼마나 가지고 있는지 가져오는 함수
+def getNutrient(food, nutrient):
+    return getattr(food, nutrient, 0) or 0
 
 #----------------------------------------여기부터 직접 사용하면 되는 메소드!-------------------------------------------------------------
 #영양소 이름과 food를 입력하면 영양소 함량이 GOOD, NEUTRAL, BAD 인지, 그리고 낮음/적정/높음 인지 반환하는 함수
@@ -36,27 +24,28 @@ def get_level(nutrient, food):
     category = "drink" if getattr(food, "food_category") == "음료류" else "solid"
 
     if nutrient == "sugar":
-        sugar = getattr(food, "sugar", 0)
+        sugar = getNutrient(food, "sugar")
         if sugar <= cutoff[category]["sugar"][0]: return {"level": "낮음", "class": "GOOD"}
         elif sugar <= cutoff[category]["sugar"][1]: return {"level": "적정", "class": "NEUTRAL"}
         else: return {"level": "높음", "class": "BAD"}
     
     if nutrient == "saturated_fatty_acids":
-        saturated_fatty_acids = getattr(food, "saturated_fatty_acids", 0)
+        saturated_fatty_acids = getNutrient(food, "saturated_fatty_acids")
         if saturated_fatty_acids <= cutoff[category]["saturated_fatty_acids"][0]: return {"level": "낮음", "class": "GOOD"}
         elif saturated_fatty_acids <= cutoff[category]["saturated_fatty_acids"][1]: return {"level": "적정", "class": "NEUTRAL"}
         else: return {"level": "높음", "class": "BAD"}
     
     if nutrient == "salt":
-        salt = sodium_into_salt(getattr(food, "salt", 0))
+        salt = sodium_into_salt(getNutrient(food, "salt"))
         if salt <= cutoff[category]["salt"][0]: return {"level": "낮음", "class": "GOOD"}
         elif salt <= cutoff[category]["salt"][1]: return {"level": "적정", "class": "NEUTRAL"}
         else: return {"level": "높음", "class": "BAD"}
 
     #단백질은 음료와 고형식 기준이 동일함
     if nutrient == "protein":
-        protein = getattr(food, "protein", 0)
-        calorie = getattr(food, "calorie", 1)
+        protein = getNutrient(food, "protein")
+        calorie = getNutrient(food, "calorie")
+        if calorie == 0: calorie = 1 #제로 음식인 경우 calorie로 나눠줘야 하므로 1로 처리
         ratio = protein*4/getattr(food, "calorie") * 100
         if ratio < 12: return {"level": "낮음", "class": "BAD"}
         elif ratio < 20: return {"level": "적정", "class": "NEUTRAL"}
@@ -64,47 +53,25 @@ def get_level(nutrient, food):
 
     return {"level": "판정불가", "class": None}
 
-# 레거시로 남겨둠
-# food의 NRF 지수를 계산하는 함수
-# def NRF(food):
-#     protein_score = NRFgoodNutrient(get_100kcal_nutrient(food, "protein"), 55)
-#     dietary_fiber_score = NRFgoodNutrient(get_100kcal_nutrient(food, "dietary_fiber"), 25)
-#     vitaminA_score = NRFgoodNutrient(get_100kcal_nutrient(food, "VitaminA"), 700)
-#     vitaminC_score = NRFgoodNutrient(get_100kcal_nutrient(food, "VitaminC"), 100)
-#     vitaminE_score = NRFgoodNutrient(get_100kcal_nutrient(food, "VitaminE"), 11)
-#     calcium_score = NRFgoodNutrient(get_100kcal_nutrient(food, "calcium"), 700)
-#     iron_content_score = NRFgoodNutrient(get_100kcal_nutrient(food, "iron_content"), 12)
-#     potassium_score = NRFgoodNutrient(get_100kcal_nutrient(food, "potassium"), 3500)
-#     magnesium_score = NRFgoodNutrient(get_100kcal_nutrient(food, "magnesium"), 315)
-
-#     saturated_fatty_acids_score = NRFbadNutrient(get_100kcal_nutrient(food, "saturated_fatty_acids"), 15)
-#     sugar_score = NRFbadNutrient(get_100kcal_nutrient(food, "sugar"), 100)
-#     salt_score = NRFbadNutrient(get_100kcal_nutrient(food, "salt"), 2000)
-
-#     good_score_sum = (protein_score + dietary_fiber_score + vitaminA_score + vitaminC_score + vitaminE_score + calcium_score + potassium_score + iron_content_score + magnesium_score)/9
-#     bad_score_sum = (saturated_fatty_acids_score + sugar_score + salt_score)/3
-
-#     return good_score_sum - bad_score_sum
-
 # 식품의 영양점수를 계산하는 함수 (0점 ~ 26점)
 def NutritionalScore(food):
 
     score = 0
 
-    calorie = getattr(food, "calorie")
+    calorie = getNutrient(food, "calorie")
 
     # 제로 음식인 경우 영양가치는 0임
     if calorie == 0:
         return 0
     
-    carbohydrate = getattr(food, "carbohydrate", 0)
-    protein = getattr(food, "protein", 0)
-    fat = getattr(food, "fat", 0)
-    sugar = getattr(food, "sugar", 0)
-    saturated_fatty_acids = getattr(food, "saturated_fatty_acids", 0)
-    trans_fatty_acids = getattr(food, "trans_fatty_acids", 0)
-    dietary_fiber = getattr(food, "dietary_fiber", 0)
-    salt = getattr(food, "salt", 0)
+    carbohydrate = getNutrient(food, "carbohydrate")
+    protein = getNutrient(food, "protein")
+    fat = getNutrient(food, "fat")
+    sugar = getNutrient(food, "sugar")
+    saturated_fatty_acids = getNutrient(food, "saturated_fatty_acids")
+    trans_fatty_acids = getNutrient(food, "trans_fatty_acids")
+    dietary_fiber = getNutrient(food, "dietary_fiber")
+    salt = getNutrient(food, "salt")
 
     carbohydrate_percent = carbohydrate/calorie*4*100
     protein_percent = protein/calorie*4*100
@@ -152,7 +119,7 @@ def NutritionalScore(food):
     #여기부터 영양소의 절대량을 가지고 평가
 
     # 1회 음식 섭취 시 섭취하게 되는 영양소 함량
-    serving_size = getattr(food, "serving_size", getattr(food, "weight", 100)) #1회 섭취참고량이 없다면 식품 중량을 기준으로, 식품 중량도 없다면 100g(ml)를 섭취하는 것으로 계산함
+    serving_size = getattr(food, "serving_size", getattr(food, "weight", 100)) or 100 #1회 섭취참고량이 없다면 식품 중량을 기준으로, 식품 중량도 없다면 100g(ml)를 섭취하는 것으로 계산함
     serving_carbohydrate = carbohydrate/100*serving_size
     serving_protein = protein/100*serving_size
     serving_fat = fat/100*serving_size
