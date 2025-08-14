@@ -9,8 +9,8 @@ from django.http import HttpResponseBadRequest
 from statistics import pstdev
 
 # 임시 날짜 선택 페이지 뷰 (확인용)
-@login_required(login_url='/accounts/login/')
 def analysis_date(request):
+    # 로그인 상태 확인 - 로그인 안 되어도 페이지는 렌더링
     return render(request, 'analysis/analysis_date.html')
 
 #user의 각 영양소별 필수섭취량, 적정량 범위를 구하는 메소드

@@ -13,7 +13,7 @@
   
   <!-- 뒤로가기 버튼 + 제목 -->
   <div class="header-nav">
-    <button class="back-button" onclick="history.back()" aria-label="뒤로가기">
+    <button class="back-button" onclick="window.location.href='/'" aria-label="뒤로가기">
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
         <path d="M15 18L9 12L15 6" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
@@ -129,6 +129,98 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!validateDates()) {
             e.preventDefault();
             alert('올바른 날짜를 선택해주세요.');
+        }
+    });
+
+    // 로그인 상태 확인 함수
+    function checkLoginStatus() {
+        return {{ user.is_authenticated|yesno:"true,false" }};
+    }
+
+    // 로그인이 필요한 기능에 적용할 함수
+    function requireLogin(callback) {
+        if (checkLoginStatus()) {
+            // 로그인된 경우 원래 기능 실행
+            if (callback) callback();
+        } else {
+            // 로그인되지 않은 경우 모달 표시
+            showLoginModal();
+        }
+    }
+
+    // 분석하기 버튼 클릭 시 로그인 체크
+    analyzeBtn.addEventListener('click', function(e) {
+        if (!checkLoginStatus()) {
+            e.preventDefault();
+            showLoginModal();
+        }
+    });
+});
+</script>
+
+<!-- 로그인 유도 모달 -->
+<div class="login-modal-overlay" id="loginModal">
+    <div class="login-modal-container">
+        <div class="login-modal-content">
+            <div class="login-modal-header">
+                <svg class="login-modal-icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/>
+                </svg>
+                <h3 class="login-modal-title">잠깐! 로그인이 필요해요!</h3>
+            </div>
+            
+            <div class="login-modal-message">
+                <p class="login-modal-text">나만의 정보를 확인하려면<br>지금 로그인해 주세요</p>
+            </div>
+            
+            <div class="login-modal-buttons">
+                <button class="login-button" onclick="goToLogin()">로그인하기</button>
+                <button class="signup-button" onclick="goToSignup()">회원가입</button>
+            </div>
+            
+            <div class="login-modal-features">
+                <svg class="login-modal-features-icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                </svg>
+                <span class="login-modal-features-text">개인 맞춤 분석</span>
+            </div>
+            
+            <div class="login-modal-description">
+                <p class="login-modal-description-text">로그인하시면 더 정확한 개인 및 분석 결과를 확인할 수 있어요</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// 로그인 모달 표시
+function showLoginModal() {
+    const modal = document.getElementById('loginModal');
+    modal.style.display = 'flex';
+}
+
+// 로그인 모달 숨기기
+function hideLoginModal() {
+    const modal = document.getElementById('loginModal');
+    modal.style.display = 'none';
+}
+
+// 로그인 페이지로 이동
+function goToLogin() {
+    window.location.href = '/accounts/login/';
+}
+
+// 회원가입 페이지로 이동
+function goToSignup() {
+    window.location.href = '/accounts/signup/';
+}
+
+// 모달 외부 클릭 시 로그인 페이지로 이동
+document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('loginModal');
+    modal.addEventListener('click', function(e) {
+        if (e.target === this) {
+            window.location.href = '/accounts/login/';
         }
     });
 });
