@@ -161,7 +161,7 @@
 
 /* 새 식사 버튼 */
 .add-meal-btn {
-    background-color: var(--main-color);
+    background-color: rgba(86, 170, 178, 1);
     color: white;
     border: none;
     border-radius: 20px;
@@ -221,13 +221,13 @@
 
 .plus-icon-large {
     font-size: 32px;
-    color: var(--main-color);
+    color: #56AAB2;
     font-weight: bold;
 }
 
 .add-today-text {
     font-size: 16px;
-    color: var(--main-color);
+    color:  #56AAB2;
     font-weight: 500;
 }
 

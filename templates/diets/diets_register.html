@@ -12,9 +12,9 @@
     <div class="status-bar"></div>
     <div class="search-section">
         <div class="search-container">
-            <div class="search-input-wrapper">
-                <input type="text" id="searchInput" class="search-input" placeholder="새 제품을 검색해서 찾아보세요">
-                <button type="button" class="search-button" onclick="performSearch()">
+            <div class="search-input-wrapper" onclick="goToDietsSearch()">
+                <input type="text" id="searchInput" class="search-input" placeholder="새 제품을 검색해서 찾아보세요" readonly>
+                <button type="button" class="search-button">
                     <div class="search-icon">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
                             <circle cx="9" cy="9" r="6" stroke="#56AAB2" stroke-width="2"/>
@@ -62,7 +62,7 @@
                 <div class="empty-icon">🔎</div>
                 <div class="empty-title">최근에 등록한 제품이 없어요</div>
                 <div class="empty-sub">상단의 검색을 눌러 제품을 찾아 등록해보세요.</div>
-                <button class="register-btn btn btn-primary" type="button" onclick="performSearch()">
+                <button class="register-btn btn btn-primary" type="button" onclick="goToDietsSearch()">
                     <span class="plus-icon">+</span>
                     <span class="register-text">새 제품 검색하러 가기</span>
                 </button>
