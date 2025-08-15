@@ -4,6 +4,7 @@ const getCookie = (name) => {
 };
 const getCsrfToken = () => getCookie('csrftoken');
 
+//좋아요
 document.addEventListener('DOMContentLoaded', () => {
 	const favoriteBtn = document.getElementById('favoriteBtn');
 	if (!favoriteBtn) return;
@@ -231,3 +232,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 	  console.error('등급 정보를 불러오는 중 오류:', e);
 	}
   });
+
+
+  
