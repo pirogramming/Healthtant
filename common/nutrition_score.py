@@ -85,41 +85,41 @@ def NutritionalScore(food):
     if 55 <= carbohydrate_percent and carbohydrate_percent <= 65: score += 2 #탄수화물 비율이 55~65% 인 경우 2점
     elif 50 <= carbohydrate_percent and carbohydrate_percent <= 75: score += 1 #탄수화물 비율이 50~55% 또는 65~75%인 경우 1점
     # 이외의 구간 0점
-    print("carbohydrate_percent: ", carbohydrate_percent)
+    #print("carbohydrate_percent: ", carbohydrate_percent)
 
     #2. 총 열량 대비 단백질 비율이 적절한가?
     # 전혀 그렇지 않다 (0점) 그렇지 않다 (1점) 그렇다 (2점)
     if 7 <= protein_percent and protein_percent <= 20: score += 2 # 단백질 비율이 7~20% 인 경우 2점
     elif 5 <= protein_percent and protein_percent <= 40: score += 1 # 단백질 비율이 5~7% 또는 20~40%인 경우 1점
     # 이외의 구간 0점
-    print("protein_percent: ", protein_percent)
+    #print("protein_percent: ", protein_percent)
 
     #3. 총 열량 대비 지방 비율이 적절한가?
     # 전혀 그렇지 않다 (0점) 그렇지 않다 (1점) 그렇다 (2점)
     if 15 <= fat_percent and fat_percent <= 30: score += 2 #지방 비율이 15~30% 인 경우 2점
     elif 10 <= fat_percent and fat_percent <= 35: score += 1 #지방 비율이 10~15% 또는 30~35% 인 경우 1점
     # 이외의 구간 0점
-    print("fat_percent: ", fat_percent)
+    #print("fat_percent: ", fat_percent)
 
     #4. 총 열량 대비 당류 비율이 적절한가?
     # 전혀 그렇지 않다 (0점) 그렇지 않다 (1점) 그렇다 (2점)
     if sugar_percent <= 10: score += 2 # 총당류 비율이 10% 이하인 경우 2점
     elif sugar_percent <= 20: score += 1 # 총당류 비율이 20% 이하인 경우 1점
     #이외의 구간 0점
-    print("sugar_percent: ", sugar_percent)
+    #print("sugar_percent: ", sugar_percent)
 
     #5. 총 열량 대비 포화지방 비율이 적절한가?
     # 전혀 그렇지 않다 (0점) 그렇지 않다 (1점) 그렇다 (2점)
     if saturated_fatty_acids_percent <= 7: score += 2 # 포화지방 비율이 7% 이하인 경우 2점
     elif saturated_fatty_acids_percent <= 9: score += 1 # 포화지방 비율이 9% 이하인 경우 1점
     #이외의 구간 0점
-    print("saturated_fatty_acids_percent: ", saturated_fatty_acids_percent)
+    #print("saturated_fatty_acids_percent: ", saturated_fatty_acids_percent)
 
     # 6. 총 열량 대비 트랜스지방 비율이 적절한가?
     if trans_fatty_acids == 0: score += 2 # 트랜스지방이 0%인 경우 2점
     elif trans_fatty_acids_percent <= 1: score += 1 #트랜스지방이 1% 이하인 경우 1점
     #이외의 구간 0점
-    print("trans_fatty_acids_percent: ", trans_fatty_acids_percent)
+    #print("trans_fatty_acids_percent: ", trans_fatty_acids_percent)
 
 
     #여기부터 영양소의 절대량을 가지고 평가
@@ -134,13 +134,13 @@ def NutritionalScore(food):
     serving_dietary_fiber = dietary_fiber/100*serving_size
     serving_salt = salt/100*serving_size
 
-    print("serving_carbo: ", serving_carbohydrate)
-    print("serving_protein: ", serving_protein)
-    print("serving_fat: ", serving_fat)
-    print("serving_sugar: ", serving_sugar)
-    print("serving_saturated_fatty: ", serving_saturated_fatty_acids)
-    print("serving_dietary_fiber: ", serving_dietary_fiber)
-    print("serving_salt: ", serving_salt)
+    #print("serving_carbo: ", serving_carbohydrate)
+    #print("serving_protein: ", serving_protein)
+    #print("serving_fat: ", serving_fat)
+    #print("serving_sugar: ", serving_sugar)
+    #print("serving_saturated_fatty: ", serving_saturated_fatty_acids)
+    #print("serving_dietary_fiber: ", serving_dietary_fiber)
+    #print("serving_salt: ", serving_salt)
 
     # 7. 탄수화물의 절대 함량이 적절한가?
     if 70 <= serving_carbohydrate and serving_carbohydrate <= 110: score += 2
