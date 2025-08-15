@@ -222,3 +222,6 @@ def advanced_search_page(request):
         context["foods"].append(food_to_dict(food))
     
     return render(request, "search/advanced_search_page.html", context)
+
+def advanced_search(request):
+    return

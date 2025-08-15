@@ -294,7 +294,18 @@
                 }
             });
         }
+        
+        const detailSearchLink = document.querySelector('a[href*="/search/advanced/page"]');
+        if (detailSearchLink) {
+            detailSearchLink.addEventListener('click', function(e) {
+                if (!checkLoginStatus()) {
+                    e.preventDefault();
+                    requireLogin(this.href);
+                }
+            });
+        }
     });
+    
     </script>
   </body>
 </html>
