@@ -1,1 +1,52 @@
 <!--일반 검색 페이지-->
+{% extends 'base/base.html' %}
+
+{% load static %}
+
+{% block title %}식품 일반검색페이지 - HEALTHTANT{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'diets/diets_search.css' %}">
+{% endblock %}
+
+{% block header %}
+<header class="app-header">
+    <div class="status-bar"></div>
+    <div class="search-section">
+        <div class="search-container">
+            <div class="search-input-wrapper">
+                <input type="text" id="searchInput" class="search-input" placeholder="제품 이름을 입력해주세요.">
+                <button type="button" class="search-button">
+                    <div class="search-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <circle cx="9" cy="9" r="6" stroke="#56AAB2" stroke-width="2"/>
+                            <path d="M14 14L17 17" stroke="#56AAB2" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                </button>
+            </div>
+        </div>
+        <button class="cancel-btn" onclick="clearSearch()">취소</button>
+    </div>
+</header>
+{% endblock %}
+
+{% block bottom_navigation %}{% endblock %}
+
+{% block content %}
+<div class="meal-register-container">
+
+    <!-- 검색 결과 섹션 -->
+    <div class="search-results-section" id="searchResults" style="display: none;">
+        <h2>검색 결과</h2>
+        <div class="search-results-list" id="searchResultsList">
+            <!-- 검색 결과가 여기에 동적으로 추가됩니다 -->
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'search/js/normal_search.js' %}"></script>
+{% endblock %}
