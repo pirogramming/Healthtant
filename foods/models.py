@@ -1,10 +1,12 @@
 from django.db import models
+import uuid
 
 class Food(models.Model):
     food_id = models.CharField(
     primary_key=True,
     max_length=50,
-    unique=True
+    unique=True,
+    default = uuid.uuid4
 )
     food_img = models.CharField(max_length=255, null=True, blank=True)
 
@@ -27,7 +29,11 @@ class Food(models.Model):
     iron_content = models.FloatField(null=True, blank=True)
     phosphorus = models.FloatField(null=True, blank=True)
     potassium = models.FloatField(null=True, blank=True)
+<<<<<<< HEAD
     salt = models.FloatField(null=True, blank=True) 
+=======
+    salt = models.FloatField(null=True, blank=True)  # 나트륨은 mg 단위이므로 BigInt 유지
+>>>>>>> 8ef3633e6e0fb3b3861ffee5a3e4412d35c94c9a
 
     VitaminA = models.FloatField(null=True, blank=True)
     VitaminB = models.FloatField(null=True, blank=True)
@@ -38,7 +44,6 @@ class Food(models.Model):
     cholesterol = models.FloatField(null=True, blank=True)
     saturated_fatty_acids = models.FloatField(null=True, blank=True)
     trans_fatty_acids = models.FloatField(null=True, blank=True)
-    #magnesium = models.FloatField(null=True, blank=True)
 
     serving_size = models.FloatField(null=True, blank=True)
     weight = models.FloatField()

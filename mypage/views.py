@@ -53,7 +53,7 @@ def profile_view(request):
         profile.save()
 
         messages.success(request, '프로필이 업데이트되었습니다.')
-        return redirect('mypage:profile')
+        return redirect('mypage:profile_view')
 
     # GET: 화면 렌더링
     user_data = {
@@ -133,7 +133,7 @@ def favorite_food_delete(request, food_id):
         messages.success(request, '즐겨찾기가 취소되었습니다.')
     except FavoriteFood.DoesNotExist:
         messages.error(request, '해당 즐겨찾기를 찾을 수 없습니다.')
-    return redirect('mypage:favorites')
+    return redirect('mypage:favorite_food_list')
 
 
 @login_required(login_url='/accounts/login/')
