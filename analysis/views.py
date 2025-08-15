@@ -100,7 +100,7 @@ def calculate_recommendation(user):
 
 # 사용자 섭취량(eat)과 적정 섭취 범위(min, max)와 필수섭취량(essential, 기본 0) 을 받아서 현재 섭취가 어느 수준인지 반환
 def get_level(eat, min, max, essential=0):
-    if eat < essential:
+    if eat < essential or eat < min - (max-min):
         return "매우 부족"
     elif eat < min:
         return "부족"
