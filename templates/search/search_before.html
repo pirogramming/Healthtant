@@ -1,0 +1,81 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}추천 제품 - HEALTHTANT{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'search/css/search_before.css' %}">
+{% endblock %}
+
+{% block header %}
+<header class="app-header">
+    <div class="status-bar"></div>
+    <div class="search-section">
+        <div class="search-container">
+            <div class="search-input-wrapper" onclick="goToSearchPage()">
+                <input type="text" id="searchInput" class="search-input" placeholder="새 제품을 검색해서 찾아보세요" readonly>
+                <button type="button" class="search-button">
+                    <div class="search-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <circle cx="9" cy="9" r="6" stroke="#56AAB2" stroke-width="2"/>
+                            <path d="M14 14L17 17" stroke="#56AAB2" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                </button>
+            </div>
+        </div>
+        <button class="cancel-btn" onclick="goToMainPage()">취소</button>
+    </div>
+</header>
+{% endblock %}
+
+{% block bottom_navigation %}{% endblock %}
+
+{% block content %}
+
+<div class="meal-register-container">
+    <!-- 영양점수 높은 제품 목록 -->
+    <div class="recommended-foods-section">
+        <h2>영양점수가 높은 추천 제품</h2>
+        <div class="recommended-foods-list">
+            {% for food in foods %}
+            <div class="food-card card" data-food-id="{{ food.food_id }}">
+                <div class="food-image">
+                    {% if food.food_img %}
+                        <img src="{{ food.food_img }}" alt="{{ food.food_name }}">
+                    {% else %}
+                        <img src="{% static 'diets/images/default-food.jpg' %}" alt="{{ food.food_name }}">
+                    {% endif %}
+                </div>
+                <div class="food-info">
+                    <div class="food-header">
+                        <div class="brand-tag">등급 계산 중...</div>
+                        <div class="food-text-container">
+                            <h3 class="food-name">{{ food.food_name }}</h3>
+                            <p class="food-company">제조사: {{ food.company_name }}</p>
+                        </div>
+                    </div>
+                </div>
+                <button class="favorite-btn" data-product-id="{{ food.food_id }}" data-is-favorite="{{ food.is_favorite|default:'false' }}" type="button" aria-pressed="{{ food.is_favorite|default:'false' }}" aria-label="즐겨찾기">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+                        <path class="heart-path" d="M20.84 4.61C20.3292 4.099 19.7228 3.69364 19.0554 3.41708C18.3879 3.14052 17.6725 2.99817 16.95 2.99817C16.2275 2.99817 15.5121 3.14052 14.8446 3.41708C14.1772 3.69364 13.5708 4.099 13.06 4.61L12 5.67L10.94 4.61C9.9083 3.5783 8.50903 2.9987 7.05 2.9987C5.59096 2.9987 4.19169 3.5783 3.16 4.61C2.1283 5.6417 1.5487 7.04097 1.5487 8.5C1.5487 9.95903 2.1283 11.3583 3.16 12.39L12 21.23L20.84 12.39C21.351 11.8792 21.7564 11.2728 22.0329 10.6054C22.3095 9.93789 22.4518 9.22249 22.4518 8.5C22.4518 7.77751 22.3095 7.0621 22.0329 6.39464C21.7564 5.72718 21.351 5.12075 20.84 4.61Z"/>
+                    </svg>
+                </button>
+            </div>
+            {% empty %}
+            <!-- 빈 상태: 추천 제품이 없을 때 -->
+            <div class="empty-state">
+                <div class="empty-icon">🔍</div>
+                <div class="empty-title">추천 제품을 불러오는 중입니다</div>
+                <div class="empty-sub">잠시만 기다려주세요.</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'search/js/search_before.js' %}"></script>
+{% endblock %}
