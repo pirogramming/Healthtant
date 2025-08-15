@@ -1,0 +1,12 @@
+diff --git a/mypage/views.py b/mypage/views.py
+index 4edbf02..6592f21 100644
+--- a/mypage/views.py
++++ b/mypage/views.py
+@@ -135,7 +135,6 @@ def favorite_food_delete(request, food_id):
+         messages.error(request, '해당 즐겨찾기를 찾을 수 없습니다.')
+     return redirect('mypage:favorite_food_list')
+ 
+-
+ @login_required(login_url='/accounts/login/')
+ @require_http_methods(["GET", "POST"])
+ def account_withdraw(request):

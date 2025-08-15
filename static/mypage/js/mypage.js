@@ -173,8 +173,8 @@ function toggleFavorite(foodId, button) {
             })
             .then(response => {
                 if (response.ok) {
-                    // 성공 시 페이지 새로고침 또는 이동
-                    window.location.href = '/mypage/profile/';
+                    // 성공 시 즐겨찾기 목록 페이지로 이동
+                    window.location.href = '/mypage/food/like/';
                 } else {
                     alert('즐겨찾기 제거에 실패했습니다.');
                 }
