@@ -49,6 +49,13 @@ function displaySearchResults(foods) {
                     <span class="register-text">등록하기</span>
                 </button>
             `;
+
+            // 카드 클릭 → 상세 페이지 이동
+            foodCard.addEventListener('click', function(e) {
+                // 버튼 클릭 시는 이동 막기
+                if (e.target.closest('.register-btn')) return;
+                window.location.href = `/products/${food.food_id}`;
+            });
             
             searchResultsList.appendChild(foodCard);
         });
