@@ -147,14 +147,14 @@
     
     <!-- 하단 버튼 -->
       <div class="bottom-actions">
-      <button id="favoriteBtn" class="favorite-btn {% if product.is_favorite %}active{% endif %}" data-product-id="{{ product.food_id }}" data-is-favorite="{{ product.is_favorite|yesno:'true,false' }}" type="button" aria-pressed="{{ product.is_favorite|yesno:'true,false' }}" aria-label="즐겨찾기">
-        <!-- 기본: 비워진 하트, 활성화 시 CSS로 채움 -->
-        <svg xmlns="http://www.w3.org/2000/svg" width="35" height="33" viewBox="0 0 35 33" fill="none" aria-hidden="true" focusable="false">
-          <path class="heart-path" d="M17.5009 8.65503C20.2022 6.37317 24.3767 6.44891 26.9791 8.90171C29.5803 11.3556 29.67 15.2636 27.2505 17.8127L17.4986 27.0007L7.74912 17.8127C5.32957 15.2636 5.42042 11.3491 8.02052 8.90171C10.6252 6.45216 14.7916 6.36993 17.5009 8.65503Z"/>
-        </svg>
-      </button>
-      <a href="/diets/upload/?food={{ product.food_id }}" class="add-meal-btn">식사로 등록하기</a>
-    </div>
+        <button id="favoriteBtn" class="favorite-btn {% if product.is_favorite %}active{% endif %}" data-product-id="{{ product.food_id }}" data-is-favorite="{{ product.is_favorite|yesno:'true,false' }}" type="button" aria-pressed="{{ product.is_favorite|yesno:'true,false' }}" aria-label="즐겨찾기">
+          <!-- 기본: 비워진 하트, 활성화 시 CSS로 채움 -->
+          <svg xmlns="http://www.w3.org/2000/svg" width="35" height="33" viewBox="0 0 35 33" fill="none" aria-hidden="true" focusable="false">
+            <path class="heart-path" d="M17.5009 8.65503C20.2022 6.37317 24.3767 6.44891 26.9791 8.90171C29.5803 11.3556 29.67 15.2636 27.2505 17.8127L17.4986 27.0007L7.74912 17.8127C5.32957 15.2636 5.42042 11.3491 8.02052 8.90171C10.6252 6.45216 14.7916 6.36993 17.5009 8.65503Z"/>
+          </svg>
+        </button>
+        <a href="/diets/upload/?food={{ product.food_id }}" class="add-meal-btn">식사로 등록하기</a>
+      </div>
   </div>
 </div>
 {% endblock %}
