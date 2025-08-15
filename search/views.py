@@ -7,7 +7,7 @@ from django.http import JsonResponse
 def food_to_dict(food):
     ret = {
         "food_id": getattr(food, "food_id"),
-        "product_image_url": getattr(food, "product_image_url", "") or "",
+        "food_img": getattr(food, "food_img", "") or "",
         "food_name": getattr(food, "food_name", "") or "",
         "food_category": getattr(food, "food_category", "") or "",
         "calorie": getattr(food, "calorie", 0) or 0,
