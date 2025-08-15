@@ -1,0 +1,121 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>즐겨찾는 제품</title>
+    <link rel="stylesheet" href="{% static 'mypage/mypage_favorite_foods.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    {% csrf_token %}
+    <header class="app-header">
+        <div class="status-bar"></div>
+        <div class="search-section">
+            <div class="search-container">
+                <div class="search-input-wrapper">
+                    <input type="text" id="searchInput" class="search-input" placeholder="" value="">
+                    <button type="button" class="search-button" onclick="performSearch()">
+                        <div class="search-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <circle cx="9" cy="9" r="6" stroke="#56AAB2" stroke-width="2"/>
+                                <path d="M14 14L17 17" stroke="#56AAB2" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                    </button>
+                </div>
+            </div>
+            <button class="cancel-btn" onclick="goBack()">취소</button>
+        </div>
+    </header>
+
+    <div class="favorite-foods-container">
+        <!-- 검색 결과 섹션 -->
+        <div class="search-results-section">
+            <h2>검색 결과</h2>
+            <div class="search-results-list">
+                {% if favorites %}
+                    {% for f in favorites %}
+                        <div class="food-card" data-food-id="{{ f.food_id }}">
+                            <div class="food-image">
+                                {% if f.food_img %}
+                                    <img src="{{ f.food_img }}" alt="{{ f.food_name }}">
+                                {% else %}
+                                    <img src="{% static 'diets/images/default-food.jpg' %}" alt="{{ f.food_name }}">
+                                {% endif %}
+                            </div>
+                            <div class="food-info">
+                                <h3 class="food-name">{{ f.food_name }}</h3>
+                                <p class="food-company">제조사: {{ f.company_name }}</p>
+                            </div>
+                            <button class="favorite-btn active" onclick="toggleFavorite('{{ f.food_id }}', this)">
+                                <span class="favorite-text">삭제하기</span>
+                            </button>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="no-results">즐겨찾는 제품이 없습니다.</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function performSearch() {
+            const searchInput = document.getElementById('searchInput');
+            const keyword = searchInput.value.trim();
+            
+            if (!keyword) {
+                alert('검색어를 입력해주세요.');
+                return;
+            }
+            
+            // 실제 검색 기능 구현 시 여기에 AJAX 요청 추가
+            console.log('검색어:', keyword);
+        }
+
+        function toggleFavorite(foodId, button) {
+            // 즐겨찾기 토글 기능
+            if (button.classList.contains('active')) {
+                // 즐겨찾기 해제
+                if (confirm('즐겨찾기에서 제거하시겠습니까?')) {
+                    // 즐겨찾기 제거 요청 (POST 요청)
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = `/mypage/food/like/${foodId}/`;
+                    
+                    // CSRF 토큰 추가
+                    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');
+                    if (csrfToken) {
+                        const csrfInput = document.createElement('input');
+                        csrfInput.type = 'hidden';
+                        csrfInput.name = 'csrfmiddlewaretoken';
+                        csrfInput.value = csrfToken.value;
+                        form.appendChild(csrfInput);
+                    }
+                    
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            } else {
+                // 즐겨찾기 추가
+                button.classList.add('active');
+                button.querySelector('.favorite-text').textContent = '+ 등록하기';
+            }
+        }
+
+        function goBack() {
+            // 마이페이지로 돌아가기
+            window.location.href = '/mypage/';
+        }
+
+        // Enter 키로도 검색 가능하도록
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+    </script>
+</body>
+</html>
