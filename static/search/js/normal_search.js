@@ -6,8 +6,6 @@ function performSearch() {
         alert('검색어를 입력해주세요.');
         return;
     }
-
-    console.log("완료")
     
     // AJAX 요청
     fetch(`/search/normal/?keyword=${encodeURIComponent(keyword)}`)
