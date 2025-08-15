@@ -9,6 +9,16 @@
 <link rel="stylesheet" href="{% static 'diets/diets_search.css' %}">
 {% endblock %}
 
+{% block extra_js %}
+<script src="{% static 'search/js/normal_search.js' %}"></script>
+{% endblock %}
+
+<!--
+to FE
+막바지까지 고생이 많습니다...
+제가 프론트를 하나 하나 구현하기는 어려울 것 같아서 그나마 ui가 비슷한 식사 관리 페이지 검색 html을 훔쳐왔습니다.
+일단 검색 Ajax는 넣어놓았고, FE 쪽에서는 검색 결과 카드에서 "+등록하기" 로 표시되는 버튼만 즐겨찾기 버튼으로 바꿔주면 될 것 같습니다.
+-->
 {% block header %}
 <header class="app-header">
     <div class="status-bar"></div>
@@ -16,7 +26,7 @@
         <div class="search-container">
             <div class="search-input-wrapper">
                 <input type="text" id="searchInput" class="search-input" placeholder="제품 이름을 입력해주세요.">
-                <button type="button" class="search-button">
+                <button type="button" class="search-button" onclick="performSearch()">
                     <div class="search-icon">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
                             <circle cx="9" cy="9" r="6" stroke="#56AAB2" stroke-width="2"/>
@@ -45,8 +55,4 @@
     </div>
 </div>
 
-{% endblock %}
-
-{% block extra_js %}
-<script src="{% static 'search/js/normal_search.js' %}"></script>
 {% endblock %}
