@@ -33,17 +33,19 @@ def search_page(request):
     
     foods = list(Food.objects.all()) #DB 전체 음식 리스트
     
+    # 영양 점수가 높은 식품이 앞에 오도록 정렬
     foods_sorted = sorted(
         foods,
         key=lambda food: NutritionalScore(food),
         reverse=True
     )
 
+    # 반환할 값 구성하는 부분
     context = {"foods":[]}
     for food in foods:
         context["foods"].append(food_to_dict(food))
     
-    return render(request, "search_page.html", context)
+    return render(request, "search/search_page.html", context)
 
 
 #실제 검색 기능을 구현한 뷰
@@ -55,8 +57,11 @@ def normal_search(request):
     filtered_list = Food.objects.filter(food_name__icontains=keyword) # keyword를 포함한 음식 1차 필터링
     sorted_list = sorted(filtered_list, key=lambda food: NutritionalScore(food), reverse=True) # NutritionalScore 기준 점수가 높은 음식이 앞에 오도록 정렬
 
+    # 반환 값을 구성하는 부분
     context = {"foods":[]}
     for food in sorted_list:
         context["foods"].append(food_to_dict(food))
 
+    # to FE: AJAX로 검색 결과를 노출해야 하므로 Json 데이터를 반환하게 구현했습니다.
+    # to FE: 만약 렌더링 해야 할 페이지가 따로 있다면 얘기해주세요!!
     return JsonResponse(context, json_dumps_params={'ensure_ascii': False})
