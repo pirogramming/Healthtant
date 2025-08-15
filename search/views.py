@@ -265,7 +265,7 @@ def search_start(request):
         qs = qs.filter(Q(food_name__icontains=keyword))
 
     # 원본 결과 ID 목록을 캐시에 저장해 둠 (추후 정렬과 범위 변경을 위함)
-    ids = list(qs.values_list('id', flat=True))
+    ids = list(qs.values_list('food_id', flat=True))
     token = str(uuid.uuid4())
     cache.set(f'search:{request.user.id}:{token}', ids, timeout=600)  # 10분 뒤면 캐시 만료됨
     
@@ -288,9 +288,32 @@ def search_start(request):
 
     return JsonResponse(data)
 
+
+# 쿼리로 주어진 범위를 받은 뒤 
+def _parse_ranges(request):
+    def f(name):
+        try: return float(request.GET.get(name))
+        except (TypeError, ValueError): return None
+    return {
+        'calorie':      (f('calorie_min'),      f('calorie_max')),
+        'carbohydrate': (f('carbohydrate_min'), f('carbohydrate_max')),
+        'protein':      (f('protein_min'),      f('protein_max')),
+        'fat':          (f('fat_min'),          f('fat_max')),
+        'salt':         (f('salt_min'),         f('salt_max')),
+        'sugar':      (f('sugar_min'),        f('sugar_max')),
+    }
+
+ORDER_MAP = {
+    "단백질이 많은": "-protein",
+    "당이 적은": "sugar",
+    "포화지방이 적은": "saturated_fatty_acids",
+    "나트륨이 적은": "salt",
+    "열량이 많은": "-calorie",
+    "열량이 적은": "calorie"
+}
+
 # 검색 결과에서 정렬/범위만 변경하는 함수
 # 이전에 최초 검색에서 받았던 토큰을 넘겨줘야 합니다!
-@login_required
 @login_required
 def search_refine(request):
     token = request.GET.get('token')
@@ -305,22 +328,25 @@ def search_refine(request):
 
     # 2) 없으면 새로 초기화(키워드가 없어도 전체셋으로 가능)
     if ids is None:
-        base_qs = Food.objects.all().order_by('-id')
+        base_qs = Food.objects.all()
         if keyword:
-            base_qs = base_qs.filter(Q(food_name__icontains=keyword) | Q(company_name__icontains=keyword))
-        # “완전 무제한”을 피하려면 가드(예: 최대 N만 개까지 허용)
+            base_qs = base_qs.filter(Q(food_name__icontains=keyword))
+
+        # MAX_BASE 를 설정해서 과하게 많은 값이 출력되지 않게 방어
         MAX_BASE = 20000
         count = base_qs.count()
         if count > MAX_BASE:
             return JsonResponse({"error": f"검색 범위가 너무 큽니다({count}건). 키워드나 범위를 먼저 좁혀주세요."}, status=400)
-        ids = list(base_qs.values_list('id', flat=True))
+        ids = list(base_qs.values_list('food_id', flat=True))
         token = str(uuid.uuid4())
-        cache.set(f'search:{request.user.id}:{token}', ids, 600)  # 10분
+        cache.set(f'search:{request.user.id}:{token}', ids, 600)  # 10분 지나면 캐시 만료
 
     # 3) 베이스셋에 범위/정렬 적용
-    qs = Food.objects.filter(id__in=ids)
+    qs = Food.objects.filter(food_id__in=ids)
 
+    # 설정한 범위에 맞는 음식만 필터링
     for field, (mn, mx) in ranges.items():
+        print(field, mn, mx)
         if mn is not None and mx is not None and mn > mx:
             mn, mx = mx, mn
         if mn is not None:
@@ -328,9 +354,9 @@ def search_refine(request):
         if mx is not None:
             qs = qs.filter(**{f'{field}__lte': mx})
 
-    qs = qs.order_by(ORDER_MAP.get(order, '-id'))
+    qs = qs.order_by(ORDER_MAP[order]) # 정렬 적용
 
-    # 4) 페이지네이션 + 응답
+    # 페이지네이션 및 반환
     paginator = Paginator(qs, size)
     page_obj = paginator.get_page(page)
     data = {
