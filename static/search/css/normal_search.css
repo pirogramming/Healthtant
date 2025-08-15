@@ -1,0 +1,326 @@
+/* 기본 스타일 리셋 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background-color: white;
+    margin: 0;
+    padding: 0;
+}
+.app-header {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-header);
+    background-color: white;
+}
+
+.status-bar {
+height: 61px;
+background-color: var(--white);
+width: 100%;
+}
+
+
+/* 식사등록페이지 전체 컨테이너 */
+.meal-register-container {
+    background-color: white; /* 회색 배경으로 변경 */
+    min-height: 100vh;
+    padding: 0;
+    font-family: 'Noto Sans KR', sans-serif;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* 검색 섹션 - base.css의 공통 스타일 사용 */
+
+/* 검색 관련 스타일 - base.css의 공통 스타일 사용 */
+
+/* 검색 결과 섹션 */
+.search-results-section {
+    background-color: white; /* 회색 배경 추가 */
+    padding: 20px;
+    flex: 1;
+    margin: 0 20px;
+    margin-top: 0;
+    min-height: calc(100vh - 200px); /* 최소 높이 설정 */
+}
+
+.search-results-section h2 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #B7B5B5;
+    margin: 0 0 20px 0;
+    padding: 0;
+}
+
+.search-results-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-height: calc(100vh - 300px);
+    overflow-y: auto;
+    padding-bottom: 20px; /* 하단 패딩 추가 */
+}
+
+/* 제품 카드 */
+.food-card {
+    padding: 26px 19px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background-color: white;
+    border-radius: 12px;
+    border: 1px solid var(--neutral-slate-black-slate-black-50, #E8E9EA);
+    box-shadow: 0 4px 24px -6px rgba(64, 72, 82, 0.15);
+    transition: all 0.2s ease;
+}
+
+.food-card:last-child {
+    border-bottom: none;
+}
+
+.food-card:hover {
+    background-color: #f8f9fa;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* 제품 이미지 */
+.food-image {
+    flex-shrink: 0;
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #f8f9fa;
+}
+
+.food-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* 제품 정보 */
+.food-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.food-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 4px 0;
+    line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.food-company {
+    font-size: 12px;
+    color: #666;
+    margin: 0;
+    line-height: 1.2;
+}
+
+/* 등록 버튼 */
+.register-btn {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 12px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.register-btn:hover {
+    background-color: #f0f8ff;
+    border-radius: 6px;
+}
+
+.plus-icon {
+    font-size: 16px;
+    font-weight: 600;
+    color: rgba(86, 170, 178, 1);
+    transition: color 0.2s;
+}
+
+.register-text {
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(86, 170, 178, 1);
+    transition: color 0.2s;
+}
+
+.no-results {
+    text-align: center;
+    padding: 40px 20px;
+    color: #666;
+    font-size: 14px;
+}
+
+/* 스크롤바 스타일링 */
+.search-results-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.search-results-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.search-results-list::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+
+.search-results-list::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .meal-register-container {
+        max-width: 100%;
+        margin: 0;
+    }
+    
+    .search-section {
+        margin: 0 15px;
+        padding: 15px;
+        gap: 10px;
+        margin-top: 15px;
+    }
+    
+    .search-container {
+        max-width: none;
+    }
+    
+    .search-input {
+        font-size: 13px;
+        border-radius: 100px;
+        border: 1px solid var(--neutral-slate-black-slate-black-50, #E8E9EA);
+        background: var(--neutral-white-pure-white, #FFF);
+        box-shadow: 0 6px 40px -10px rgba(64, 72, 82, 0.15);
+    }
+    
+    .search-placeholder {
+        font-size: 13px;
+    }
+    
+    .cancel-btn {
+        font-size: 16px;
+        padding: 6px 10px;
+    }
+    
+    .search-results-section {
+        margin: 0 15px;
+        padding: 15px;
+        margin-top: 0;
+    }
+    
+    .search-results-section h2 {
+        font-size: 15px;
+        margin-bottom: 15px;
+    }
+    
+    .food-image {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .food-name {
+        font-size: 13px;
+    }
+    
+    .food-company {
+        font-size: 11px;
+    }
+    
+    .register-btn {
+        padding: 6px 10px;
+    }
+    
+    .plus-icon {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .meal-register-container {
+        max-width: 100%;
+        margin: 0;
+    }
+    
+    .search-section {
+        margin: 0 12px;
+        padding: 12px;
+        gap: 8px;
+        margin-top: 12px;
+        flex-wrap: wrap;
+    }
+    
+    .search-container {
+        flex: 1;
+        min-width: 0;
+    }
+    
+    .search-input {
+        font-size: 12px;
+    }
+    
+    .search-placeholder {
+        font-size: 12px;
+    }
+    
+    .cancel-btn {
+        font-size: 16px;
+        padding: 5px 8px;
+    }
+    
+    .search-results-section {
+        margin: 0 12px;
+        padding: 12px;
+        margin-top: 0;
+    }
+    
+    .search-results-section h2 {
+        font-size: 14px;
+        margin-bottom: 12px;
+    }
+    
+    .food-image {
+        width: 45px;
+        height: 45px;
+    }
+    
+    .food-name {
+        font-size: 15px;
+    }
+    
+    .food-company {
+        font-size: 10px;
+    }
+    
+    .register-btn {
+        padding: 5px 8px;
+    }
+    
+    .plus-icon {
+        font-size: 14px;
+    }
+    
+    .register-text {
+        font-size: 15px;
+    }
+}
+

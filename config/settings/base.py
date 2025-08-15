@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'main',
     'analysis',
     'products',
+    'search',
 ]
 
 SITE_ID = 1
