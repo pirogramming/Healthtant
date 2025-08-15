@@ -29,7 +29,7 @@ class Food(models.Model):
     iron_content = models.FloatField(null=True, blank=True)
     phosphorus = models.FloatField(null=True, blank=True)
     potassium = models.FloatField(null=True, blank=True)
-    salt = models.BigIntegerField(null=True, blank=True)  # 나트륨은 mg 단위이므로 BigInt 유지
+    salt = models.FloatField(null=True, blank=True)  # 나트륨은 mg 단위이므로 BigInt 유지
 
     VitaminA = models.FloatField(null=True, blank=True)
     VitaminB = models.FloatField(null=True, blank=True)
