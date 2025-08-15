@@ -4,14 +4,6 @@ DEBUG = True
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-
-'''
 # SQLite 사용 (개발용)
 DATABASES = {
     'default': {
@@ -19,7 +11,6 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-'''
 
 '''
 # postgreSQL 사용 (배포용)

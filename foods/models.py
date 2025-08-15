@@ -44,6 +44,13 @@ class Food(models.Model):
     serving_size = models.FloatField(null=True, blank=True)
     weight = models.FloatField()
     company_name = models.CharField(max_length=255)
+    
+    # 가격 정보 (CSV 칼럼에 맞춰 추가)
+    shop_name = models.CharField(max_length=100, null=True, blank=True)
+    price = models.BigIntegerField(null=True, blank=True)
+    discount_price = models.BigIntegerField(null=True, blank=True)
+    shop_url = models.URLField(null=True, blank=True)
+    image_url = models.URLField(null=True, blank=True)
 
     class Meta:
         db_table = 'food'
@@ -54,40 +61,6 @@ class Food(models.Model):
         return self.food_name
     
 
-class Price(models.Model):
-    price_id = models.CharField(max_length=255, primary_key=True)  # P20240001 형태
-    food = models.ForeignKey(Food, on_delete=models.CASCADE, related_name='prices')
-    shop_name = models.CharField(max_length=100)
-    price = models.BigIntegerField()
-    discount_price = models.BigIntegerField(null=True, blank=True)
-    is_available = models.BooleanField(default=True)
-
-    crawling_status = models.CharField(
-        max_length=20,
-        default='pending',
-        db_index=True,
-        help_text="pending | in_progress | success | failed | not_found"
-    )
-    crawling_error = models.TextField(null=True, blank=True)
-    crawled_at = models.DateTimeField(null=True, blank=True)
-    product_url = models.URLField(null=True, blank=True)
-    product_image_url = models.URLField(null=True, blank=True)
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    # 시간 필드
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        db_table = 'price'
-        verbose_name = "가격 정보"
-        verbose_name_plural = "가격 정보들"
-
-    def __str__(self):
-        return f"{self.food.food_name} - {self.shop_name}: {self.price}원"
-    
 from django.contrib.auth import get_user_model
 
 User = get_user_model()  # 현재 User 모델 가져오기
