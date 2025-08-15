@@ -1,10 +1,8 @@
-/* 기본 스타일 리셋 */
-
-
+/* 추천 제품 페이지 스타일 */
 
 /* 식사등록페이지 전체 컨테이너 */
 .meal-register-container {
-    background-color: white; /* 회색 배경으로 변경 */
+    background-color: white;
     min-height: 100vh;
     padding: 0;
     font-family: 'Noto Sans KR', sans-serif;
@@ -12,21 +10,17 @@
     margin: 0 auto;
 }
 
-/* 검색 섹션 - base.css의 공통 스타일 사용 */
-
-/* 검색 관련 스타일 - base.css의 공통 스타일 사용 */
-
-/* 검색 결과 섹션 */
-.search-results-section {
-    background-color: white; /* 회색 배경 추가 */
+/* 추천 제품 섹션 */
+.recommended-foods-section {
+    background-color: white;
     padding: 20px;
     flex: 1;
     margin: 0 20px;
     margin-top: 0;
-    min-height: calc(100vh - 200px); /* 최소 높이 설정 */
+    min-height: calc(100vh - 200px);
 }
 
-.search-results-section h2 {
+.recommended-foods-section h2 {
     font-size: 16px;
     font-weight: 600;
     color: #B7B5B5;
@@ -34,13 +28,13 @@
     padding: 0;
 }
 
-.search-results-list {
+.recommended-foods-list {
     display: flex;
     flex-direction: column;
     gap: 20px;
     max-height: calc(100vh - 300px);
     overflow-y: auto;
-    padding-bottom: 20px; /* 하단 패딩 추가 */
+    padding-bottom: 20px;
 }
 
 /* 제품 카드 */
@@ -54,6 +48,7 @@
     border: 1px solid var(--neutral-slate-black-slate-black-50, #E8E9EA);
     box-shadow: 0 4px 24px -6px rgba(64, 72, 82, 0.15);
     transition: all 0.2s ease;
+    cursor: pointer;
 }
 
 .food-card:last-child {
@@ -180,30 +175,95 @@
     cursor: not-allowed;
 }
 
-.no-results {
+/* 빈 상태 */
+.empty-state {
     text-align: center;
     padding: 40px 20px;
     color: #666;
+}
+
+.empty-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+}
+
+.empty-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.empty-sub {
     font-size: 14px;
+    color: #999;
 }
 
 /* 스크롤바 스타일링 */
-.search-results-list::-webkit-scrollbar {
+.recommended-foods-list::-webkit-scrollbar {
     width: 6px;
 }
 
-.search-results-list::-webkit-scrollbar-track {
+.recommended-foods-list::-webkit-scrollbar-track {
     background: #f1f1f1;
     border-radius: 3px;
 }
 
-.search-results-list::-webkit-scrollbar-thumb {
+.recommended-foods-list::-webkit-scrollbar-thumb {
     background: #c1c1c1;
     border-radius: 3px;
 }
 
-.search-results-list::-webkit-scrollbar-thumb:hover {
+.recommended-foods-list::-webkit-scrollbar-thumb:hover {
     background: #a8a8a8;
+}
+
+/* 검색 아이콘 호버 툴팁 */
+.search-button {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.search-button::before {
+    content: "검색하기";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+    z-index: 1000;
+    margin-bottom: 8px;
+}
+
+.search-button::after {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: rgba(0, 0, 0, 0.8);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+    margin-bottom: 3px;
+}
+
+.search-button:hover::before,
+.search-button:hover::after {
+    opacity: 1;
+    visibility: visible;
 }
 
 /* 반응형 디자인 */
@@ -213,41 +273,13 @@
         margin: 0;
     }
     
-    .search-section {
-        margin: 0 15px;
-        padding: 15px;
-        gap: 10px;
-        margin-top: 15px;
-    }
-    
-    .search-container {
-        max-width: none;
-    }
-    
-    .search-input {
-        font-size: 13px;
-        border-radius: 100px;
-        border: 1px solid var(--neutral-slate-black-slate-black-50, #E8E9EA);
-        background: var(--neutral-white-pure-white, #FFF);
-        box-shadow: 0 6px 40px -10px rgba(64, 72, 82, 0.15);
-    }
-    
-    .search-placeholder {
-        font-size: 13px;
-    }
-    
-    .cancel-btn {
-        font-size: 16px;
-        padding: 6px 10px;
-    }
-    
-    .search-results-section {
+    .recommended-foods-section {
         margin: 0 15px;
         padding: 15px;
         margin-top: 0;
     }
     
-    .search-results-section h2 {
+    .recommended-foods-section h2 {
         font-size: 15px;
         margin-bottom: 15px;
     }
@@ -277,39 +309,13 @@
         margin: 0;
     }
     
-    .search-section {
-        margin: 0 12px;
-        padding: 12px;
-        gap: 8px;
-        margin-top: 12px;
-        flex-wrap: wrap;
-    }
-    
-    .search-container {
-        flex: 1;
-        min-width: 0;
-    }
-    
-    .search-input {
-        font-size: 12px;
-    }
-    
-    .search-placeholder {
-        font-size: 12px;
-    }
-    
-    .cancel-btn {
-        font-size: 16px;
-        padding: 5px 8px;
-    }
-    
-    .search-results-section {
+    .recommended-foods-section {
         margin: 0 12px;
         padding: 12px;
         margin-top: 0;
     }
     
-    .search-results-section h2 {
+    .recommended-foods-section h2 {
         font-size: 14px;
         margin-bottom: 12px;
     }
@@ -332,4 +338,3 @@
         height: 32px;
     }
 }
-

@@ -11,6 +11,11 @@ function performSearch() {
     window.location.href = '/diets/search/page/';
   }
 
+// 식사 검색 페이지로 이동
+function goToDietsSearch() {
+    window.location.href = '/diets/search/page/';
+  }
+
 function clearSearch() {
     const today = new Date();
     const year = today.getFullYear();

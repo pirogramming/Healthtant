@@ -4,9 +4,13 @@ from foods.models import Food
 from diets.models import Diet
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
+from django.core.cache import cache
+from django.core.paginator import Paginator, EmptyPage
+from django.db.models import Q, Case, When
 from datetime import datetime, timedelta, date
 from analysis.views import make_evaluation, calculate_recommendation, get_real_nutrient
 import functools
+import uuid
 
 #to FE: food를 이런 형태의 데이터로 넘겨줄겁니다! 더 필요한 값 있거나 문제있는 값 있으면 바로 연락해주세요!!
 def food_to_dict(food):
@@ -53,6 +57,31 @@ def search_page(request):
         context["foods"].append(food_to_dict(food))
     
     return render(request, "search/search_page.html", context)
+
+#추천 제품 페이지 렌더링 뷰
+#영양 점수가 높은 음식들을 랜덤으로 선택해서 프론트로 전달합니다!
+def search_before(request):
+    import random
+    
+    foods = list(Food.objects.all()) #DB 전체 음식 리스트
+    
+    # 영양 점수가 높은 식품이 앞에 오도록 정렬
+    foods_sorted = sorted(
+        foods,
+        key=lambda food: NutritionalScore(food),
+        reverse=True
+    )
+    
+    # 상위 50개 제품 중에서 랜덤으로 10개 선택
+    top_foods = foods_sorted[:50]
+    random_foods = random.sample(top_foods, min(10, len(top_foods)))
+
+    # 반환할 값 구성하는 부분
+    context = {"foods":[]}
+    for food in random_foods:
+        context["foods"].append(food_to_dict(food))
+    
+    return render(request, "search/search_before.html", context)
 
 
 #실제 검색 기능을 구현한 뷰
@@ -223,5 +252,120 @@ def advanced_search_page(request):
     
     return render(request, "search/advanced_search_page.html", context)
 
-def advanced_search(request):
-    return
+# 고급 검색 기능 뷰
+# 처음에 고급 검색에서 키워드를 입력하여 검색하면 실행할 뷰입니다.
+# 정렬과 범위 설정은 검색 결과가 존재하는 상태에서 실행할 함수로 따로 나눴습니다.
+@login_required
+def search_start(request):
+    keyword = request.GET.get('keyword','').strip() #검색 키워드
+    qs = Food.objects.all() # DB에 있는 모든 Food를 모두 가져옴
+    # 키워드가 있다면 필터링까지 진행
+    if keyword:
+        qs = qs.filter(Q(food_name__icontains=keyword))
+
+    # 원본 결과 ID 목록을 캐시에 저장해 둠 (추후 정렬과 범위 변경을 위함)
+    ids = list(qs.values_list('food_id', flat=True))
+    token = str(uuid.uuid4())
+    cache.set(f'search:{request.user.id}:{token}', ids, timeout=600)  # 10분 뒤면 캐시 만료됨
+    
+    # 첫 페이지(또는 요청된 페이지) 반환
+    page_number = int(request.GET.get('page', 1))
+    paginator = Paginator(qs, 30)  # 페이지당 30개
+    try:
+        page_obj = paginator.page(page_number)
+    except EmptyPage:
+        page_obj = paginator.page(paginator.num_pages)
+
+    data = {
+        "search_token": token, #검색 결과를 다시 불러오기 위한 토큰
+        "keyword": keyword, #유저가 검색한 키워드
+        "page": page_obj.number, #현재 페이지
+        "total_pages": paginator.num_pages, #전체 페이지 수
+        "total": paginator.count,
+        "foods": [food_to_dict(f) for f in page_obj.object_list], #검색 결과 나올 음식들 데이터
+    }
+
+    return JsonResponse(data)
+
+
+# 쿼리로 주어진 범위를 받은 뒤 
+def _parse_ranges(request):
+    def f(name):
+        try: return float(request.GET.get(name))
+        except (TypeError, ValueError): return None
+    return {
+        'calorie':      (f('calorie_min'),      f('calorie_max')),
+        'carbohydrate': (f('carbohydrate_min'), f('carbohydrate_max')),
+        'protein':      (f('protein_min'),      f('protein_max')),
+        'fat':          (f('fat_min'),          f('fat_max')),
+        'salt':         (f('salt_min'),         f('salt_max')),
+        'sugar':      (f('sugar_min'),        f('sugar_max')),
+    }
+
+ORDER_MAP = {
+    "단백질이 많은": "-protein",
+    "당이 적은": "sugar",
+    "포화지방이 적은": "saturated_fatty_acids",
+    "나트륨이 적은": "salt",
+    "열량이 많은": "-calorie",
+    "열량이 적은": "calorie"
+}
+
+# 검색 결과에서 정렬/범위만 변경하는 함수
+# 이전에 최초 검색에서 받았던 토큰을 넘겨줘야 합니다!
+@login_required
+def search_refine(request):
+    token = request.GET.get('token')
+    order = (request.GET.get('order') or '').strip()
+    page  = int(request.GET.get('page', 1))
+    size  = int(request.GET.get('size', 30))
+    keyword = (request.GET.get('keyword') or '').strip()
+    ranges = _parse_ranges(request)
+
+    # 1) 토큰이 있으면 캐시에서 베이스 ID 목록 복구
+    ids = cache.get(f'search:{request.user.id}:{token}') if token else None
+
+    # 2) 없으면 새로 초기화(키워드가 없어도 전체셋으로 가능)
+    if ids is None:
+        base_qs = Food.objects.all()
+        if keyword:
+            base_qs = base_qs.filter(Q(food_name__icontains=keyword))
+
+        # MAX_BASE 를 설정해서 과하게 많은 값이 출력되지 않게 방어
+        MAX_BASE = 20000
+        count = base_qs.count()
+        if count > MAX_BASE:
+            return JsonResponse({"error": f"검색 범위가 너무 큽니다({count}건). 키워드나 범위를 먼저 좁혀주세요."}, status=400)
+        ids = list(base_qs.values_list('food_id', flat=True))
+        token = str(uuid.uuid4())
+        cache.set(f'search:{request.user.id}:{token}', ids, 600)  # 10분 지나면 캐시 만료
+
+    # 3) 베이스셋에 범위/정렬 적용
+    qs = Food.objects.filter(food_id__in=ids)
+
+    # 설정한 범위에 맞는 음식만 필터링
+    for field, (mn, mx) in ranges.items():
+        print(field, mn, mx)
+        if mn is not None and mx is not None and mn > mx:
+            mn, mx = mx, mn
+        if mn is not None:
+            qs = qs.filter(**{f'{field}__gte': mn})
+        if mx is not None:
+            qs = qs.filter(**{f'{field}__lte': mx})
+
+    qs = qs.order_by(ORDER_MAP[order]) # 정렬 적용
+
+    # 페이지네이션 및 반환
+    paginator = Paginator(qs, size)
+    page_obj = paginator.get_page(page)
+    data = {
+        "search_token": token,
+        "keyword": keyword,
+        "order": order,
+        "page": page_obj.number,
+        "size": size,
+        "total_pages": paginator.num_pages,
+        "total": paginator.count,
+        "foods": [food_to_dict(f) for f in page_obj.object_list],
+    }
+    return JsonResponse(data)
