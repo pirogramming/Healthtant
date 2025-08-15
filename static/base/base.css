@@ -9,7 +9,7 @@ body {
   font-family: var(--font-primary);
   font-size: var(--font-size-base);
   color: var(--text-primary);
-  background-color: var(--bg-primary);
+  background-color: #F5F8FA;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -18,12 +18,14 @@ body {
 /* ====== 메인 레이아웃 ====== */
 .screen {
   width: 100%;
-  max-width: 402px;
+  max-width: 450px;
   margin: 0 auto;
   height: 100vh;
+
+  min-height: 100vh;
   background-color: var(--white);
   position: relative;
-  overflow-y: auto;
+  overflow-y: visible;
   overflow-x: hidden;
   scrollbar-width: none;
   -ms-overflow-style: none;
@@ -164,7 +166,7 @@ body {
   bottom: 0;
   left: 0;
   right: 0;
-  max-width: 402px;
+  max-width: 450px;
   margin: 0 auto;
   background-color: var(--white);
   border-top: 1px solid var(--gray-border);
@@ -305,7 +307,7 @@ body {
 }
 
 /* ====== 반응형 디자인 ====== */
-@media (min-width: 768px) {
+/* @media (min-width: 768px) {
   .screen, .main-nav {
     max-width: 768px;
   }
@@ -315,7 +317,7 @@ body {
   .screen, .main-nav {
     max-width: 1024px;
   }
-}
+} */
 
 /* ====== 유틸리티 클래스 ====== */
 .container {

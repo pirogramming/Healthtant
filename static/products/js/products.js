@@ -4,9 +4,12 @@ const getCookie = (name) => {
 };
 const getCsrfToken = () => getCookie('csrftoken');
 
+//좋아요
 document.addEventListener('DOMContentLoaded', () => {
 	const favoriteBtn = document.getElementById('favoriteBtn');
 	if (!favoriteBtn) return;
+
+	const isAuthenticated = favoriteBtn.dataset.isAuthenticated === 'true';
 
 	const getCsrfToken = () => {
 		const input = document.querySelector('[name=csrfmiddlewaretoken]');
@@ -32,17 +35,13 @@ document.addEventListener('DOMContentLoaded', () => {
 			if (!res.ok) throw new Error('네트워크 오류');
 
 			const data = await res.json();
-			if (data.is_favorite) {
-				favoriteBtn.classList.add('active');
-				favoriteBtn.setAttribute('data-is-favorite', 'true');
-				favoriteBtn.setAttribute('aria-pressed', 'true');
-			} else {
-				favoriteBtn.classList.remove('active');
-				favoriteBtn.setAttribute('data-is-favorite', 'false');
-				favoriteBtn.setAttribute('aria-pressed', 'false');
-			}
+			const isFavorite = data.is_favorite;
+
+			favoriteBtn.classList.toggle('active', isFavorite);
+			favoriteBtn.setAttribute('data-is-favorite', String(isFavorite));
+			favoriteBtn.setAttribute('aria-pressed', String(isFavorite));
 		} catch (e) {
-			console.error('좋아요 처리 오류:', e);
+			console.error('찜 처리 오류:', e);
 		} finally {
 			favoriteBtn.disabled = false;
 		}
@@ -50,9 +49,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	favoriteBtn.addEventListener('click', (e) => {
 		e.preventDefault();
+
+		if (!isAuthenticated) {
+			const modal = document.getElementById('loginModal');
+			if (modal) {
+				modal.style.display = 'flex';  // 가운데 정렬용
+				modal.classList.add('show');
+			} else {
+				alert('로그인이 필요한 기능입니다.');
+			}
+			return;
+		}
+
 		toggleFavorite();
 	});
 });
+
+// 로그인/회원가입 이동 함수 (모달 내부 버튼용)
+function goToLogin() {
+	window.location.href = "/accounts/login/";
+}
+
+function goToSignup() {
+	window.location.href = "/accounts/signup/";
+}
+
+	
 
 // 영양 정보 불러오기
 document.addEventListener('DOMContentLoaded', async () => {
@@ -231,3 +253,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 	  console.error('등급 정보를 불러오는 중 오류:', e);
 	}
   });
+
+
+  

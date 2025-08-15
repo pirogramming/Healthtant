@@ -1,0 +1,173 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}검색 결과 - HEALTHTANT{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'search/css/advanced_result.css' %}">
+{% endblock %}
+
+{% block header_title %}
+
+{% endblock %}
+
+{% block header_search %}
+<!-- 고급검색 결과페이지에서는 기본 검색 영역을 숨김 -->
+{% endblock %}
+
+{% block bottom_navigation %}{% endblock %}
+
+{% block content %}
+<div class="advanced-result-container">
+  <!-- 헤더 영역 -->
+  <div class="result-header">
+    <button class="back-button" onclick="history.back()">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <div class="home-icon">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <polyline points="9,22 9,12 15,12 15,22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="search-input-wrapper">
+      <input type="text" class="search-input" placeholder="What's your daily needs?" id="searchInput" value="{{ keyword|default:'' }}">
+      <button type="button" class="search-button" id="searchButton" aria-label="검색">
+        <svg class="search-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M9.18297 3.62741C6.11472 3.62741 3.62741 6.11472 3.62741 9.18297C3.62741 12.2512 6.11472 14.7385 9.18297 14.7385C10.6756 14.7385 12.0307 14.1499 13.0289 13.1921C13.0525 13.1622 13.0781 13.1334 13.1057 13.1057C13.1334 13.0781 13.1622 13.0525 13.1921 13.0289C14.1499 12.0307 14.7385 10.6756 14.7385 9.18297C14.7385 6.11472 12.2512 3.62741 9.18297 3.62741ZM15.1459 13.7594C16.1201 12.492 16.6993 10.9051 16.6993 9.18297C16.6993 5.03181 13.3341 1.66663 9.18297 1.66663C5.03181 1.66663 1.66663 5.03181 1.66663 9.18297C1.66663 13.3341 5.03181 16.6993 9.18297 16.6993C10.9051 16.6993 12.492 16.1201 13.7594 15.1459L16.6597 18.0461C17.0425 18.429 17.6633 18.429 18.0461 18.0461C18.429 17.6633 18.429 17.0425 18.0461 16.6597L15.1459 13.7594Z" fill="#56AAB2"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- 구분선 -->
+  <div class="header-divider"></div>
+
+  <!-- 검색 결과 컨트롤 영역 -->
+  <div class="result-controls">
+    <div class="sort-dropdown" id="sortDropdown">
+      <span class="sort-label">정렬</span>
+      <svg class="sort-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="filter-button" id="filterButton">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path d="M3 4h14M6 8h8M9 12h2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- 검색 결과 목록 -->
+  <div class="result-list" id="resultList">
+    <!-- 검색 결과가 여기에 동적으로 로드됩니다 -->
+  </div>
+
+  <!-- 로딩 상태 -->
+  <div class="loading-state" id="loadingState" style="display: none;">
+    <div class="loading-spinner"></div>
+    <p>검색 중...</p>
+  </div>
+
+  <!-- 검색 결과 없음 -->
+  <div class="no-results" id="noResults" style="display: none;">
+    <p>검색 결과가 없습니다.</p>
+    <p>다른 검색어를 시도해보세요.</p>
+  </div>
+
+  <!-- 페이지네이션 -->
+  <div class="pagination" id="pagination" style="display: none;">
+    <button class="page-btn prev-btn" id="prevBtn">이전</button>
+    <div class="page-numbers" id="pageNumbers"></div>
+    <button class="page-btn next-btn" id="nextBtn">다음</button>
+  </div>
+</div>
+
+<!-- 정렬 옵션 모달 -->
+<div class="sort-modal" id="sortModal">
+  <div class="sort-modal-content">
+    <div class="sort-modal-header">
+      <h3>정렬 옵션</h3>
+      <button class="close-btn" id="closeSortModal">×</button>
+    </div>
+    <div class="sort-options">
+      <button class="sort-option" data-order="단백질이 많은">단백질이 많은</button>
+      <button class="sort-option" data-order="당이 적은">당이 적은</button>
+      <button class="sort-option" data-order="포화지방이 적은">포화지방이 적은</button>
+      <button class="sort-option" data-order="나트륨이 적은">나트륨이 적은</button>
+      <button class="sort-option" data-order="열량이 많은">열량이 많은</button>
+      <button class="sort-option" data-order="열량이 적은">열량이 적은</button>
+    </div>
+  </div>
+</div>
+
+<!-- 필터 모달 -->
+<div class="filter-modal" id="filterModal">
+  <div class="filter-modal-content">
+    <div class="filter-modal-header">
+      <h3>영양성분 범위 설정</h3>
+      <button class="close-btn" id="closeFilterModal">×</button>
+    </div>
+    <div class="filter-options">
+      <div class="filter-group">
+        <label>열량 (kcal)</label>
+        <div class="range-inputs">
+          <input type="number" placeholder="최소" id="calorieMin">
+          <span>~</span>
+          <input type="number" placeholder="최대" id="calorieMax">
+        </div>
+      </div>
+      <div class="filter-group">
+        <label>단백질 (g)</label>
+        <div class="range-inputs">
+          <input type="number" placeholder="최소" id="proteinMin">
+          <span>~</span>
+          <input type="number" placeholder="최대" id="proteinMax">
+        </div>
+      </div>
+      <div class="filter-group">
+        <label>지방 (g)</label>
+        <div class="range-inputs">
+          <input type="number" placeholder="최소" id="fatMin">
+          <span>~</span>
+          <input type="number" placeholder="최대" id="fatMax">
+        </div>
+      </div>
+      <div class="filter-group">
+        <label>탄수화물 (g)</label>
+        <div class="range-inputs">
+          <input type="number" placeholder="최소" id="carbMin">
+          <span>~</span>
+          <input type="number" placeholder="최대" id="carbMax">
+        </div>
+      </div>
+      <div class="filter-group">
+        <label>나트륨 (mg)</label>
+        <div class="range-inputs">
+          <input type="number" placeholder="최소" id="saltMin">
+          <span>~</span>
+          <input type="number" placeholder="최대" id="saltMax">
+        </div>
+      </div>
+      <div class="filter-group">
+        <label>당류 (g)</label>
+        <div class="range-inputs">
+          <input type="number" placeholder="최소" id="sugarMin">
+          <span>~</span>
+          <input type="number" placeholder="최대" id="sugarMax">
+        </div>
+      </div>
+    </div>
+    <div class="filter-actions">
+      <button class="filter-apply-btn" id="applyFilter">적용</button>
+      <button class="filter-reset-btn" id="resetFilter">초기화</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'search/js/advanced_result.js' %}"></script>
+{% endblock %}

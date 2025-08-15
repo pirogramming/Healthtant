@@ -37,7 +37,6 @@
     font-family: Inter;
     font-size: 15px;
     font-style: normal;
-    font-weight: 800;
     line-height: 20px;
     color: var(--main, #56AAB2);
     margin-bottom: 45px;
@@ -168,7 +167,7 @@
     border: 1px solid #E8E8E8;
     background: #FFF;
     box-shadow: 0 6px 4px 0 rgba(142, 142, 142, 0.25);
-    margin-bottom: 40px;
+    margin: 10px 10px 40px 10px;
     padding: 25px 20px 40px 20px;
     flex-shrink: 0;
 }
