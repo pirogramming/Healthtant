@@ -1,9 +1,24 @@
+# views.py
 from django.shortcuts import render
+from django.db.models import Prefetch
+from foods.models import Food, Price
 
-# Create your views here.
 def main_page(request):
-    """메인 페이지 뷰(바꾸셔도 돼요요)"""
-    return render(request, 'main/main_mainpage.html')
+    prefetch_prices = Prefetch(
+        'prices',
+        queryset=Price.objects.order_by('-created_at', '-price_id'),
+        to_attr='price_list',
+    )
+
+    foods = (
+        Food.objects
+        .exclude(food_img__isnull=True)
+        .exclude(food_img='')
+        .prefetch_related(prefetch_prices)
+        .order_by('-created_at', '-food_id')[:100]
+    )
+
+    return render(request, 'main/main_mainpage.html', {'foods': foods})
 
 def permission_denied_view(request, exception=None):
     """403 에러 페이지 뷰"""
