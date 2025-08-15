@@ -108,7 +108,7 @@ def normal_search(request):
 @login_required
 def advanced_search_page(request):
 
-    end_date = date.today()                # 오늘 날짜
+    end_date = date.today() # 오늘 날짜
     start_date = end_date - timedelta(days=30)  # 30일 전 날짜
 
     diet_query_set = Diet.objects.select_related('food').filter(
@@ -251,7 +251,6 @@ def advanced_search_page(request):
         context["foods"].append(food_to_dict(food))
     
     return render(request, "search/advanced_search_page.html", context)
-
 
 # 고급 검색 기능 뷰
 # 처음에 고급 검색에서 키워드를 입력하여 검색하면 실행할 뷰입니다.
