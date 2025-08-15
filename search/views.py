@@ -54,6 +54,31 @@ def search_page(request):
     
     return render(request, "search/search_page.html", context)
 
+#추천 제품 페이지 렌더링 뷰
+#영양 점수가 높은 음식들을 랜덤으로 선택해서 프론트로 전달합니다!
+def search_before(request):
+    import random
+    
+    foods = list(Food.objects.all()) #DB 전체 음식 리스트
+    
+    # 영양 점수가 높은 식품이 앞에 오도록 정렬
+    foods_sorted = sorted(
+        foods,
+        key=lambda food: NutritionalScore(food),
+        reverse=True
+    )
+    
+    # 상위 50개 제품 중에서 랜덤으로 10개 선택
+    top_foods = foods_sorted[:50]
+    random_foods = random.sample(top_foods, min(10, len(top_foods)))
+
+    # 반환할 값 구성하는 부분
+    context = {"foods":[]}
+    for food in random_foods:
+        context["foods"].append(food_to_dict(food))
+    
+    return render(request, "search/search_before.html", context)
+
 
 #실제 검색 기능을 구현한 뷰
 #Ajax 쓰라는 의미에서 JsonResponse로 드렸습니다 ^^
