@@ -1,5 +1,4 @@
 from django.db import models
-import uuid
 
 class Food(models.Model):
     food_id = models.CharField(
@@ -50,6 +49,23 @@ class Food(models.Model):
     nutri_score_grade = models.CharField(max_length=1, null=True, blank=True, help_text="A-E 등급")
     nrf_index = models.FloatField(null=True, blank=True, help_text="NRF 지수")
 
+    product_image_url = models.URLField(max_length=500, null=True, blank=True, help_text="크롤링된 제품 이미지 URL")
+    product_url = models.URLField(max_length=500, null=True, blank=True, help_text="크롤링된 제품 상세 페이지 URL")
+    crawled_at = models.DateTimeField(null=True, blank=True, help_text="크롤링 수행 시간")
+    crawling_status = models.CharField(
+        max_length=20, 
+        choices=[
+            ('pending', '대기 중'),
+            ('in_progress', '크롤링 중'),
+            ('success', '성공'),
+            ('failed', '실패'),
+            ('not_found', '제품 없음')
+        ],
+        default='pending',
+        help_text="크롤링 상태"
+    )
+    crawling_error = models.TextField(null=True, blank=True, help_text="크롤링 오류 메시지")
+
 
     # 시간 필드
     created_at = models.DateTimeField(auto_now_add=True)
@@ -71,6 +87,20 @@ class Price(models.Model):
     price = models.BigIntegerField()
     discount_price = models.BigIntegerField(null=True, blank=True)
     is_available = models.BooleanField(default=True)
+
+    crawling_status = models.CharField(
+        max_length=20,
+        default='pending',
+        db_index=True,
+        help_text="pending | in_progress | success | failed | not_found"
+    )
+    crawling_error = models.TextField(null=True, blank=True)
+    crawled_at = models.DateTimeField(null=True, blank=True)
+    product_url = models.URLField(null=True, blank=True)
+    product_image_url = models.URLField(null=True, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     # 시간 필드
     created_at = models.DateTimeField(auto_now_add=True)
