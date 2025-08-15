@@ -252,40 +252,50 @@ def advanced_search_page(request):
     
     return render(request, "search/advanced_search_page.html", context)
 
+
 # 고급 검색 기능 뷰
 # 처음에 고급 검색에서 키워드를 입력하여 검색하면 실행할 뷰입니다.
 # 정렬과 범위 설정은 검색 결과가 존재하는 상태에서 실행할 함수로 따로 나눴습니다.
 @login_required
 def search_start(request):
     keyword = request.GET.get('keyword','').strip() #검색 키워드
-    qs = Food.objects.all() # DB에 있는 모든 Food를 모두 가져옴
-    # 키워드가 있다면 필터링까지 진행
-    if keyword:
-        qs = qs.filter(Q(food_name__icontains=keyword))
+    #내가 여기를 수정했는데 이게 맞는지 틀린지 확인 부탁해요!!!
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest' :
+        qs = Food.objects.all() # DB에 있는 모든 Food를 모두 가져옴
+        # 키워드가 있다면 필터링까지 진행
+        if keyword:
+            qs = qs.filter(Q(food_name__icontains=keyword))
 
-    # 원본 결과 ID 목록을 캐시에 저장해 둠 (추후 정렬과 범위 변경을 위함)
-    ids = list(qs.values_list('food_id', flat=True))
-    token = str(uuid.uuid4())
-    cache.set(f'search:{request.user.id}:{token}', ids, timeout=600)  # 10분 뒤면 캐시 만료됨
-    
-    # 첫 페이지(또는 요청된 페이지) 반환
-    page_number = int(request.GET.get('page', 1))
-    paginator = Paginator(qs, 30)  # 페이지당 30개
-    try:
-        page_obj = paginator.page(page_number)
-    except EmptyPage:
-        page_obj = paginator.page(paginator.num_pages)
+        # 원본 결과 ID 목록을 캐시에 저장해 둠 (추후 정렬과 범위 변경을 위함)
+        ids = list(qs.values_list('food_id', flat=True))
+        token = str(uuid.uuid4())
+        cache.set(f'search:{request.user.id}:{token}', ids, timeout=600)  # 10분 뒤면 캐시 만료됨
+        
+        # 첫 페이지(또는 요청된 페이지) 반환
+        page_number = int(request.GET.get('page', 1))
+        paginator = Paginator(qs, 30)  # 페이지당 30개
+        try:
+            page_obj = paginator.page(page_number)
+        except EmptyPage:
+            page_obj = paginator.page(paginator.num_pages)
 
-    data = {
-        "search_token": token, #검색 결과를 다시 불러오기 위한 토큰
-        "keyword": keyword, #유저가 검색한 키워드
-        "page": page_obj.number, #현재 페이지
-        "total_pages": paginator.num_pages, #전체 페이지 수
-        "total": paginator.count,
-        "foods": [food_to_dict(f) for f in page_obj.object_list], #검색 결과 나올 음식들 데이터
+        data = {
+            "search_token": token, #검색 결과를 다시 불러오기 위한 토큰
+            "keyword": keyword, #유저가 검색한 키워드
+            "page": page_obj.number, #현재 페이지
+            "total_pages": paginator.num_pages, #전체 페이지 수
+            "total": paginator.count,
+            "foods": [food_to_dict(f) for f in page_obj.object_list], #검색 결과 나올 음식들 데이터
+        }
+
+        return JsonResponse(data)
+
+    context = {
+        'keyword': keyword,
     }
+    return render(request, 'search/advanced_result.html', context)
 
-    return JsonResponse(data)
+
 
 
 # 쿼리로 주어진 범위를 받은 뒤 
