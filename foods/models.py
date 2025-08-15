@@ -40,7 +40,6 @@ class Food(models.Model):
     cholesterol = models.FloatField(null=True, blank=True)
     saturated_fatty_acids = models.FloatField(null=True, blank=True)
     trans_fatty_acids = models.FloatField(null=True, blank=True)
-    #magnesium = models.FloatField(null=True, blank=True)
 
     serving_size = models.FloatField(null=True, blank=True)
     weight = models.FloatField()
