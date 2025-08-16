@@ -1,30 +1,22 @@
-# insert_food_safe.py
-# - ASCII 출력만 사용 (이모지/특수문자 없음)
-# - Windows 콘솔에서 surrogate 에러 회피
-# - CSV: 탭 구분, UTF-8-SIG 기본, 실패시 CP949로 재시도
-
+import os, sys
 import pandas as pd
 from django.db import connection, transaction
-from django.utils import timezone
 import django
-import os, sys
-import django
-import numpy as np
 
-# ① manage.py가 있는 프로젝트 루트를 sys.path에 추가
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # scripts 폴더에서 상위 폴더로
+# 프로젝트 루트 경로 추가
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, BASE_DIR)
 
-# ② DJANGO_SETTINGS_MODULE을 manage.py와 동일하게
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings.local')  # ← manage.py에서 복붙
-
+# Django 세팅
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings.local')
 django.setup()
 
-# 영양 점수 계산 함수 import  
+# 모델/점수 함수 import
+from foods.models import Food
 from common.nutrition_score import NutritionalScore, letterGrade
 
-CSV_PATH = '../food_clean_data.csv'   # <-- 정리된 CSV 경로
-TABLE_NAME = 'food'                       # <-- 실제 테이블명 (예: 'food' 또는 'foods_food')
+CSV_PATH = os.path.join(BASE_DIR, 'food_clean_data.csv')
+TABLE_NAME = Food._meta.db_table
 
 def safe_print(*args):
     try:
@@ -93,11 +85,34 @@ def read_csv_smart(path):
     df = pd.read_csv(path, sep=',', engine='python', dtype=str, encoding='cp949', on_bad_lines='skip')
     return df
 
+def purge_foods_and_children_auto():
+    """
+    Food를 참조하는 모든 자식 테이블을 먼저 삭제한 뒤, 마지막에 Food 삭제.
+    기본 ordering으로 인해 컬럼 미존재 에러가 나지 않도록 .order_by()로 제거.
+    """
+    with transaction.atomic():
+        # 1) Food 역참조(related_objects) 순회하며 자식부터 삭제
+        for rel in Food._meta.related_objects:
+            model = rel.related_model
+            try:
+                # 자식 모델에 기본 ordering이 걸려 있을 수 있으니 제거 후 delete
+                qs = model._default_manager.all()
+                try:
+                    qs = qs.order_by()
+                except Exception:
+                    pass
+                qs.delete()
+            except Exception:
+                # 일부 테이블이 실제로 없거나 마이그가 안 되어 있을 수 있음 → 무시
+                pass
+
+        # 2) 마지막으로 Food 삭제 (ordering 제거)
+        Food.objects.all().order_by().delete()
+
 def main():
     # 1) 기존 DB 데이터 모두 삭제
     safe_print("=== 기존 DB 데이터 삭제 중... ===")
-    with connection.cursor() as cursor:
-        cursor.execute(f"DELETE FROM {TABLE_NAME}")
+    purge_foods_and_children_auto()
     safe_print("기존 데이터 삭제 완료")
     
     # 2) CSV 로드 
@@ -309,7 +324,7 @@ def main():
             continue
         if c in ('image_url', 'shop_url'):
             # If the incoming value is NULL or empty string, keep the existing DB value
-            set_parts.append(f"{c}=COALESCE(NULLIF(excluded.{c}, ''), {TABLE_NAME}.{c})")
+            set_parts.append(f"{c}=COALESCE(NULLIF(excluded.{c}, ''), {c})")
         else:
             set_parts.append(f"{c}=excluded.{c}")
     set_clause = ",\n".join(set_parts)
