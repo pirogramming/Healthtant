@@ -64,10 +64,6 @@
     transition: background-color 0.2s;
 }
 
-.search-button:hover {
-    background-color: rgba(86, 170, 178, 0.1);
-}
-
 .search-icon {
     display: flex;
     align-items: center;
