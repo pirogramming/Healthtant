@@ -14,63 +14,101 @@ import uuid
 
 #to FE: food를 이런 형태의 데이터로 넘겨줄겁니다! 더 필요한 값 있거나 문제있는 값 있으면 바로 연락해주세요!!
 def food_to_dict(food):
+    # bytes 타입을 문자열로 변환하는 헬퍼 함수
+    def safe_str(value):
+        if isinstance(value, bytes):
+            return value.decode('utf-8', errors='ignore')
+        elif value is None:
+            return ""
+        else:
+            return str(value)
+    
+    # 안전한 숫자 변환 함수
+    def safe_float(value, default=0.0):
+        if isinstance(value, bytes):
+            try:
+                return float(value.decode('utf-8', errors='ignore'))
+            except:
+                return default
+        elif value is None:
+            return default
+        else:
+            try:
+                return float(value)
+            except:
+                return default
+    
     ret = {
-        "food_id": getattr(food, "food_id"),
-        "food_img": getattr(food, "image_url", "") or getattr(food, "food_img", "") or "",
-        "food_name": getattr(food, "food_name", "") or "",
-        "food_category": getattr(food, "food_category", "") or "",
-        "calorie": getattr(food, "calorie", 0) or 0,
-        "moisture": getattr(food, "moisture", 0) or 0,
-        "protein": getattr(food, "protein", 0) or 0,
-        "fat" : getattr(food, "fat", 0) or 0,
-        "carbohydrate": getattr(food, "carbohydrate", 0) or 0,
-        "sugar" : getattr(food, "sugar", 0) or 0,
-        "dietary_fiber": getattr(food, "dietary_fiber", 0) or 0,
-        "salt": getattr(food, "salt", 0) or 0,
-        "cholesterol": getattr(food, "cholesterol", 0) or 0,
-        "saturated_fatty_acids": getattr(food, "saturated_fatty_acids", 0) or 0,
-        "trans_fatty_acids": getattr(food, "trans_fatty_acids", 0) or 0,
-        "serving_size": getattr(food, "serving_size", 0) or 0,
-        "weight": getattr(food, "weight", 0) or 0,
-        "company_name": getattr(food, "shop_name", "") or getattr(food, "company_name", "") or "",
-        "score": getattr(food, "nutrition_score", None) or NutritionalScore(food),
-        "letter_grade": getattr(food, "nutri_score_grade", None) or letterGrade(food),
-        "nutri_score_grade": getattr(food, "nutri_score_grade", None) or letterGrade(food)
+        "food_id": safe_str(getattr(food, "food_id", "")),
+        "food_img": safe_str(getattr(food, "image_url", "") or getattr(food, "food_img", "") or ""),
+        "food_name": safe_str(getattr(food, "food_name", "") or ""),
+        "food_category": safe_str(getattr(food, "food_category", "") or ""),
+        "calorie": safe_float(getattr(food, "calorie", 0)),
+        "moisture": safe_float(getattr(food, "moisture", 0)),
+        "protein": safe_float(getattr(food, "protein", 0)),
+        "fat": safe_float(getattr(food, "fat", 0)),
+        "carbohydrate": safe_float(getattr(food, "carbohydrate", 0)),
+        "sugar": safe_float(getattr(food, "sugar", 0)),
+        "dietary_fiber": safe_float(getattr(food, "dietary_fiber", 0)),
+        "salt": safe_float(getattr(food, "salt", 0)),
+        "cholesterol": safe_float(getattr(food, "cholesterol", 0)),
+        "saturated_fatty_acids": safe_float(getattr(food, "saturated_fatty_acids", 0)),
+        "trans_fatty_acids": safe_float(getattr(food, "trans_fatty_acids", 0)),
+        "serving_size": safe_float(getattr(food, "serving_size", 0)),
+        "weight": safe_float(getattr(food, "weight", 0)),
+        "company_name": safe_str(getattr(food, "shop_name", "") or getattr(food, "company_name", "") or ""),
+        "score": safe_float(getattr(food, "nutrition_score", 0)),
+        "letter_grade": safe_str(getattr(food, "nutri_score_grade", "") or letterGrade(food) or ""),
+        "nutri_score_grade": safe_str(getattr(food, "nutri_score_grade", "") or letterGrade(food) or "")
     }
     return ret
 
 #일반 검색 메인 페이지 렌더링 뷰
-#영양 점수가 높은 음식들(기본으로 띄울 음식들)을 추려서 프론트로 전달합니다!
+#검색어가 있을 때만 검색 결과를 보여줍니다
 def search_page(request):
+    keyword = request.GET.get('keyword', '').strip()
     
-    # 영양 점수가 높은 식품이 앞에 오도록 정렬 (DB에서 바로 정렬)
-    foods = Food.objects.all().order_by('-nutrition_score')
-
+    if not keyword:
+        # 검색어가 없으면 빈 결과 반환
+        context = {"foods": [], "keyword": ""}
+        return render(request, "search/search_page.html", context)
+    
+    # 검색어가 있으면 검색 결과 반환 (서버 사이드 렌더링용)
+    filtered_list = Food.objects.filter(food_name__icontains=keyword).order_by("-nutrition_score")
+    
     # 반환할 값 구성하는 부분
-    context = {"foods":[]}
-    for food in foods:
+    context = {"foods": [], "keyword": keyword}
+    for food in filtered_list:
         context["foods"].append(food_to_dict(food))
     
     return render(request, "search/search_page.html", context)
 
-#검색어가 있을 때만 검색 결과를 보여줍니다
+#실제 검색 기능을 구현한 뷰
+#Ajax 쓰라는 의미에서 JsonResponse로 드렸습니다 ^^
 def normal_search(request):
-    keyword = (request.GET.get("keyword") or "").strip()
-
+    keyword = request.GET.get('keyword')
+    page = int(request.GET.get('page', 1))
+    limit = int(request.GET.get('limit', 30))
+    
     if not keyword:
-        # 검색어 없으면 빈 결과
-        context = {"foods": [], "keyword": ""}
-        return render(request, "search/search_page.html", context)
+        return JsonResponse({"foods": []}, json_dumps_params={'ensure_ascii': False})
+    
+    # 검색어가 있으면 필터 + DB에서 바로 점수 내림차순 정렬
+    filtered_list = Food.objects.filter(food_name__icontains=keyword).order_by("-nutrition_score")
+    
+    # 페이지네이션 적용
+    start_index = (page - 1) * limit
+    end_index = start_index + limit
+    paginated_list = filtered_list[start_index:end_index]
 
-    # 검색어 있으면 필터 + DB에서 바로 점수 내림차순 정렬
-    foods = (
-        Food.objects
-        .filter(food_name__icontains=keyword)
-        .order_by("-nutrition_score")
-    )
+    # 반환 값을 구성하는 부분
+    context = {"foods": []}
+    for food in paginated_list:
+        context["foods"].append(food_to_dict(food))
 
-    context = {"foods": foods, "keyword": keyword}
-    return render(request, "search/search_page.html", context)
+    # to FE: AJAX로 검색 결과를 노출해야 하므로 Json 데이터를 반환하게 구현했습니다.
+    # to FE: 만약 렌더링 해야 할 페이지가 따로 있다면 얘기해주세요!!
+    return JsonResponse(context, json_dumps_params={'ensure_ascii': False})
 
 #추천 제품 페이지 렌더링 뷰
 #영양 점수가 높은 음식들을 랜덤으로 선택해서 프론트로 전달합니다!
