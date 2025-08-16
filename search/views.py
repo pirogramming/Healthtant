@@ -9,8 +9,7 @@ from django.core.paginator import Paginator, EmptyPage
 from django.db.models import Q, Case, When
 from datetime import datetime, timedelta, date
 from analysis.views import make_evaluation, calculate_recommendation, get_real_nutrient
-import functools
-import uuid
+import functools, random, uuid
 
 # bytes 타입을 문자열로 변환하는 헬퍼 함수
 def safe_str(value):
@@ -129,7 +128,6 @@ def normal_search(request):
 #추천 제품 페이지 렌더링 뷰
 #영양 점수가 높은 음식들을 랜덤으로 선택해서 프론트로 전달합니다!
 def search_before(request):
-    import random
     
     top_foods = list(Food.objects.order_by('-nutrition_score')[:50]) # 영양 점수가 높은 식품이 앞에 오도록 정렬
 
