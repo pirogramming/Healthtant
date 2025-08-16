@@ -71,18 +71,20 @@
     <p>검색 중...</p>
   </div>
 
+  <!-- 더보기 버튼 -->
+  <div class="load-more-container" id="loadMoreContainer" style="display: none;">
+    <button class="load-more-btn" id="loadMoreBtn" onclick="loadMoreResults()">
+      더보기
+    </button>
+  </div>
+
   <!-- 검색 결과 없음 -->
   <div class="no-results" id="noResults" style="display: none;">
     <p>검색 결과가 없습니다.</p>
     <p>다른 검색어를 시도해보세요.</p>
   </div>
 
-  <!-- 페이지네이션 -->
-  <div class="pagination" id="pagination" style="display: none;">
-    <button class="page-btn prev-btn" id="prevBtn">이전</button>
-    <div class="page-numbers" id="pageNumbers"></div>
-    <button class="page-btn next-btn" id="nextBtn">다음</button>
-  </div>
+
 </div>
 
 <!-- 정렬 옵션 모달 -->
