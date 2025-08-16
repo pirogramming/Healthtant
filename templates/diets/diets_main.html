@@ -87,180 +87,182 @@
       <!-- 일별 식사 기록 -->
       <div class="daily-meals">
         {% for date in data %}
-        <div class="day-card">
-          <div class="day-header">{{ date.date }}</div>
+          {% if date.diets.breakfast or date.diets.lunch or date.diets.dinner %}
+          <div class="day-card">
+            <div class="day-header">{{ date.date }}</div>
 
-          <!-- 아침 -->
-          {% if date.diets.breakfast %} {% for diet in date.diets.breakfast %}
-          <div class="meal-item">
-            <span class="meal-type">아침</span>
-            <span class="meal-content"> {{ diet.food_name }} </span>
-            <div class="meal-actions">
-              <button
-                class="edit-btn"
-                type="button"
-                data-diet-id="{{ diet.diet_id }}"
-                data-food-id="{{ diet.food_id }}"
-                data-food-name="{{ diet.food_name }}"
-                data-date="{{ date.date }}"
-                data-meal="아침"
-                onclick="editMeal(this)"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="15"
-                  height="15"
-                  viewBox="0 0 15 15"
-                  fill="none"
+            <!-- 아침 -->
+            {% if date.diets.breakfast %} {% for diet in date.diets.breakfast %}
+            <div class="meal-item">
+              <span class="meal-type">아침</span>
+              <span class="meal-content"> {{ diet.food_name }} </span>
+              <div class="meal-actions">
+                <button
+                  class="edit-btn"
+                  type="button"
+                  data-diet-id="{{ diet.diet_id }}"
+                  data-food-id="{{ diet.food_id }}"
+                  data-food-name="{{ diet.food_name }}"
+                  data-date="{{ date.date }}"
+                  data-meal="아침"
+                  onclick="editMeal(this)"
                 >
-                  <path
-                    d="M1 14.1993H3.82833L14.1993 3.82833L11.3707 1L1 11.371V14.1993Z"
-                    stroke="#B7B5B5"
-                    stroke-width="1.5"
-                    stroke-linejoin="round"
-                  />
-                </svg>
-              </button>
-              <a
-                class="delete-btn"
-                data-diet-id="{{ diet.diet_id }}"
-                data-food-name="{{ diet.food_name }}"
-                onclick="deleteMeal(this)"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="14"
-                  height="16"
-                  viewBox="0 0 14 16"
-                  fill="none"
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="15"
+                    height="15"
+                    viewBox="0 0 15 15"
+                    fill="none"
+                  >
+                    <path
+                      d="M1 14.1993H3.82833L14.1993 3.82833L11.3707 1L1 11.371V14.1993Z"
+                      stroke="#B7B5B5"
+                      stroke-width="1.5"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </button>
+                <a
+                  class="delete-btn"
+                  data-diet-id="{{ diet.diet_id }}"
+                  data-food-name="{{ diet.food_name }}"
+                  onclick="deleteMeal(this)"
                 >
-                  <path
-                    d="M1 4.11111H12.9255M5.47205 7.22222V11.8889M8.45342 7.22222V11.8889M1.74534 4.11111L2.49068 13.4444C2.49068 13.857 2.64774 14.2527 2.92729 14.5444C3.20685 14.8361 3.58601 15 3.98137 15H9.9441C10.3395 15 10.7186 14.8361 10.9982 14.5444C11.2777 14.2527 11.4348 13.857 11.4348 13.4444L12.1801 4.11111M4.72671 4.11111V1.77778C4.72671 1.5715 4.80524 1.37367 4.94501 1.22781C5.08479 1.08194 5.27437 1 5.47205 1H8.45342C8.65109 1 8.84067 1.08194 8.98045 1.22781C9.12023 1.37367 9.19876 1.5715 9.19876 1.77778V4.11111"
-                    stroke="#B7B5B5"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                </svg>
-              </a>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="14"
+                    height="16"
+                    viewBox="0 0 14 16"
+                    fill="none"
+                  >
+                    <path
+                      d="M1 4.11111H12.9255M5.47205 7.22222V11.8889M8.45342 7.22222V11.8889M1.74534 4.11111L2.49068 13.4444C2.49068 13.857 2.64774 14.2527 2.92729 14.5444C3.20685 14.8361 3.58601 15 3.98137 15H9.9441C10.3395 15 10.7186 14.8361 10.9982 14.5444C11.2777 14.2527 11.4348 13.857 11.4348 13.4444L12.1801 4.11111M4.72671 4.11111V1.77778C4.72671 1.5715 4.80524 1.37367 4.94501 1.22781C5.08479 1.08194 5.27437 1 5.47205 1H8.45342C8.65109 1 8.84067 1.08194 8.98045 1.22781C9.12023 1.37367 9.19876 1.5715 9.19876 1.77778V4.11111"
+                      stroke="#B7B5B5"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </a>
+              </div>
             </div>
-          </div>
-          {% endfor %} {% endif %}
+            {% endfor %} {% endif %}
 
-          <!-- 점심 -->
-          {% if date.diets.lunch %} {% for diet in date.diets.lunch %}
-          <div class="meal-item">
-            <span class="meal-type">점심</span>
-            <span class="meal-content"> {{ diet.food_name }} </span>
-            <div class="meal-actions">
-              <button
-                class="edit-btn"
-                type="button"
-                data-diet-id="{{ diet.diet_id }}"
-                data-food-id="{{ diet.food_id }}"
-                data-food-name="{{ diet.food_name }}"
-                data-date="{{ date.date }}"
-                data-meal="점심"
-                onclick="editMeal(this)"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="15"
-                  height="15"
-                  viewBox="0 0 15 15"
-                  fill="none"
+            <!-- 점심 -->
+            {% if date.diets.lunch %} {% for diet in date.diets.lunch %}
+            <div class="meal-item">
+              <span class="meal-type">점심</span>
+              <span class="meal-content"> {{ diet.food_name }} </span>
+              <div class="meal-actions">
+                <button
+                  class="edit-btn"
+                  type="button"
+                  data-diet-id="{{ diet.diet_id }}"
+                  data-food-id="{{ diet.food_id }}"
+                  data-food-name="{{ diet.food_name }}"
+                  data-date="{{ date.date }}"
+                  data-meal="점심"
+                  onclick="editMeal(this)"
                 >
-                  <path
-                    d="M1 14.1993H3.82833L14.1993 3.82833L11.3707 1L1 11.371V14.1993Z"
-                    stroke="#B7B5B5"
-                    stroke-width="1.5"
-                    stroke-linejoin="round"
-                  />
-                </svg>
-              </button>
-              <a
-                class="delete-btn"
-                data-diet-id="{{ diet.diet_id }}"
-                data-food-name="{{ diet.food_name }}"
-                onclick="deleteMeal(this)"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="14"
-                  height="16"
-                  viewBox="0 0 14 16"
-                  fill="none"
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="15"
+                    height="15"
+                    viewBox="0 0 15 15"
+                    fill="none"
+                  >
+                    <path
+                      d="M1 14.1993H3.82833L14.1993 3.82833L11.3707 1L1 11.371V14.1993Z"
+                      stroke="#B7B5B5"
+                      stroke-width="1.5"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </button>
+                <a
+                  class="delete-btn"
+                  data-diet-id="{{ diet.diet_id }}"
+                  data-food-name="{{ diet.food_name }}"
+                  onclick="deleteMeal(this)"
                 >
-                  <path
-                    d="M1 4.11111H12.9255M5.47205 7.22222V11.8889M8.45342 7.22222V11.8889M1.74534 4.11111L2.49068 13.4444C2.49068 13.857 2.64774 14.2527 2.92729 14.5444C3.20685 14.8361 3.58601 15 3.98137 15H9.9441C10.3395 15 10.7186 14.8361 10.9982 14.5444C11.2777 14.2527 11.4348 13.857 11.4348 13.4444L12.1801 4.11111M4.72671 4.11111V1.77778C4.72671 1.5715 4.80524 1.37367 4.94501 1.22781C5.08479 1.08194 5.27437 1 5.47205 1H8.45342C8.65109 1 8.84067 1.08194 8.98045 1.22781C9.12023 1.37367 9.19876 1.5715 9.19876 1.77778V4.11111"
-                    stroke="#B7B5B5"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                </svg>
-              </a>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="14"
+                    height="16"
+                    viewBox="0 0 14 16"
+                    fill="none"
+                  >
+                    <path
+                      d="M1 4.11111H12.9255M5.47205 7.22222V11.8889M8.45342 7.22222V11.8889M1.74534 4.11111L2.49068 13.4444C2.49068 13.857 2.64774 14.2527 2.92729 14.5444C3.20685 14.8361 3.58601 15 3.98137 15H9.9441C10.3395 15 10.7186 14.8361 10.9982 14.5444C11.2777 14.2527 11.4348 13.857 11.4348 13.4444L12.1801 4.11111M4.72671 4.11111V1.77778C4.72671 1.5715 4.80524 1.37367 4.94501 1.22781C5.08479 1.08194 5.27437 1 5.47205 1H8.45342C8.65109 1 8.84067 1.08194 8.98045 1.22781C9.12023 1.37367 9.19876 1.5715 9.19876 1.77778V4.11111"
+                      stroke="#B7B5B5"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </a>
+              </div>
             </div>
-          </div>
-          {% endfor %}{% endif %}
+            {% endfor %}{% endif %}
 
-          <!-- 저녁 -->
-          {% if date.diets.dinner %} {% for diet in date.diets.dinner %}
-          <div class="meal-item">
-            <span class="meal-type">저녁</span>
-            <span class="meal-content"> {{ diet.food_name }} </span>
-            <div class="meal-actions">
-              <button
-                class="edit-btn"
-                type="button"
-                data-diet-id="{{ diet.diet_id }}"
-                data-food-id="{{ diet.food_id }}"
-                data-food-name="{{ diet.food_name }}"
-                data-date="{{ date.date }}"
-                data-meal="저녁"
-                onclick="editMeal(this)"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="15"
-                  height="15"
-                  viewBox="0 0 15 15"
-                  fill="none"
+            <!-- 저녁 -->
+            {% if date.diets.dinner %} {% for diet in date.diets.dinner %}
+            <div class="meal-item">
+              <span class="meal-type">저녁</span>
+              <span class="meal-content"> {{ diet.food_name }} </span>
+              <div class="meal-actions">
+                <button
+                  class="edit-btn"
+                  type="button"
+                  data-diet-id="{{ diet.diet_id }}"
+                  data-food-id="{{ diet.food_id }}"
+                  data-food-name="{{ diet.food_name }}"
+                  data-date="{{ date.date }}"
+                  data-meal="저녁"
+                  onclick="editMeal(this)"
                 >
-                  <path
-                    d="M1 14.1993H3.82833L14.1993 3.82833L11.3707 1L1 11.371V14.1993Z"
-                    stroke="#B7B5B5"
-                    stroke-width="1.5"
-                    stroke-linejoin="round"
-                  />
-                </svg>
-              </button>
-              <a
-                class="delete-btn"
-                data-diet-id="{{ diet.diet_id }}"
-                data-food-name="{{ diet.food_name }}"
-                onclick="deleteMeal(this)"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="14"
-                  height="16"
-                  viewBox="0 0 14 16"
-                  fill="none"
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="15"
+                    height="15"
+                    viewBox="0 0 15 15"
+                    fill="none"
+                  >
+                    <path
+                      d="M1 14.1993H3.82833L14.1993 3.82833L11.3707 1L1 11.371V14.1993Z"
+                      stroke="#B7B5B5"
+                      stroke-width="1.5"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </button>
+                <a
+                  class="delete-btn"
+                  data-diet-id="{{ diet.diet_id }}"
+                  data-food-name="{{ diet.food_name }}"
+                  onclick="deleteMeal(this)"
                 >
-                  <path
-                    d="M1 4.11111H12.9255M5.47205 7.22222V11.8889M8.45342 7.22222V11.8889M1.74534 4.11111L2.49068 13.4444C2.49068 13.857 2.64774 14.2527 2.92729 14.5444C3.20685 14.8361 3.58601 15 3.98137 15H9.9441C10.3395 15 10.7186 14.8361 10.9982 14.5444C11.2777 14.2527 11.4348 13.857 11.4348 13.4444L12.1801 4.11111M4.72671 4.11111V1.77778C4.72671 1.5715 4.80524 1.37367 4.94501 1.22781C5.08479 1.08194 5.27437 1 5.47205 1H8.45342C8.65109 1 8.84067 1.08194 8.98045 1.22781C9.12023 1.37367 9.19876 1.5715 9.19876 1.77778V4.11111"
-                    stroke="#B7B5B5"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                </svg>
-              </a>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="14"
+                    height="16"
+                    viewBox="0 0 14 16"
+                    fill="none"
+                  >
+                    <path
+                      d="M1 4.11111H12.9255M5.47205 7.22222V11.8889M8.45342 7.22222V11.8889M1.74534 4.11111L2.49068 13.4444C2.49068 13.857 2.64774 14.2527 2.92729 14.5444C3.20685 14.8361 3.58601 15 3.98137 15H9.9441C10.3395 15 10.7186 14.8361 10.9982 14.5444C11.2777 14.2527 11.4348 13.857 11.4348 13.4444L12.1801 4.11111M4.72671 4.11111V1.77778C4.72671 1.5715 4.80524 1.37367 4.94501 1.22781C5.08479 1.08194 5.27437 1 5.47205 1H8.45342C8.65109 1 8.84067 1.08194 8.98045 1.22781C9.12023 1.37367 9.19876 1.5715 9.19876 1.77778V4.11111"
+                      stroke="#B7B5B5"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </a>
+              </div>
             </div>
+            {% endfor %} {% endif %}
           </div>
-          {% endfor %} {% endif %}
-        </div>
+          {% endif %}
         {% endfor %}
         </div>
         </div>
