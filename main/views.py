@@ -1,14 +1,17 @@
 # views.py
 from django.shortcuts import render
 from foods.models import Food
+import random
 
 def main_page(request):
-    foods = (
+    sorted_foods = list(
         Food.objects
         .exclude(image_url__isnull=True)
         .exclude(image_url='')
-        .order_by('-food_id')[:100]
+        .order_by('-nutrition_score')[:300]
     )
+
+    foods = random.sample(sorted_foods, 10)
 
     return render(request, 'main/main_mainpage.html', {'foods': foods})
 
