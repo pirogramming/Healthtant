@@ -131,17 +131,8 @@ def normal_search(request):
 def search_before(request):
     import random
     
-    foods = list(Food.objects.all()) #DB 전체 음식 리스트
-    
-    # 영양 점수가 높은 식품이 앞에 오도록 정렬
-    foods_sorted = sorted(
-        foods,
-        key=lambda food: NutritionalScore(food),
-        reverse=True
-    )
-    
-    # 상위 50개 제품 중에서 랜덤으로 10개 선택
-    top_foods = foods_sorted[:50]
+    top_foods = list(Food.objects.order_by('-nutrition_score')[:50]) # 영양 점수가 높은 식품이 앞에 오도록 정렬
+
     random_foods = random.sample(top_foods, min(10, len(top_foods)))
 
     # 반환할 값 구성하는 부분
@@ -182,7 +173,6 @@ def normal_search(request):
 #사용자가 필요로 할 법한 제품을 우선으로 출력합니다.
 @login_required
 def advanced_search_page(request):
-
     end_date = date.today() # 오늘 날짜
     start_date = end_date - timedelta(days=30)  # 30일 전 날짜
 
