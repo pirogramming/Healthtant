@@ -388,3 +388,5 @@ def search_refine(request):
         "foods": foods_to_dict(page_obj.object_list, request.user),
     }
     return JsonResponse(data)
+
+
