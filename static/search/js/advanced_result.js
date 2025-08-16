@@ -375,7 +375,7 @@ class AdvancedResultPage {
 
     foodDiv.innerHTML = `
       <div class="food-image">
-        ${food.image ? `<img src="${food.image}" alt="${food.food_name}">` : '이미지 없음'}
+        ${food.food_img ? `<img src="${food.food_img}" alt="${food.food_name}">` : '이미지 없음'}
       </div>
       <div class="food-info">
         <div class="food-name clickable" onclick="advancedResult.goToProductDetail('${food.food_id}')">${food.food_name}</div>
