@@ -7,6 +7,7 @@ class AdvancedResultPage {
     this.currentOrder = '';
     this.currentFilters = {};
     this.isLoading = false;
+    this.currentFavorites = {};
     
     this.init();
   }
@@ -97,6 +98,20 @@ class AdvancedResultPage {
   async loadInitialResults() {
     const urlParams = new URLSearchParams(window.location.search);
     const keyword = urlParams.get('keyword') || '';
+    const favoritesParam = urlParams.get('favorites') || '';
+    
+    // URL에서 좋아요 상태 복원
+    if (favoritesParam) {
+      try {
+        const favorites = JSON.parse(decodeURIComponent(favoritesParam));
+        this.restoreFavorites(favorites);
+      } catch (error) {
+        console.error('좋아요 상태 복원 오류:', error);
+      }
+    } else {
+      // URL 파라미터가 없으면 로컬스토리지에서 로드
+      this.loadFavoritesFromStorage();
+    }
     
     if (keyword) {
       this.currentKeyword = keyword;
@@ -104,6 +119,32 @@ class AdvancedResultPage {
     } else {
       this.showNoResults();
     }
+  }
+
+  // 로컬스토리지에서 좋아요 상태 로드
+  loadFavoritesFromStorage() {
+    try {
+      const stored = localStorage.getItem('healthtant_favorites');
+      if (stored) {
+        const favorites = JSON.parse(stored);
+        this.currentFavorites = favorites;
+      }
+    } catch (error) {
+      console.error('로컬스토리지에서 좋아요 상태 로드 오류:', error);
+      this.currentFavorites = {};
+    }
+  }
+
+  // 좋아요 상태 복원
+  restoreFavorites(favorites) {
+    this.currentFavorites = favorites;
+    // 로컬스토리지에도 저장
+    localStorage.setItem('healthtant_favorites', JSON.stringify(favorites));
+  }
+
+  // 현재 좋아요 상태 확인
+  isFavorite(foodId) {
+    return this.currentFavorites && this.currentFavorites[foodId] === true;
   }
 
   // 검색 실행
@@ -157,6 +198,8 @@ class AdvancedResultPage {
     this.currentKeyword = data.keyword;
     
     if (data.foods && data.foods.length > 0) {
+      // 서버에서 받은 좋아요 상태와 로컬 상태 병합
+      this.mergeFavoriteStates(data.foods);
       this.displayFoods(data.foods);
       this.displayPagination(data.page, data.total_pages, data.total);
     } else {
@@ -164,6 +207,19 @@ class AdvancedResultPage {
     }
     
     this.hideLoading();
+  }
+
+  // 서버 데이터와 로컬 좋아요 상태 병합
+  mergeFavoriteStates(foods) {
+    foods.forEach(food => {
+      // 서버에서 받은 상태가 있으면 우선, 없으면 로컬 상태 사용
+      if (food.is_favorite !== undefined) {
+        this.currentFavorites[food.food_id] = food.is_favorite;
+      }
+    });
+    
+    // 로컬스토리지 업데이트
+    localStorage.setItem('healthtant_favorites', JSON.stringify(this.currentFavorites));
   }
 
   // 음식 목록 표시
@@ -185,17 +241,25 @@ class AdvancedResultPage {
     foodDiv.className = 'food-item';
     foodDiv.dataset.foodId = food.food_id;
 
+    // 서버 상태와 로컬 상태를 모두 확인
+    const serverFavorite = food.is_favorite === true;
+    const localFavorite = this.isFavorite(food.food_id);
+    const isFavorite = serverFavorite || localFavorite;
+    
+    const favoriteClass = isFavorite ? 'active' : '';
+    const svgFill = isFavorite ? 'currentColor' : 'none';
+
     foodDiv.innerHTML = `
       <div class="food-image">
         ${food.image ? `<img src="${food.image}" alt="${food.food_name}">` : '이미지 없음'}
       </div>
       <div class="food-info">
-        <div class="food-name">${food.food_name}</div>
+        <div class="food-name clickable" onclick="advancedResult.goToProductDetail('${food.food_id}')">${food.food_name}</div>
         <div class="food-company">${food.company_name || '제조사 정보 없음'}</div>
       </div>
-      <button class="favorite-button ${food.is_favorite ? 'active' : ''}" 
+      <button class="favorite-button ${favoriteClass}" 
               onclick="advancedResult.toggleFavorite('${food.food_id}')">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="${food.is_favorite ? 'currentColor' : 'none'}">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="${svgFill}">
           <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" 
                 stroke="currentColor" stroke-width="2" fill-rule="evenodd"/>
         </svg>
@@ -366,6 +430,16 @@ class AdvancedResultPage {
       }
 
       const data = await response.json();
+      
+      // 로컬 상태 업데이트
+      if (data.is_favorite) {
+        this.currentFavorites[foodId] = true;
+      } else {
+        delete this.currentFavorites[foodId];
+      }
+      localStorage.setItem('healthtant_favorites', JSON.stringify(this.currentFavorites));
+      
+      // UI 업데이트
       const favoriteBtn = document.querySelector(`[data-food-id="${foodId}"] .favorite-button`);
       
       if (favoriteBtn) {
@@ -375,6 +449,11 @@ class AdvancedResultPage {
           svg.setAttribute('fill', data.is_favorite ? 'currentColor' : 'none');
         }
       }
+
+      // 다른 페이지와의 동기화를 위한 이벤트 발생
+      window.dispatchEvent(new CustomEvent('favoriteChanged', {
+        detail: { foodId, isFavorite: data.is_favorite }
+      }));
 
       this.showToast(data.is_favorite ? '즐겨찾기에 추가되었습니다.' : '즐겨찾기에서 제거되었습니다.');
     } catch (error) {
@@ -498,6 +577,11 @@ class AdvancedResultPage {
       }, 300);
     }, 3000);
   }
+
+  // 상품 상세 페이지로 이동
+  goToProductDetail(foodId) {
+    window.location.href = `/products/${foodId}/`;
+  }
 }
 
 // CSS 애니메이션 추가
@@ -523,6 +607,21 @@ style.textContent = `
       opacity: 0;
       transform: translate(-50%, 20px);
     }
+  }
+
+  /* 클릭 가능한 상품 제목 스타일 */
+  .food-name.clickable {
+    cursor: pointer;
+    transition: color 0.2s ease;
+  }
+
+  .food-name.clickable:hover {
+    color: #56AAAB;
+    text-decoration: underline;
+  }
+
+  .food-name.clickable:active {
+    color: #56AAAB;
   }
 `;
 document.head.appendChild(style);
