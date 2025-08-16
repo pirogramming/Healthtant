@@ -8,6 +8,26 @@ from django.db.models.functions import Coalesce
 from django.http import HttpResponseBadRequest
 from statistics import pstdev
 
+def _to_float(v, default=0.0):
+    if v is None:
+        return default
+    if isinstance(v, (int, float)):
+        return float(v)
+    if isinstance(v, bytes):
+        try:
+            return float(v.decode('utf-8', errors='ignore').strip().replace(',', ''))
+        except Exception:
+            return default
+    if isinstance(v, str):
+        try:
+            return float(v.strip().replace(',', ''))
+        except Exception:
+            return default
+    try:
+        return float(v)
+    except Exception:
+        return default
+    
 # 임시 날짜 선택 페이지 뷰 (확인용)
 def analysis_date(request):
     # 로그인 상태 확인 - 로그인 안 되어도 페이지는 렌더링
@@ -148,18 +168,28 @@ def make_evaluation(name, avg, min, max, essential=0):
         "message": nutrition_message
     }
 
-# 실제로 food를 1회 섭취했을 때 얻을 수 있는 영양소의 양을 반환하는 함수
+
 def get_real_nutrient(food, nutrient_name):
-    serving_size = getattr(food, "serving_size", getattr(food, "weight", 100)) or 100#1회 섭취참고량이 없다면 식품 중량을 기준으로, 식품 중량도 없다면 100g(ml)를 섭취하는 것으로 계산함
-    nutritional_value_standard_amount = getattr(food, "nutritional_value_standard_amount", 100) or 100 #model 설계 시 null=False 로 설정이지만... 혹시 모르니 100g(ml)를 기본으로 설정
-    nutrient = getattr(food, nutrient_name, 0) or 0 #null인 영양소 필드도 존재함
-    weight = getattr(food, "weight") #model 설계시 null=False 로 설정
-    
-    if nutrient == 0:
-        return 0
-    
-    #1회제공량에 담긴 영양소만큼 반환
-    return nutrient / nutritional_value_standard_amount * serving_size
+    """
+    라벨 표기 기준량(nutritional_value_standard_amount) 대비 실제 섭취량 환산.
+    값이 None/str/bytes여도 안전하게 float으로 계산합니다.
+    """
+    serving_size = _to_float(
+        getattr(food, "serving_size", None),
+        default=_to_float(getattr(food, "weight", None), 100.0) or 100.0
+    )
+    standard_amount = _to_float(
+        getattr(food, "nutritional_value_standard_amount", None),
+        default=100.0
+    )
+    nutrient = _to_float(getattr(food, nutrient_name, None), 0.0)
+
+    if nutrient == 0.0:
+        return 0.0
+    if standard_amount == 0.0:
+        # 기준량 정보가 없으면 라벨 값 그대로 반환
+        return nutrient
+    return nutrient / standard_amount * serving_size
 
 #메인 분석 페이지 뷰
 @login_required

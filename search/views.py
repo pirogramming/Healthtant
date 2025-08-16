@@ -12,31 +12,47 @@ from analysis.views import make_evaluation, calculate_recommendation, get_real_n
 import functools
 import uuid
 
+# bytes 타입을 문자열로 변환하는 헬퍼 함수
+def safe_str(value):
+    if isinstance(value, bytes):
+        return value.decode('utf-8', errors='ignore')
+    elif value is None:
+        return ""
+    else:
+        return str(value)
+
+# 안전한 숫자 변환 함수
+def safe_float(value, default=0.0):
+    if isinstance(value, bytes):
+        try:
+            return float(value.decode('utf-8', errors='ignore'))
+        except:
+            return default
+    elif value is None:
+        return default
+    else:
+        try:
+            return float(value)
+        except:
+            return default
+        
+# 안전한 숫자 변환 함수
+def safe_int(value, default=0):
+    if isinstance(value, bytes):
+        try:
+            return int(value.decode('utf-8', errors='ignore'))
+        except:
+            return default
+    elif value is None:
+        return default
+    else:
+        try:
+            return int(value)
+        except:
+            return default
+        
 #to FE: food를 이런 형태의 데이터로 넘겨줄겁니다! 더 필요한 값 있거나 문제있는 값 있으면 바로 연락해주세요!!
 def food_to_dict(food):
-    # bytes 타입을 문자열로 변환하는 헬퍼 함수
-    def safe_str(value):
-        if isinstance(value, bytes):
-            return value.decode('utf-8', errors='ignore')
-        elif value is None:
-            return ""
-        else:
-            return str(value)
-    
-    # 안전한 숫자 변환 함수
-    def safe_float(value, default=0.0):
-        if isinstance(value, bytes):
-            try:
-                return float(value.decode('utf-8', errors='ignore'))
-            except:
-                return default
-        elif value is None:
-            return default
-        else:
-            try:
-                return float(value)
-            except:
-                return default
     
     ret = {
         "food_id": safe_str(getattr(food, "food_id", "")),
@@ -115,17 +131,8 @@ def normal_search(request):
 def search_before(request):
     import random
     
-    foods = list(Food.objects.all()) #DB 전체 음식 리스트
-    
-    # 영양 점수가 높은 식품이 앞에 오도록 정렬
-    foods_sorted = sorted(
-        foods,
-        key=lambda food: NutritionalScore(food),
-        reverse=True
-    )
-    
-    # 상위 50개 제품 중에서 랜덤으로 10개 선택
-    top_foods = foods_sorted[:50]
+    top_foods = list(Food.objects.order_by('-nutrition_score')[:50]) # 영양 점수가 높은 식품이 앞에 오도록 정렬
+
     random_foods = random.sample(top_foods, min(10, len(top_foods)))
 
     # 반환할 값 구성하는 부분
@@ -166,7 +173,6 @@ def normal_search(request):
 #사용자가 필요로 할 법한 제품을 우선으로 출력합니다.
 @login_required
 def advanced_search_page(request):
-
     end_date = date.today() # 오늘 날짜
     start_date = end_date - timedelta(days=30)  # 30일 전 날짜
 
@@ -191,7 +197,7 @@ def advanced_search_page(request):
     recommendation = calculate_recommendation(request.user)
 
     calorie_evaluation = make_evaluation(
-        "carbohydrate",
+        "calorie",
         nutrients_avg['calorie'],
         recommendation['calorie']['min'],
         recommendation['calorie']['max'],
@@ -219,97 +225,31 @@ def advanced_search_page(request):
     )
     salt_evaluation = make_evaluation(
         "salt",
-        nutrients_avg['salt'], 
+        nutrients_avg['salt'],
         recommendation['salt']['min'],
         recommendation['salt']['max'],
         recommendation['salt']['essential']
     )
 
-    # food1과 food2를 영양점수로 먼저 비교하고, 만약 영양점수가 같다면 사용자가 필요로 하는 영양소를 다량 함유한 식품이 앞에 오도록 정렬하는 기준을 제공하는 comparator
-    def comparator(food1,food2):
-        #영양 점수 2개 먼저 계산
-        score1 = NutritionalScore(food1)
-        score2 = NutritionalScore(food2)
+    def append_order(order_list, evaluation, field):
+        level = evaluation["level"]
+        if level in ("부족", "매우 부족"):
+            order_list.append(f'-{field}')
+        elif level in ("과다", "매우 과다"):
+            order_list.append(field)
 
-        # 영양 점수가 다르다면 점수만을 가지고 정렬하도록 반환
-        if score1 != score2: return score1 - score2
+    ORDER_BY = ['-nutrition_score']
+    append_order(ORDER_BY, calorie_evaluation, 'calorie')
+    append_order(ORDER_BY, carbohydrate_evaluation, 'carbohydrate')
+    append_order(ORDER_BY, protein_evaluation, 'protein')
+    append_order(ORDER_BY, fat_evaluation, 'fat')
+    append_order(ORDER_BY, salt_evaluation, 'salt')
 
-        # food1의 영양소 정보
-        calorie1 = getattr(food1, "calorie", 0) or 0
-        carbohydrate1 = getattr(food1, "carbohydrate", 0) or 0
-        protein1 = getattr(food1, "protein", 0) or 0
-        fat1 = getattr(food1, "fat", 0) or 0
-        salt1 = getattr(food1, "salt", 0) or 0
-
-        # food2의 영양소 정보
-        calorie2 = getattr(food2, "calorie", 0) or 0
-        carbohydrate2 = getattr(food2, "carbohydrate", 0) or 0
-        protein2 = getattr(food2, "protein", 0) or 0
-        fat2 = getattr(food2, "fat", 0) or 0
-        salt2 = getattr(food2, "salt", 0) or 0
-
-        # 칼로리 비교 (섭취가 부족할 경우 많이 함유한 식품이 우세, 그렇지 않은 경우 적게 함유한 식품이 우세)
-        calorie_state = calorie_evaluation["level"]
-        if calorie_state == "부족" or calorie_state == "매우 부족":
-            if calorie1 > calorie2: score1 += 1
-            elif calorie1 < calorie2: score2 += 1
-        elif calorie_state == "과다" or calorie_state == "매우 과다":
-            if calorie1 > calorie2: score2 += 1
-            elif calorie1 < calorie2: score1 += 1
-
-        # 탄수화물 비교 (섭취가 부족할 경우 많이 함유한 식품이 우세, 그렇지 않은 경우 적게 함유한 식품이 우세)
-        carbohydrate_state = carbohydrate_evaluation["level"]
-        if carbohydrate_state == "부족" or carbohydrate_state == "매우 부족":
-            if carbohydrate1 > carbohydrate2: score1 += 1
-            elif carbohydrate1 < carbohydrate2: score2 += 1
-        elif carbohydrate_state == "과다" or carbohydrate_state == "매우 과다":
-            if carbohydrate1 > carbohydrate2: score2 += 1
-            elif carbohydrate1 < carbohydrate2: score1 += 1
-
-        # 단백질 비교 (섭취가 부족할 경우 많이 함유한 식품이 우세, 그렇지 않은 경우 적게 함유한 식품이 우세)
-        protein_state = protein_evaluation["level"]
-        if protein_state == "부족" or protein_state == "매우 부족":
-            if protein1 > protein2: score1 += 1
-            elif protein1 < protein2: score2 += 1
-        elif protein_state == "과다" or protein_state == "매우 과다":
-            if protein1 > protein2: score2 += 1
-            elif protein1 < protein2: score1 += 1
-
-        # 지방 비교 (섭취가 부족할 경우 많이 함유한 식품이 우세, 그렇지 않은 경우 적게 함유한 식품이 우세)
-        fat_state = fat_evaluation["level"]
-        if fat_state == "부족" or fat_state == "매우 부족":
-            if fat1 > fat2: score1 += 1
-            elif fat1 < fat2: score2 += 1
-        elif fat_state == "과다" or fat_state == "매우 과다":
-            if fat1 > fat2: score2 += 1
-            elif fat1 < fat2: score1 += 1
-
-        # 나트륨 비교 (섭취가 부족할 경우 많이 함유한 식품이 우세, 그렇지 않은 경우 적게 함유한 식품이 우세)
-        salt_state = salt_evaluation["level"]
-        if salt_state == "부족" or salt_state == "매우 부족":
-            if salt1 > salt2: score1 += 1
-            elif salt1 < salt2: score2 += 1
-        elif salt_state == "과다" or salt_state == "매우 과다":
-            if salt1 > salt2: score2 += 1
-            elif salt1 < salt2: score1 += 1
-
-        return score1 - score2
-    
-    foods = list(Food.objects.all()) #DB 전체 음식 리스트
-    
-    # 영양 점수가 높은 식품이 앞에 오도록 정렬
-    foods_sorted = sorted(
-        foods,
-        key=functools.cmp_to_key(comparator),
-        reverse=True
-    )
-
-    # 상위 4개만 추천 제품으로 선택
-    recommended_foods = foods_sorted[:4]
+    foods_sorted = Food.objects.order_by(*ORDER_BY)[:10]
 
     # 반환할 값 구성하는 부분
     context = {"foods":[]}
-    for food in recommended_foods:
+    for food in foods_sorted:
         context["foods"].append(food_to_dict(food))
     
     return render(request, "search/advanced_search_page.html", context)
