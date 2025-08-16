@@ -1,29 +1,15 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
 body {
-    font-family: "inter", Helvetica, Arial, sans-serif;
-    background-color: #ffffff;
     min-height: 100vh;
     display: flex;
     justify-content: center;
-    align-items: center;
-    width : 402px;
-    height : 874px;
-    margin: auto;
 }
 
 .container {
     background-color: var(--neutralwhitepure-white);
     width: 100%;
-    max-width: 375px;
+    max-width: 450px;
     min-height: 100vh;
     position: relative;
-    display: flex;
-    flex-direction: column;
 }
 
 .nav-bar {
