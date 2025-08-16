@@ -217,3 +217,8 @@ class AdvancedSearchPage {
   document.addEventListener('DOMContentLoaded', () => {
     window.advancedSearch = new AdvancedSearchPage();
   });
+
+// 고급 검색 결과 페이지로 이동하는 전역 함수
+function goToAdvancedResult() {
+  window.location.href = '/search/advanced/';
+}

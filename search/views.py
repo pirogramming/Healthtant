@@ -304,9 +304,12 @@ def advanced_search_page(request):
         reverse=True
     )
 
+    # 상위 4개만 추천 제품으로 선택
+    recommended_foods = foods_sorted[:4]
+
     # 반환할 값 구성하는 부분
     context = {"foods":[]}
-    for food in foods_sorted:
+    for food in recommended_foods:
         context["foods"].append(food_to_dict(food))
     
     return render(request, "search/advanced_search_page.html", context)
@@ -331,7 +334,8 @@ def search_start(request):
         
         # 첫 페이지(또는 요청된 페이지) 반환
         page_number = int(request.GET.get('page', 1))
-        paginator = Paginator(qs, 30)  # 페이지당 30개
+        limit = int(request.GET.get('limit', 30))
+        paginator = Paginator(qs, limit)  # 페이지당 limit개
         try:
             page_obj = paginator.page(page_number)
         except EmptyPage:

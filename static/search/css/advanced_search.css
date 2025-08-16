@@ -301,6 +301,39 @@
   stroke: #EB5757;
 }   
 
+/* 추가 카드 스타일 */
+.additional-card {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border: 2px dashed #56AAB2;
+  opacity: 0.8;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.additional-card:hover {
+  opacity: 1;
+  transform: translateY(-2px);
+  box-shadow: 0px 8px 24px rgba(86, 170, 178, 0.2);
+}
+
+.additional-card .product-name {
+  color: #56AAB2;
+  font-weight: 600;
+}
+
+.additional-card .product-manufacturer {
+  color: #6c757d;
+  font-size: 12px;
+}
+
+.additional-card .favorite-btn {
+  border-color: #56AAB2;
+}
+
+.additional-card .favorite-btn svg path {
+  stroke: #56AAB2;
+}
+
 /* 반응형 디자인 */
 @media (max-width: 480px) {
   .advanced-search-container {
