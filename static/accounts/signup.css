@@ -1,23 +1,11 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
 body {
-    font-family: "Koulen", "inter", Helvetica, Arial, sans-serif;
-    background-color: #ffffff;
-    width: 402px;
-    height: 874px;
-    margin: 0 auto;
+    min-height: 100vh;
     display: flex;
     justify-content: center;
-    align-items: center;
-    overflow: scroll;
 }
 .nav-bar {
     
-    height: 62px;
+    height: 40px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -41,13 +29,10 @@ body {
 
 .container {
     background-color: var(--neutralwhitepure-white);
-    width: 375px;
-    height: 874px;
+    width: 100%;
+    max-width: 450px;
+    min-height: 100vh;
     position: relative;
-    display: flex;
-    flex-direction: column;
-    border-radius: 8px;
-    margin: 0;
 }
 
 .header {
