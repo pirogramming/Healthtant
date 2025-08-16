@@ -1,45 +1,4 @@
-/* Base 레이아웃 스타일 */
-.screen {
-    width: 100%;
-    max-width: 402px;
-    margin: 0 auto;
-    height: 100vh;  /* min-height → height */
-    background-color: #ffffff;
-    position: relative;
-    overflow-y: auto;  /* 여기로 이동 */
-    overflow-x: hidden;  /* 여기로 이동 */
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-}
 
-.screen::-webkit-scrollbar {
-    display: none;
-}
-
-.view {
-    width: 100%;
-    min-height: 100vh;
-    padding-bottom: 80px;
-}
-
-.view::-webkit-scrollbar {
-    display: none;
-}
-
-/* 헤더 영역 */
-.app-header {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background-color: #ffffff;
-}
-
-.status-bar {
-    height: 41px;
-    background-color: #ffffff;
-    width: 100%;
-    
-}
 
 .app-title {
     font-family: "Koulen";
@@ -47,7 +6,7 @@
     color: var(--main);
     text-align: center;
     font-weight: 400;
-    margin: -5px;
+    margin: 10px;
 }
 
 /* 메인 콘텐츠 */
@@ -78,6 +37,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.main-search-input-wrapper:hover {
+    opacity: 0.8;
 }
 
 .main-search-input {
@@ -108,69 +73,133 @@
     height: 20px;
 }
 
-/* 추천 제품 영역 */
+/* 추천 제품 롤링배너 영역 */
 .featured-container {
-    padding: 20px 37px;
-    margin-bottom: 20px;
+    padding: 33px 37px;
+    margin-bottom: 15px;
 }
 
-.featured-product {
-    background-color: #f7f8fa;
-    border-radius: 20px;
-    box-shadow: 0px 4px 4px rgba(217, 217, 217, 0.1);
-    overflow: hidden;
-    min-height: 279px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 21px;
-}
-
-.product-image {
-    max-width: 100%;
-    height: auto;
-    object-fit: cover;
-    border-radius: 10px;
-}
-
-/* 네비게이션 바 */
-.main-nav {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    max-width: 402px;
-    margin: 0 auto;
-    background-color: #ffffff;
-    border-top: 1px solid #f8f8f8;
-    box-shadow: 0px -2px 14px rgba(183, 180, 180, 0.1);
-    z-index: 20;
-}
-
-.nav-list {
-    display: flex;
-    height: 75px;
-    justify-content: space-around;
-    align-items: center;
-    padding: 10px 0;
-    list-style: none;
-    margin: 0;
+/* 롤링배너 컨테이너 */
+.rolling-banner-container {
     position: relative;
+    width: 100%;
+    height: 390px;
+    overflow: hidden;
+    border-radius: 20px;
+    background: linear-gradient(135deg, #f7f8fa 0%, #e8e9ea 100%);
+    box-shadow: 0px 8px 32px rgba(0, 0, 0, 0.1);
 }
 
-.nav-item {
-    text-align: center;
-    flex: 1;
+/* 롤링배너 */
+.rolling-banner {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+    height: 100%;
 }
 
-.nav-link {
+/* 배너 아이템 */
+.banner-item {
+    flex: 0 0 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
-    color: #000000;
-    text-decoration: none;
+    justify-content: center;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.banner-item:hover {
+    transform: scale(1.02);
+}
+
+/* 배너 이미지 */
+.banner-image {
+    width: 290px;
+    height: 290px;
+    object-fit: cover;
+    border-radius: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.15);
     transition: all 0.3s ease;
 }
+
+.banner-image.placeholder {
+    background: linear-gradient(135deg, #e8e9ea 0%, #d1d3d4 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #666;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* 배너 정보 */
+.banner-info {
+    text-align: center;
+    color: #333;
+}
+
+.banner-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: #2c3e50;
+    line-height: 1.2;
+}
+
+.banner-subtitle {
+    font-size: 16px;
+    color: #666;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+/* 네비게이션 버튼 */
+.banner-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    font-size: 24px;
+    font-weight: bold;
+    color: #56AAB2;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+    opacity: 0;
+    visibility: hidden;
+}
+
+.banner-nav:hover {
+    background: rgba(255, 255, 255, 1);
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.banner-nav.prev {
+    left: 20px;
+}
+
+.banner-nav.next {
+    right: 20px;
+}
+
+/* 배너 아이템 호버 시 네비게이션 버튼 표시 */
+.rolling-banner-container:hover .banner-nav {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* 인디케이터 제거됨 */
+
 
 .nav-icon {
     width: 24px;
@@ -286,23 +315,5 @@
     z-index: 1;
 }
 
-/* 반응형 디자인 */
-@media (min-width: 768px) {
-    .screen {
-        max-width: 768px;
-    }
-    
-    .main-nav {
-        max-width: 768px;
-    }
-}
-
-@media (min-width: 1024px) {
-    .screen {
-        max-width: 1024px;
-    }
-    
-    .main-nav {
-        max-width: 1024px;
-    }
-}
+/* 고정 크기 설정 - 반응형 제거 */
+/* 모든 화면 크기에서 동일한 고정 크기 유지 */

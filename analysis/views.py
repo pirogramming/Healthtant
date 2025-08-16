@@ -9,8 +9,8 @@ from django.http import HttpResponseBadRequest
 from statistics import pstdev
 
 # 임시 날짜 선택 페이지 뷰 (확인용)
-@login_required(login_url='/accounts/login/')
 def analysis_date(request):
+    # 로그인 상태 확인 - 로그인 안 되어도 페이지는 렌더링
     return render(request, 'analysis/analysis_date.html')
 
 #user의 각 영양소별 필수섭취량, 적정량 범위를 구하는 메소드
@@ -100,7 +100,7 @@ def calculate_recommendation(user):
 
 # 사용자 섭취량(eat)과 적정 섭취 범위(min, max)와 필수섭취량(essential, 기본 0) 을 받아서 현재 섭취가 어느 수준인지 반환
 def get_level(eat, min, max, essential=0):
-    if eat < essential:
+    if eat < essential or eat < min - (max-min):
         return "매우 부족"
     elif eat < min:
         return "부족"
@@ -150,9 +150,9 @@ def make_evaluation(name, avg, min, max, essential=0):
 
 # 실제로 food를 1회 섭취했을 때 얻을 수 있는 영양소의 양을 반환하는 함수
 def get_real_nutrient(food, nutrient_name):
-    serving_size = getattr(food, "serving_size", getattr(food, "weight", 100)) #1회 섭취참고량이 없다면 식품 중량을 기준으로, 식품 중량도 없다면 100g(ml)를 섭취하는 것으로 계산함
-    nutritional_value_standard_amount = getattr(food, "nutritional_value_standard_amount", 100) #model 설계 시 null=False 로 설정이지만... 혹시 모르니 100g(ml)를 기본으로 설정
-    nutrient = getattr(food, nutrient_name, 0) #null인 영양소 필드도 존재함
+    serving_size = getattr(food, "serving_size", getattr(food, "weight", 100)) or 100#1회 섭취참고량이 없다면 식품 중량을 기준으로, 식품 중량도 없다면 100g(ml)를 섭취하는 것으로 계산함
+    nutritional_value_standard_amount = getattr(food, "nutritional_value_standard_amount", 100) or 100 #model 설계 시 null=False 로 설정이지만... 혹시 모르니 100g(ml)를 기본으로 설정
+    nutrient = getattr(food, nutrient_name, 0) or 0 #null인 영양소 필드도 존재함
     weight = getattr(food, "weight") #model 설계시 null=False 로 설정
     
     if nutrient == 0:

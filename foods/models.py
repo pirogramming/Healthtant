@@ -2,7 +2,12 @@ from django.db import models
 import uuid
 
 class Food(models.Model):
-    food_id = models.CharField(max_length=255, primary_key=True)  # F20240001 형태
+    food_id = models.CharField(
+    primary_key=True,
+    max_length=50,
+    unique=True,
+    default = uuid.uuid4
+)
     food_img = models.CharField(max_length=255, null=True, blank=True)
 
     food_name = models.CharField(max_length=255)
@@ -11,7 +16,7 @@ class Food(models.Model):
 
     # 기준량과 기본 영양소
     nutritional_value_standard_amount = models.BigIntegerField()
-    calorie = models.BigIntegerField()
+    calorie = models.FloatField()
     moisture = models.FloatField()
     protein = models.FloatField()
     fat = models.FloatField()
@@ -24,7 +29,7 @@ class Food(models.Model):
     iron_content = models.FloatField(null=True, blank=True)
     phosphorus = models.FloatField(null=True, blank=True)
     potassium = models.FloatField(null=True, blank=True)
-    salt = models.BigIntegerField(null=True, blank=True)  # 나트륨은 mg 단위이므로 BigInt 유지
+    salt = models.FloatField(null=True, blank=True)  # 나트륨은 mg 단위이므로 BigInt 유지
 
     VitaminA = models.FloatField(null=True, blank=True)
     VitaminB = models.FloatField(null=True, blank=True)
@@ -35,20 +40,22 @@ class Food(models.Model):
     cholesterol = models.FloatField(null=True, blank=True)
     saturated_fatty_acids = models.FloatField(null=True, blank=True)
     trans_fatty_acids = models.FloatField(null=True, blank=True)
-    magnesium = models.FloatField(null=True, blank=True)
 
     serving_size = models.FloatField(null=True, blank=True)
     weight = models.FloatField()
     company_name = models.CharField(max_length=255)
-
-    # 영양 점수 관련 필드 추가
-    nutrition_score = models.FloatField(null=True, blank=True, help_text="0-10 영양 점수")
-    nutri_score_grade = models.CharField(max_length=1, null=True, blank=True, help_text="A-E 등급")
-    nrf_index = models.FloatField(null=True, blank=True, help_text="NRF 지수")
-
-    # 시간 필드
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    
+    # 영양 점수 관련 필드
+    nutrition_score = models.FloatField(null=True, blank=True)
+    nutri_score_grade = models.CharField(max_length=10, null=True, blank=True)
+    nrf_index = models.FloatField(null=True, blank=True)
+    
+    # 가격 정보 (CSV 칼럼에 맞춰 추가)
+    shop_name = models.CharField(max_length=100, null=True, blank=True)
+    price = models.BigIntegerField(null=True, blank=True)
+    discount_price = models.BigIntegerField(null=True, blank=True)
+    shop_url = models.URLField(null=True, blank=True)
+    image_url = models.URLField(null=True, blank=True)
 
     class Meta:
         db_table = 'food'
@@ -57,26 +64,8 @@ class Food(models.Model):
 
     def __str__(self):
         return self.food_name
-class Price(models.Model):
-    price_id = models.CharField(max_length=255, primary_key=True)  # P20240001 형태
-    food = models.ForeignKey(Food, on_delete=models.CASCADE, related_name='prices')
-    shop_name = models.CharField(max_length=100)
-    price = models.BigIntegerField()
-    discount_price = models.BigIntegerField(null=True, blank=True)
-    is_available = models.BooleanField(default=True)
-
-    # 시간 필드
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        db_table = 'price'
-        verbose_name = "가격 정보"
-        verbose_name_plural = "가격 정보들"
-
-    def __str__(self):
-        return f"{self.food.food_name} - {self.shop_name}: {self.price}원"
     
+
 from django.contrib.auth import get_user_model
 
 User = get_user_model()  # 현재 User 모델 가져오기
@@ -104,4 +93,3 @@ class FavoriteFood(models.Model):
 
     def __str__(self):
         return f'{getattr(self.user, "username", self.user_id)} ♥ {self.food_id}'
-

@@ -11,12 +11,26 @@ from django.core.files.storage import default_storage
 from accounts.models import UserProfile
 from foods.models import FavoriteFood
 
-@login_required(login_url='/accounts/login/')
 @require_http_methods(["GET", "POST"])
 def profile_view(request):
     """
     회원 정보 조회(GET) + 수정(POST)  // 렌더링 전용
     """
+    # 로그인 상태 확인
+    if not request.user.is_authenticated:
+        # 로그인 안 된 경우 빈 데이터로 렌더링
+        user_data = {
+            "user_id": "",
+            "nickname": "",
+            "user_name": "",
+            "user_gender": "M",
+            "user_age": 25,
+            "user_email": "",
+            "profile_image_url": "",
+        }
+        return render(request, 'mypage/mypage_profile.html', {'user_data': user_data})
+    
+    # 로그인된 경우 기존 로직 실행
     user = request.user
     profile, _ = UserProfile.objects.get_or_create(
         user=user, defaults={"nickname": user.username}
@@ -39,7 +53,7 @@ def profile_view(request):
         profile.save()
 
         messages.success(request, '프로필이 업데이트되었습니다.')
-        return redirect('mypage:profile')
+        return redirect('mypage:profile_view')
 
     # GET: 화면 렌더링
     user_data = {
@@ -96,11 +110,11 @@ def favorite_food_list(request):
     for f in favorites:
         food = f.food
         favorite_foods.append({
-            "favorite_id": f.id,
+            "favorite_id": str(f.pk),
             "food_id": str(food.food_id),
             "food_name": food.food_name,
-            "food_img": getattr(food, 'food_img', '') or "http://example.com/default_food.png",
-            "company_name": getattr(food, 'company_name', '') or "Unknown",
+            "food_img": getattr(food, 'image_url', '') or getattr(food, 'food_img', '') or "http://example.com/default_food.png",
+            "company_name": getattr(food, 'shop_name', '') or getattr(food, 'company_name', '') or "Unknown",
             "calorie": int(food.calorie) if getattr(food, 'calorie', None) else 0,
             "created_at": getattr(f, 'created_at', None),
         })
@@ -119,7 +133,7 @@ def favorite_food_delete(request, food_id):
         messages.success(request, '즐겨찾기가 취소되었습니다.')
     except FavoriteFood.DoesNotExist:
         messages.error(request, '해당 즐겨찾기를 찾을 수 없습니다.')
-    return redirect('mypage:favorites')
+    return redirect('mypage:favorite_food_list')
 
 
 @login_required(login_url='/accounts/login/')

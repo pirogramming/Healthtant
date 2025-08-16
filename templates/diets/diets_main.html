@@ -266,28 +266,6 @@
         </div>
       </div>
     </div>
-
-        {% comment %} // PATCH 호출
-        const res = await fetch(`/diets/${dietId}/`, {
-          method: "PATCH",
-          headers: {
-            "X-CSRFToken": getCookie("csrftoken"),
-            "X-Requested-With": "XMLHttpRequest",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            food: newFood, // ✅ 뷰에서 Food.objects.get(food_id=data['food'])로 사용
-            date: newDate, // 'YYYY-MM-DD'
-            meal: newMeal, // 'breakfast'|'lunch'|'dinner'
-          }),
-        });
-
-        if (res.ok) {
-          location.reload(); // 간단히 새로고침
-        } else {
-          alert(`수정 실패 (${res.status})`);
-        }
-      } {% endcomment %}
     </div>
   </div>
 </div>
@@ -301,97 +279,15 @@
 {% endblock %}
 
 {% block extra_js %}
+<!-- Django 템플릿 변수를 JavaScript 전역 변수로 설정 -->
 <script>
-
-  function getCookie(name) {
-    const v = `; ${document.cookie}`;
-    const p = v.split(`; ${name}=`);
-    if (p.length === 2) return p.pop().split(";").shift();
-  }
-  // 맨 위로 가기 버튼 기능
-  const scrollToTopBtn = document.getElementById('scrollToTopBtn');
-
-  // 스크롤 이벤트 리스너
-  window.addEventListener('scroll', () => {
-    if (window.pageYOffset > 1) {
-      scrollToTopBtn.classList.add('show');
-    } else {
-      scrollToTopBtn.classList.remove('show');
-    }
-  });
-
-// 버튼 클릭 시 맨 위로 스크롤 (a태그용)
-  scrollToTopBtn.addEventListener('click', function(e) {
-    e.preventDefault(); // 링크 기본 동작 방지
-    window.scrollTo({
-      top: 0,
-      left: 0,
-      behavior: 'instant' // smooth 대신 instant 사용
-    });
-  });
-
-  async function deleteMeal(el) {
-    const id = el.dataset.dietId;
-    console.log(id);
-    const res = await fetch(`/diets/${id}/`, {
-      method: "DELETE",
-      headers: { "X-CSRFToken": getCookie("csrftoken") },
-    });
-    if (res.status === 204) {
-      el.closest(".meal-item")?.remove(); // 또는: location.reload();
-    } else {
-      alert(`삭제 실패 (${res.status})`);
-    }
-  }
-
-  async function editMeal(el) {
-    const dietId = el.dataset.dietId;
-    const curFood = el.dataset.foodId; // 문자열 (uuid 또는 int)
-    const curDate = el.dataset.date; // 'YYYY-MM-DD'
-    const curMeal = el.dataset.meal; // 'breakfast' | 'lunch' | 'dinner'
-    const url = `/diets/form/${dietId}/?date=${encodeURIComponent(curDate)}&meal=${encodeURIComponent(curMeal)}`;
-    window.location.href = url;
-  }
-  
-  // 프롬프트로 새 값 입력(엔터 치면 기존값 유지)
-  function todayYMD() {
-      const d = new Date();
-      const m = String(d.getMonth() + 1).padStart(2, "0");
-      const day = String(d.getDate()).padStart(2, "0");
-      return `${d.getFullYear()}-${m}-${day}`;
-  }
-
-  // "새 식사" / "오늘의 식사 추가하기" → register 페이지로 이동
-  document.querySelector(".add-meal-btn")?.addEventListener("click", () => {
-      // 기본: 오늘 날짜만 세팅. 음식/끼니는 register 페이지에서 선택.
-      window.location.href = `/diets/list/?date=${todayYMD()}`;
-  });
-
-  document.querySelector(".add-today-meal")?.addEventListener("click", () => {
-      window.location.href = `/diets/list/?date=${todayYMD()}`;
-  });
-
-  // 월 변경 함수
-  function changeMonth(direction) {
-      // Django에서 전달받은 현재 년도와 월 사용
-      let year = {{ year }};
-      let month = {{ month }};
-      
-      month += direction;
-      
-      if (month > 12) {
-          month = 1;
-          year++;
-      } else if (month < 1) {
-          month = 12;
-          year--;
-      }
-      
-      // URL 파라미터로 년도와 월을 전달하여 페이지 새로고침
-      const currentUrl = new URL(window.location.href);
-      currentUrl.searchParams.set('year', year);
-      currentUrl.searchParams.set('month', month);
-      window.location.href = currentUrl.toString();
-  }
+  // Django 템플릿 변수를 JavaScript에서 사용할 수 있도록 전역 변수로 설정
+  window.isUserAuthenticated = {{ user.is_authenticated|yesno:"true,false" }};
+  window.currentYear = {{ year }};
+  window.currentMonth = {{ month }};
 </script>
+
+<!-- 외부 JavaScript 파일 로드 -->
+{% comment %} {% load static %} {% endcomment %}
+<script src="{% static 'diets/js/diets_main.js' %}"></script>
 {% endblock %}

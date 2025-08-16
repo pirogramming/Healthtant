@@ -1,0 +1,87 @@
+<!--고급 검색 페이지-->
+
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}고급검색 - HEALTHTANT{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'search/css/advanced_search.css' %}">
+{% endblock %}
+
+{% block header_title %}
+<h1 class="app-title">고급검색페이지</h1>
+{% endblock %}
+
+{% block header_search %}
+<!-- 고급검색페이지에서는 기본 검색 영역을 숨김 -->
+{% endblock %}
+
+{% block header %}
+<header class="app-header">
+  <div class="status-bar"></div>
+  
+  <!-- 뒤로가기 버튼 + 제목 -->
+  <div class="header-nav">
+    <button class="back-button" onclick="history.back()" aria-label="뒤로가기">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path d="M15 18L9 12L15 6" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <h1 class="page-title">상세검색</h1>
+  </div>
+  <div class="header-divider"></div>
+</header>
+{% endblock %}
+
+{% block content %}
+<div class="advanced-search-container">
+
+  <!-- 검색 섹션 -->
+  <h2 class="advanced-search-title">제품을 검색해보세요</h2>
+  <div class="advanced-search-section">
+    <div class="advanced-search-input-container">
+      <div class="advanced-search-input-wrapper">
+        <svg class="advanced-search-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <g clip-path="url(#clip0_75_2444)">
+                <path d="M12.9167 11.6667H12.2583L12.025 11.4417C12.8417 10.4917 13.3333 9.25833 13.3333 7.91667C13.3333 4.925 10.9083 2.5 7.91667 2.5C4.925 2.5 2.5 4.925 2.5 7.91667C2.5 10.9083 4.925 13.3333 7.91667 13.3333C9.25833 13.3333 10.4917 12.8417 11.4417 12.025L11.6667 12.2583V12.9167L15.8333 17.075L17.075 15.8333L12.9167 11.6667ZM7.91667 11.6667C5.84167 11.6667 4.16667 9.99167 4.16667 7.91667C4.16667 5.84167 5.84167 4.16667 7.91667 4.16667C9.99167 4.16667 11.6667 5.84167 11.6667 7.91667C11.6667 9.99167 9.99167 11.6667 7.91667 11.6667Z" fill="#BBBBBB"/>
+              </g>
+              <defs>
+                <clipPath id="clip0_75_2444">
+                  <rect width="20" height="20" fill="white"/>
+                </clipPath>
+              </defs>
+        </svg>
+        <input type="text" class="advanced-search-input" placeholder="제품을 검색해보세요!" id="searchInput">
+      </div>
+      <button class="advanced-search-button" id="searchBtn">검색하기</button>
+    </div>
+  </div>
+
+  <!-- 추천 제품 섹션 -->
+  <h3 class="recommendation-title">이 제품을 {{user.username}}님께 추천합니다</h3>
+  <div class="recommendation-section">
+    <div class="product-list" id="productList">
+      {% for food in foods %}
+      <div class="product-card" data-product-id="{{ food.food_id }}">
+        <img src="{{ food.food_img|default:'' }}" alt="{{ food.food_name }}" class="product-image">
+        <div class="product-info">
+          <h4 class="product-name clickable" data-product-id="{{ food.food_id }}">{{ food.food_name }}</h4>
+          <p class="product-manufacturer">제조사: {{ food.company_name|default:'제조사 정보 없음' }}</p>
+        </div>
+        <button class="favorite-btn" data-product-id="{{ food.food_id }}" data-is-favorite="false" type="button" aria-pressed="false" aria-label="즐겨찾기">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+              <path class="heart-path" d="M20.84 4.61C20.3292 4.099 19.7228 3.69364 19.0554 3.41708C18.3879 3.14052 17.6725 2.99817 16.95 2.99817C16.2275 2.99817 15.5121 3.14052 14.8446 3.41708C14.1772 3.69364 13.5708 4.099 13.06 4.61L12 5.67L10.94 4.61C9.9083 3.5783 8.50903 2.9987 7.05 2.9987C5.59096 2.9987 4.19169 3.5783 3.16 4.61C2.1283 5.6417 1.5487 7.04097 1.5487 8.5C1.5487 9.95903 2.1283 11.3583 3.16 12.39L12 21.23L20.84 12.39C21.351 11.8792 21.7564 11.2728 22.0329 10.6054C22.3095 9.93789 22.4518 9.22249 22.4518 8.5C22.4518 7.77751 22.3095 7.0621 22.0329 6.39464C21.7564 5.72718 21.351 5.12075 20.84 4.61Z"/>
+          </svg>
+        </button>
+      </div>
+    {% endfor %}
+    </div>
+  </div>
+</div>
+{% block bottom_navigation %}{% endblock %}
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'search/js/advanced_search_page.js' %}"></script>
+{% endblock %}

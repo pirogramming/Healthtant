@@ -3,6 +3,7 @@ from django.shortcuts import get_object_or_404, render
 from django.views.decorators.http import require_GET, require_http_methods
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
+from common import nutrition_score
 
 from foods.models import Food, FavoriteFood
 
@@ -10,27 +11,61 @@ from foods.models import Food, FavoriteFood
 def _product_dict(food, is_favorite: bool):
     return {
         "food_id": str(food.pk),
-        "food_img": food.food_img or "",
+        "food_img": food.image_url or food.food_img or "",
         "food_name": food.food_name,
         "calorie": food.calorie,
+        "moisture": food.moisture,
         "protein": food.protein,
         "fat": food.fat,
         "carbohydrate": food.carbohydrate,
+        "sugar": food.sugar,
+        "dietary_fiber": food.dietary_fiber,
+        "calcium": food.calcium,
+        "iron_content": food.iron_content,
+        "phosphorus": food.phosphorus,
+        "potassium": food.potassium,
         "sodium": food.salt,
-        "nutrition_score": None,
+        "VitaminA": food.VitaminA,
+        "VitaminB": food.VitaminB,
+        "VitaminC": food.VitaminC,
+        "VitaminD": food.VitaminD,
+        "VitaminE": food.VitaminE,
+        "cholesterol": food.cholesterol,
+        "saturated_fatty_acids": food.saturated_fatty_acids,
+        "trans_fatty_acids": food.trans_fatty_acids,
+        "nutritional_value_standard_amount": food.nutritional_value_standard_amount,
+        "weight": food.weight,
+        "company_name": food.shop_name or food.company_name,
+        "nutrition_score": food.nutrition_score,
+        "nutri_score_grade": food.nutri_score_grade,
+        "price": food.price,
+        "shop_name": food.shop_name,
+        "shop_url": food.shop_url,
+        "sugar_level": None,
+        "saturated_fatty_acids_level": None,
+        "salt_level": None,
+        "protein_level": None,
         "is_favorite": is_favorite,
     }
 
 
 @require_GET
-def product_detail(request, product_id):
-    food = get_object_or_404(Food, pk=product_id)
+def product_detail(request, food_id):
+    food = get_object_or_404(Food, pk=food_id)
     is_fav = (
         request.user.is_authenticated
         and FavoriteFood.objects.filter(user_id=request.user.id, food=food).exists()
     )
 
     data = _product_dict(food, is_fav)
+
+    data["nutrition_score"] = food.nutrition_score or nutrition_score.NutritionalScore(food) # 0 ~ 26점 반환
+    data["nutri_score_grade"] = food.nutri_score_grade or nutrition_score.letterGrade(food) #A, B, C, D, E
+    
+    data["sugar_level"] = nutrition_score.get_level("sugar", food) # ex) {"level": "낮음", "class": "GOOD"}
+    data["saturated_fatty_acids_level"]= nutrition_score.get_level("saturated_fatty_acids", food) # ex) {"level": "낮음", "class": "GOOD"}
+    data["salt_level"] = nutrition_score.get_level("salt", food) # ex) {"level": "낮음", "class": "GOOD"}
+    data["protein_level"] = nutrition_score.get_level("protein", food) # ex) {"level": "낮음", "class": "GOOD"}
 
     # JSON이 필요하면 명시적으로 응답
     wants_json = (
@@ -47,11 +82,11 @@ def product_detail(request, product_id):
 
 @login_required(login_url='/accounts/login/')
 @require_http_methods(["POST"])
-def toggle_favorite(request, product_id):
+def toggle_favorite(request, food_id):
     """
-    POST /products/<uuid>/like/
+    POST /products/<food_id>/like/
     """
-    food = get_object_or_404(Food, pk=product_id)
+    food = get_object_or_404(Food, pk=food_id)
     fav_qs = FavoriteFood.objects.filter(user_id=request.user.id, food=food)
 
     if fav_qs.exists():

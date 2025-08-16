@@ -1,0 +1,99 @@
+<!--일반 검색 페이지-->
+{% extends 'base/base.html' %}
+
+{% load static %}
+
+{% block title %}식품 일반검색페이지 - HEALTHTANT{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'search/css/normal_search.css' %}">
+{% endblock %}
+
+<!--
+to FE
+막바지까지 고생이 많습니다...
+제가 프론트를 하나 하나 구현하기는 어려울 것 같아서 그나마 ui가 비슷한 식사 관리 페이지 검색 html을 훔쳐왔습니다.
+일단 검색 Ajax는 넣어놓았고, FE 쪽에서는 검색 결과 카드에서 "+등록하기" 로 표시되는 버튼만 즐겨찾기 버튼으로 바꿔주면 될 것 같습니다.
+-->
+{% block header %}
+<header class="app-header">
+    <div class="status-bar"></div>
+    <div class="search-section">
+        <div class="search-container">
+            <div class="search-input-wrapper">
+                <input type="text" id="searchInput" class="search-input" placeholder="제품 이름을 입력해주세요." value="{{ keyword|default:'' }}">
+                <button type="button" class="search-button" onclick="performSearch()">
+                    <div class="search-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <circle cx="9" cy="9" r="6" stroke="#56AAB2" stroke-width="2"/>
+                            <path d="M14 14L17 17" stroke="#56AAB2" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                </button>
+            </div>
+        </div>
+        <button class="cancel-btn" onclick="clearSearch()">취소</button>
+    </div>
+</header>
+{% endblock %}
+
+{% block bottom_navigation %}{% endblock %}
+
+{% block content %}
+<div class="meal-register-container">
+
+    <!-- 검색 결과 섹션 -->
+    <div class="search-results-section" id="searchResults" {% if not keyword %}style="display: none;"{% endif %}>
+        <h2>검색 결과</h2>
+        <div class="search-results-list" id="searchResultsList">
+            {% if foods %}
+                {% for food in foods %}
+                <div class="food-card" data-food-id="{{ food.food_id }}">
+                    <div class="food-image">
+                        {% if food.food_img %}
+                            <img src="{{ food.food_img }}" alt="{{ food.food_name }}">
+                        {% else %}
+                            <img src="{% static 'diets/images/default-food.jpg' %}" alt="{{ food.food_name }}">
+                        {% endif %}
+                    </div>
+                    <div class="food-info">
+                        <div class="food-header">
+                            <div class="brand-tag">등급 계산 중...</div>
+                            <div class="food-text-container">
+                                <h3 class="food-name">{{ food.food_name }}</h3>
+                                <p class="food-company">제조사: {{ food.company_name }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="favorite-btn" data-product-id="{{ food.food_id }}" data-is-favorite="{{ food.is_favorite|default:'false' }}" type="button" aria-pressed="{{ food.is_favorite|default:'false' }}" aria-label="즐겨찾기">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+                            <path class="heart-path" d="M20.84 4.61C20.3292 4.099 19.7228 3.69364 19.0554 3.41708C18.3879 3.14052 17.6725 2.99817 16.95 2.99817C16.2275 2.99817 15.5121 3.14052 14.8446 3.41708C14.1772 3.69364 13.5708 4.099 13.06 4.61L12 5.67L10.94 4.61C9.9083 3.5783 8.50903 2.9987 7.05 2.9987C5.59096 2.9987 4.19169 3.5783 3.16 4.61C2.1283 5.6417 1.5487 7.04097 1.5487 8.5C1.5487 9.95903 2.1283 11.3583 3.16 12.39L12 21.23L20.84 12.39C21.351 11.8792 21.7564 11.2728 22.0329 10.6054C22.3095 9.93789 22.4518 9.22249 22.4518 8.5C22.4518 7.77751 22.3095 7.0621 22.0329 6.39464C21.7564 5.72718 21.351 5.12075 20.84 4.61Z"/>
+                        </svg>
+                    </button>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="no-results">검색 결과가 없습니다.</div>
+            {% endif %}
+        </div>
+        
+        <!-- 로딩 인디케이터 -->
+        <div class="loading-indicator" id="loadingIndicator" style="display: none;">
+            <div class="loading-spinner"></div>
+            <p>더 많은 결과를 불러오는 중...</p>
+        </div>
+        
+        <!-- 더보기 버튼 -->
+        <div class="load-more-container" id="loadMoreContainer" style="display: none;">
+            <button class="load-more-btn" id="loadMoreBtn" onclick="loadMoreResults()">
+                더보기
+            </button>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'search/js/normal_search.js' %}"></script>
+{% endblock %}
