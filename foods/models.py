@@ -45,6 +45,11 @@ class Food(models.Model):
     weight = models.FloatField()
     company_name = models.CharField(max_length=255)
     
+    # 영양 점수 관련 필드
+    nutrition_score = models.FloatField(null=True, blank=True)
+    nutri_score_grade = models.CharField(max_length=10, null=True, blank=True)
+    nrf_index = models.FloatField(null=True, blank=True)
+    
     # 가격 정보 (CSV 칼럼에 맞춰 추가)
     shop_name = models.CharField(max_length=100, null=True, blank=True)
     price = models.BigIntegerField(null=True, blank=True)

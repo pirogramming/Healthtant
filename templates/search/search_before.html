@@ -50,7 +50,7 @@
                 </div>
                 <div class="food-info">
                     <div class="food-header">
-                        <div class="brand-tag">등급 계산 중...</div>
+                        <div class="brand-tag">{{ food.nutri_score_grade|default:"등급 없음" }}</div>
                         <div class="food-text-container">
                             <h3 class="food-name">{{ food.food_name }}</h3>
                             <p class="food-company">제조사: {{ food.company_name }}</p>

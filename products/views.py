@@ -11,7 +11,7 @@ from foods.models import Food, FavoriteFood
 def _product_dict(food, is_favorite: bool):
     return {
         "food_id": str(food.pk),
-        "food_img": food.food_img or "",
+        "food_img": food.image_url or food.food_img or "",
         "food_name": food.food_name,
         "calorie": food.calorie,
         "moisture": food.moisture,
@@ -35,9 +35,12 @@ def _product_dict(food, is_favorite: bool):
         "trans_fatty_acids": food.trans_fatty_acids,
         "nutritional_value_standard_amount": food.nutritional_value_standard_amount,
         "weight": food.weight,
-        "company_name": food.company_name,
-        "nutrition_score": None,
-        "letter_grade": None,
+        "company_name": food.shop_name or food.company_name,
+        "nutrition_score": food.nutrition_score,
+        "nutri_score_grade": food.nutri_score_grade,
+        "price": food.price,
+        "shop_name": food.shop_name,
+        "shop_url": food.shop_url,
         "sugar_level": None,
         "saturated_fatty_acids_level": None,
         "salt_level": None,
@@ -56,8 +59,8 @@ def product_detail(request, food_id):
 
     data = _product_dict(food, is_fav)
 
-    data["nutrition_score"] = nutrition_score.NutritionalScore(food) # 0 ~ 26점 반환
-    data["letter_grade"] = nutrition_score.letterGrade(food) #A, B, C, D, E
+    data["nutrition_score"] = food.nutrition_score or nutrition_score.NutritionalScore(food) # 0 ~ 26점 반환
+    data["nutri_score_grade"] = food.nutri_score_grade or nutrition_score.letterGrade(food) #A, B, C, D, E
     
     data["sugar_level"] = nutrition_score.get_level("sugar", food) # ex) {"level": "낮음", "class": "GOOD"}
     data["saturated_fatty_acids_level"]= nutrition_score.get_level("saturated_fatty_acids", food) # ex) {"level": "낮음", "class": "GOOD"}

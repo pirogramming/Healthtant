@@ -16,7 +16,7 @@ import uuid
 def food_to_dict(food):
     ret = {
         "food_id": getattr(food, "food_id"),
-        "food_img": getattr(food, "food_img", "") or "",
+        "food_img": getattr(food, "image_url", "") or getattr(food, "food_img", "") or "",
         "food_name": getattr(food, "food_name", "") or "",
         "food_category": getattr(food, "food_category", "") or "",
         "calorie": getattr(food, "calorie", 0) or 0,
@@ -32,31 +32,31 @@ def food_to_dict(food):
         "trans_fatty_acids": getattr(food, "trans_fatty_acids", 0) or 0,
         "serving_size": getattr(food, "serving_size", 0) or 0,
         "weight": getattr(food, "weight", 0) or 0,
-        "company_name": getattr(food, "company_name", "") or "",
-        "score": NutritionalScore(food),
-        "letter_grade": letterGrade(food)
+        "company_name": getattr(food, "shop_name", "") or getattr(food, "company_name", "") or "",
+        "score": getattr(food, "nutrition_score", None) or NutritionalScore(food),
+        "letter_grade": getattr(food, "nutri_score_grade", None) or letterGrade(food),
+        "nutri_score_grade": getattr(food, "nutri_score_grade", None) or letterGrade(food)
     }
     return ret
 
 #일반 검색 메인 페이지 렌더링 뷰
 #검색어가 있을 때만 검색 결과를 보여줍니다
-def search_page(request):
-    keyword = request.GET.get('keyword', '').strip()
-    
+def normal_search(request):
+    keyword = (request.GET.get("keyword") or "").strip()
+
     if not keyword:
-        # 검색어가 없으면 빈 결과 반환
+        # 검색어 없으면 빈 결과
         context = {"foods": [], "keyword": ""}
         return render(request, "search/search_page.html", context)
-    
-    # 검색어가 있으면 검색 결과 반환
-    filtered_list = Food.objects.filter(food_name__icontains=keyword)
-    sorted_list = sorted(filtered_list, key=lambda food: NutritionalScore(food), reverse=True)
 
-    # 반환할 값 구성하는 부분
-    context = {"foods": [], "keyword": keyword}
-    for food in sorted_list:
-        context["foods"].append(food_to_dict(food))
-    
+    # 검색어 있으면 필터 + DB에서 바로 점수 내림차순 정렬
+    foods = (
+        Food.objects
+        .filter(food_name__icontains=keyword)
+        .order_by("-nutrition_score")
+    )
+
+    context = {"foods": foods, "keyword": keyword}
     return render(request, "search/search_page.html", context)
 
 #추천 제품 페이지 렌더링 뷰

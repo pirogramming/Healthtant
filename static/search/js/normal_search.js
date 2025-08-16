@@ -104,19 +104,25 @@ function displaySearchResults(foods) {
         foodCard.className = 'food-card';
         foodCard.setAttribute('data-food-id', food.food_id);
         
-        foodCard.innerHTML = `
-            <div class="food-image">
-                ${food.food_img ? 
-                    `<img src="${food.food_img}" alt="${food.food_name}">` : 
-                    `<img src="/static/diets/images/default-food.jpg" alt="${food.food_name}">`
-                }
-            </div>
-            <div class="food-info">
-                <div class="food-header">
-                    <div class="brand-tag">등급 계산 중...</div>
-                    <div class="food-text-container">
-                        <h3 class="food-name">${food.food_name}</h3>
-                        <p class="food-company">제조사: ${food.company_name}</p>
+        foods.forEach(food => {
+            const foodCard = document.createElement('div');
+            foodCard.className = 'food-card';
+            foodCard.setAttribute('data-food-id', food.food_id);
+            
+            foodCard.innerHTML = `
+                <div class="food-image">
+                    ${food.food_img ? 
+                        `<img src="${food.food_img}" alt="${food.food_name}">` : 
+                        `<img src="/static/diets/images/default-food.jpg" alt="${food.food_name}">`
+                    }
+                </div>
+                <div class="food-info">
+                    <div class="food-header">
+                        <div class="brand-tag">${food.nutri_score_grade || '등급 없음'}</div>
+                        <div class="food-text-container">
+                            <h3 class="food-name">${food.food_name}</h3>
+                            <p class="food-company">제조사: ${food.company_name}</p>
+                        </div>
                     </div>
                 </div>
             </div>
