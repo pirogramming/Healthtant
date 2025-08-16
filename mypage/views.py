@@ -113,8 +113,8 @@ def favorite_food_list(request):
             "favorite_id": str(f.pk),
             "food_id": str(food.food_id),
             "food_name": food.food_name,
-            "food_img": getattr(food, 'food_img', '') or "http://example.com/default_food.png",
-            "company_name": getattr(food, 'company_name', '') or "Unknown",
+            "food_img": getattr(food, 'image_url', '') or getattr(food, 'food_img', '') or "http://example.com/default_food.png",
+            "company_name": getattr(food, 'shop_name', '') or getattr(food, 'company_name', '') or "Unknown",
             "calorie": int(food.calorie) if getattr(food, 'calorie', None) else 0,
             "created_at": getattr(f, 'created_at', None),
         })

@@ -20,6 +20,9 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings.local')  # ← 
 
 django.setup()
 
+# 영양 점수 계산 함수 import  
+from common.nutrition_score import NutritionalScore, letterGrade
+
 CSV_PATH = '../food_clean_data.csv'   # <-- 정리된 CSV 경로
 TABLE_NAME = 'food'                       # <-- 실제 테이블명 (예: 'food' 또는 'foods_food')
 
@@ -128,6 +131,10 @@ def main():
         'hprice': 'discount_price',
         'product_link': 'shop_url',
         'image': 'image_url',
+        # 영양 점수 필드 추가
+        'nutrition_score': 'nutrition_score',
+        'nutri_score_grade': 'nutri_score_grade', 
+        'nrf_index': 'nrf_index',
         # 기본값들
         'food_name': 'food_name',
         'food_category': 'food_category',
@@ -215,13 +222,58 @@ def main():
         if c in out.columns:
             out[c] = out[c].astype(str).str.strip().replace('', 'UNKNOWN')
     
+    # 5) 영양 점수 계산 및 추가
+    safe_print("영양 점수 계산 중...")
+    
+    def calculate_nutrition_scores(row):
+        """각 행에 대해 영양 점수 계산"""
+        # 임시 Food 객체 생성 (DB에 저장하지 않고 계산만 위해)
+        class TempFood:
+            def __init__(self, data):
+                for key, value in data.items():
+                    setattr(self, key, value)
+        
+        temp_food = TempFood({
+            'calorie': row.get('calorie', 0),
+            'moisture': row.get('moisture', 0),
+            'protein': row.get('protein', 0),
+            'fat': row.get('fat', 0),
+            'carbohydrate': row.get('carbohydrate', 0),
+            'sugar': row.get('sugar', 0),
+            'dietary_fiber': row.get('dietary_fiber', 0),
+            'salt': row.get('salt', 0),
+            'saturated_fatty_acids': row.get('saturated_fatty_acids', 0),
+            'trans_fatty_acids': row.get('trans_fatty_acids', 0),
+            'serving_size': row.get('serving_size', None),
+            'weight': row.get('weight', 100),
+            'food_category': row.get('food_category', ''),
+        })
+        
+        try:
+            nutrition_score = NutritionalScore(temp_food)
+            nutri_grade = letterGrade(temp_food)
+            # nrf_index는 일단 None으로 (구현되어 있지 않음)
+            return nutrition_score, nutri_grade, None
+        except:
+            return None, None, None
+    
+    # 각 행에 대해 영양 점수 계산
+    nutrition_data = out.apply(calculate_nutrition_scores, axis=1, result_type='expand')
+    out['nutrition_score'] = nutrition_data[0]
+    out['nutri_score_grade'] = nutrition_data[1] 
+    out['nrf_index'] = nutrition_data[2]
+    
+    safe_print(f"영양 점수 계산 완료! A급: {(out['nutri_score_grade'] == 'A').sum()}개")
+    safe_print(f"B급: {(out['nutri_score_grade'] == 'B').sum()}개, C급: {(out['nutri_score_grade'] == 'C').sum()}개")
+    
     cols = [
         'food_id','food_img','food_name','food_category','representative_food',
         'nutritional_value_standard_amount','calorie','moisture','protein','fat',
         'carbohydrate','sugar','dietary_fiber','calcium','iron_content','phosphorus',
         'potassium','salt','VitaminA','VitaminB','VitaminC','VitaminD','VitaminE',
         'cholesterol','saturated_fatty_acids','trans_fatty_acids','serving_size',
-        'weight','company_name','shop_name','price','discount_price','shop_url','image_url'
+        'weight','company_name','nutrition_score','nutri_score_grade','nrf_index',
+        'shop_name','price','discount_price','shop_url','image_url'
     ]
 
     for c in cols:
