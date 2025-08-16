@@ -38,7 +38,7 @@
 <div class="advanced-search-container">
 
   <!-- 검색 섹션 -->
-  <h2 class="advanced-search-title">성분으로 검색해보세요</h2>
+  <h2 class="advanced-search-title">제품을 검색해보세요</h2>
   <div class="advanced-search-section">
     <div class="advanced-search-input-container">
       <div class="advanced-search-input-wrapper">
@@ -63,10 +63,10 @@
   <div class="recommendation-section">
     <div class="product-list" id="productList">
       {% for food in foods %}
-      <div class="product-card">
+      <div class="product-card" data-product-id="{{ food.food_id }}">
         <img src="{{ food.food_img|default:'' }}" alt="{{ food.food_name }}" class="product-image">
         <div class="product-info">
-          <h4 class="product-name">{{ food.food_name }}</h4>
+          <h4 class="product-name clickable" data-product-id="{{ food.food_id }}">{{ food.food_name }}</h4>
           <p class="product-manufacturer">제조사: {{ food.company_name|default:'제조사 정보 없음' }}</p>
         </div>
         <button class="favorite-btn" data-product-id="{{ food.food_id }}" data-is-favorite="false" type="button" aria-pressed="false" aria-label="즐겨찾기">

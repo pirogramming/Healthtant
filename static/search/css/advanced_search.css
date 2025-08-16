@@ -247,6 +247,21 @@
   color: #222;
 }
 
+/* 클릭 가능한 상품 제목 스타일 */
+.product-name.clickable {
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.product-name.clickable:hover {
+  color: #56AAB2;
+  text-decoration: underline;
+}
+
+.product-name.clickable:active {
+  color: #4a959c;
+}
+
 .product-manufacturer {
   font-size: 14px;
   color: #888;
