@@ -8,6 +8,58 @@ from django.db.models import Case, When, Value, IntegerField
 from datetime import date, datetime
 import json
 from django.http import HttpResponse
+from common.nutrition_score import NutritionalScore, letterGrade
+
+# bytes 타입을 문자열로 변환하는 헬퍼 함수
+def safe_str(value):
+    if isinstance(value, bytes):
+        return value.decode('utf-8', errors='ignore')
+    elif value is None:
+        return ""
+    else:
+        return str(value)
+
+# 안전한 숫자 변환 함수
+def safe_float(value, default=0.0):
+    if isinstance(value, bytes):
+        try:
+            return float(value.decode('utf-8', errors='ignore'))
+        except:
+            return default
+    elif value is None:
+        return default
+    else:
+        try:
+            return float(value)
+        except:
+            return default
+
+#to FE: food를 이런 형태의 데이터로 넘겨줄겁니다! 더 필요한 값 있거나 문제있는 값 있으면 바로 연락해주세요!!
+def food_to_dict(food):
+    ret = {
+        "food_id": safe_str(getattr(food, "food_id", "")),
+        "food_img": safe_str(getattr(food, "image_url", "") or getattr(food, "food_img", "") or ""),
+        "food_name": safe_str(getattr(food, "food_name", "") or ""),
+        "food_category": safe_str(getattr(food, "food_category", "") or ""),
+        "calorie": safe_float(getattr(food, "calorie", 0)),
+        "moisture": safe_float(getattr(food, "moisture", 0)),
+        "protein": safe_float(getattr(food, "protein", 0)),
+        "fat": safe_float(getattr(food, "fat", 0)),
+        "carbohydrate": safe_float(getattr(food, "carbohydrate", 0)),
+        "sugar": safe_float(getattr(food, "sugar", 0)),
+        "dietary_fiber": safe_float(getattr(food, "dietary_fiber", 0)),
+        "salt": safe_float(getattr(food, "salt", 0)),
+        "cholesterol": safe_float(getattr(food, "cholesterol", 0)),
+        "saturated_fatty_acids": safe_float(getattr(food, "saturated_fatty_acids", 0)),
+        "trans_fatty_acids": safe_float(getattr(food, "trans_fatty_acids", 0)),
+        "serving_size": safe_float(getattr(food, "serving_size", 0)),
+        "weight": safe_float(getattr(food, "weight", 0)),
+        "company_name": safe_str(getattr(food, "shop_name", "") or getattr(food, "company_name", "") or ""),
+        "score": safe_float(getattr(food, "nutrition_score", 0)),
+        "letter_grade": safe_str(getattr(food, "nutri_score_grade", "") or letterGrade(food) or ""),
+        "nutri_score_grade": safe_str(getattr(food, "nutri_score_grade", "") or letterGrade(food) or "")
+    }
+    return ret
 
 #유저 식사 리스트 전달
 def diet_main(request):
@@ -339,3 +391,23 @@ def diet_upload(request):
         return redirect('/diets/list/')
     
     return render(request, 'diets/diets_upload.html', context)
+
+#식사 등록용 검색 페이지 렌더링 뷰
+#검색어가 있을 때만 검색 결과를 보여줍니다
+def diets_search(request):
+    keyword = request.GET.get('keyword', '').strip()
+    
+    if not keyword:
+        # 검색어가 없으면 빈 결과 반환
+        context = {"foods": [], "keyword": ""}
+        return render(request, "diets/diets_search.html", context)
+    
+    # 검색어가 있으면 검색 결과 반환 (서버 사이드 렌더링용)
+    filtered_list = Food.objects.filter(food_name__icontains=keyword).order_by("-nutrition_score")
+    
+    # 반환할 값 구성하는 부분
+    context = {"foods": [], "keyword": keyword}
+    for food in filtered_list:
+        context["foods"].append(food_to_dict(food))
+    
+    return render(request, "diets/diets_search.html", context)

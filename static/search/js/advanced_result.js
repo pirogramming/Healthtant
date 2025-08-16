@@ -19,6 +19,7 @@ class AdvancedResultPage {
   init() {
     this.bindEvents();
     this.loadInitialResults();
+    this.updateFavoriteButtons();
   }
 
   bindEvents() {
@@ -131,6 +132,9 @@ class AdvancedResultPage {
     } else {
       this.showNoResults();
     }
+    
+    // 즐겨찾기 버튼 상태 업데이트
+    this.updateFavoriteButtons();
   }
 
   // 로컬스토리지에서 좋아요 상태 로드
@@ -157,6 +161,24 @@ class AdvancedResultPage {
   // 현재 좋아요 상태 확인
   isFavorite(foodId) {
     return this.currentFavorites && this.currentFavorites[foodId] === true;
+  }
+
+  // 좋아요 버튼 상태 업데이트
+  updateFavoriteButtons() {
+    const favoriteBtns = document.querySelectorAll('.favorite-button');
+    favoriteBtns.forEach(btn => {
+      const productId = btn.getAttribute('data-product-id');
+      if (productId && this.currentFavorites[productId]) {
+        btn.classList.add('active');
+        btn.setAttribute('data-is-favorite', 'true');
+        btn.setAttribute('aria-pressed', 'true');
+      }
+    });
+  }
+
+  // 로컬스토리지에 좋아요 상태 저장
+  saveFavorites() {
+    localStorage.setItem('healthtant_favorites', JSON.stringify(this.currentFavorites));
   }
 
   // 검색 실행
@@ -337,6 +359,9 @@ class AdvancedResultPage {
       const foodElement = this.createFoodElement(food);
       resultList.appendChild(foodElement);
     });
+    
+    // 즐겨찾기 버튼 상태 업데이트
+    this.updateFavoriteButtons();
   }
 
   // 검색 결과 표시 (페이지네이션용)
@@ -371,7 +396,8 @@ class AdvancedResultPage {
     const isFavorite = serverFavorite || localFavorite;
     
     const favoriteClass = isFavorite ? 'active' : '';
-    const svgFill = isFavorite ? 'currentColor' : 'none';
+    const dataIsFavorite = isFavorite ? 'true' : 'false';
+    const ariaPressed = isFavorite ? 'true' : 'false';
 
     foodDiv.innerHTML = `
       <div class="food-image">
@@ -382,13 +408,25 @@ class AdvancedResultPage {
         <div class="food-company">${food.company_name || '제조사 정보 없음'}</div>
       </div>
       <button class="favorite-button ${favoriteClass}" 
-              onclick="advancedResult.toggleFavorite('${food.food_id}')">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="${svgFill}">
-          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" 
-                stroke="currentColor" stroke-width="2" fill-rule="evenodd"/>
+              data-product-id="${food.food_id}" 
+              data-is-favorite="${dataIsFavorite}" 
+              type="button" 
+              aria-pressed="${ariaPressed}" 
+              aria-label="즐겨찾기">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+          <path class="heart-path" d="M20.84 4.61C20.3292 4.099 19.7228 3.69364 19.0554 3.41708C18.3879 3.14052 17.6725 2.99817 16.95 2.99817C16.2275 2.99817 15.5121 3.14052 14.8446 3.41708C14.1772 3.69364 13.5708 4.099 13.06 4.61L12 5.67L10.94 4.61C9.9083 3.5783 8.50903 2.9987 7.05 2.9987C5.59096 2.9987 4.19169 3.5783 3.16 4.61C2.1283 5.6417 1.5487 7.04097 1.5487 8.5C1.5487 9.95903 2.1283 11.3583 3.16 12.39L12 21.23L20.84 12.39C21.351 11.8792 21.7564 11.2728 22.0329 10.6054C22.3095 9.93789 22.4518 9.22249 22.4518 8.5C22.4518 7.77751 22.3095 7.0621 22.0329 6.39464C21.7564 5.72718 21.351 5.12075 20.84 4.61Z"/>
         </svg>
       </button>
     `;
+
+    // 생성된 버튼에 이벤트 리스너 추가
+    const favoriteBtn = foodDiv.querySelector('.favorite-button');
+    if (favoriteBtn) {
+      favoriteBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.toggleFavorite(favoriteBtn);
+      });
+    }
 
     return foodDiv;
   }
@@ -624,51 +662,45 @@ class AdvancedResultPage {
   }
 
   // 즐겨찾기 토글
-  async toggleFavorite(foodId) {
+  async toggleFavorite(favoriteBtn) {
+    const productId = favoriteBtn.getAttribute('data-product-id');
+    if (!productId) return;
+
+    favoriteBtn.disabled = true;
+    
     try {
-      const response = await fetch(`/products/${foodId}/like/`, {
+      const response = await fetch(`/products/${productId}/like/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'X-CSRFToken': this.getCsrfToken(),
           'X-Requested-With': 'XMLHttpRequest'
-        }
+        },
+        credentials: 'same-origin'
       });
 
       if (!response.ok) {
-        throw new Error('즐겨찾기 처리 실패');
+        throw new Error('네트워크 오류');
       }
 
       const data = await response.json();
-      
+      const isFavorite = data.is_favorite;
+
       // 로컬 상태 업데이트
-      if (data.is_favorite) {
-        this.currentFavorites[foodId] = true;
+      if (isFavorite) {
+        this.currentFavorites[productId] = true;
       } else {
-        delete this.currentFavorites[foodId];
+        delete this.currentFavorites[productId];
       }
-      localStorage.setItem('healthtant_favorites', JSON.stringify(this.currentFavorites));
-      
-      // UI 업데이트
-      const favoriteBtn = document.querySelector(`[data-food-id="${foodId}"] .favorite-button`);
-      
-      if (favoriteBtn) {
-        favoriteBtn.classList.toggle('active', data.is_favorite);
-        const svg = favoriteBtn.querySelector('svg');
-        if (svg) {
-          svg.setAttribute('fill', data.is_favorite ? 'currentColor' : 'none');
-        }
-      }
+      this.saveFavorites();
 
-      // 다른 페이지와의 동기화를 위한 이벤트 발생
-      window.dispatchEvent(new CustomEvent('favoriteChanged', {
-        detail: { foodId, isFavorite: data.is_favorite }
-      }));
-
-      this.showToast(data.is_favorite ? '즐겨찾기에 추가되었습니다.' : '즐겨찾기에서 제거되었습니다.');
+      favoriteBtn.classList.toggle('active', isFavorite);
+      favoriteBtn.setAttribute('data-is-favorite', String(isFavorite));
+      favoriteBtn.setAttribute('aria-pressed', String(isFavorite));
     } catch (error) {
-      console.error('즐겨찾기 오류:', error);
-      this.showToast('즐겨찾기 처리 중 오류가 발생했습니다.');
+      console.error('찜 처리 오류:', error);
+    } finally {
+      favoriteBtn.disabled = false;
     }
   }
 
