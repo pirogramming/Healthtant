@@ -4,7 +4,7 @@
 {% block title %}추천 제품 - HEALTHTANT{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'search/css/search_before.css' %}">
+<link rel="stylesheet" href="{% static 'search/css/normal_search.css' %}">
 {% endblock %}
 
 {% block header %}
@@ -34,12 +34,13 @@
 {% block content %}
 
 <div class="meal-register-container">
-    <!-- 영양점수 높은 제품 목록 -->
-    <div class="recommended-foods-section">
+
+    <!-- 추천 제품 섹션 -->
+    <div class="search-results-section">
         <h2>영양점수가 높은 추천 제품</h2>
-        <div class="recommended-foods-list">
+        <div class="search-results-list">
             {% for food in foods %}
-            <div class="food-card card" data-food-id="{{ food.food_id }}">
+            <div class="food-card" data-food-id="{{ food.food_id }}">
                 <div class="food-image">
                     {% if food.food_img %}
                         <img src="{{ food.food_img }}" alt="{{ food.food_name }}">

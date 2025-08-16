@@ -206,6 +206,75 @@
     background: #a8a8a8;
 }
 
+/* 빈 상태 스타일 */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #666;
+}
+
+.empty-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+}
+
+.empty-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+.empty-sub {
+    font-size: 14px;
+    color: #999;
+}
+
+/* 검색 아이콘 호버 툴팁 */
+.search-button {
+    position: relative;
+}
+
+.search-button::before {
+    content: "검색하기";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+    z-index: 1000;
+    margin-bottom: 8px;
+}
+
+.search-button::after {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: rgba(0, 0, 0, 0.8);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+    margin-bottom: 3px;
+}
+
+.search-button:hover::before,
+.search-button:hover::after {
+    opacity: 1;
+    visibility: visible;
+}
+
 /* 반응형 디자인 */
 @media (max-width: 768px) {
     .meal-register-container {
