@@ -241,14 +241,35 @@
 }
 
 .favorite-button:hover {
-  background: rgba(255, 71, 87, 0.1);
+  background:  #fff5f5;
   border-color: #ff4757;
+  transform: scale(1.1);
 }
 
 .favorite-button.active {
-  background: rgba(255, 71, 87, 0.1);
-  border-color: #ff4757;
-  color: #ff4757;
+  fill: #FF4444;
+  stroke: #FF4444;
+}
+
+.favorite-button .heart-path {
+  fill: none;
+  stroke: #999;
+  stroke-width: 2;
+  transition: all 0.2s ease;
+}
+
+.favorite-button.active .heart-path {
+  fill: #FF4444;
+  stroke: #FF4444;
+}
+
+.favorite-button:hover .heart-path {
+  stroke: #FF4444;
+}
+
+.favorite-button.active:hover .heart-path {
+  fill: #FF6666;
+  stroke: #FF6666;
 }
 
 /* 로딩 상태 */
