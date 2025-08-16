@@ -192,10 +192,16 @@ def main():
             df[src] = ''
 
     out = pd.DataFrame({dst: df[src] for src, dst in csv_to_db.items()})
+    
+    # image 컬럼을 food_img에도 복사 (메인페이지용)
+    if 'image_url' in out.columns:
+        out['food_img'] = out['image_url']
 
     # Normalize media/link fields: empty string -> None, strip spaces
     if 'image_url' in out.columns:
         out['image_url'] = out['image_url'].astype(str).str.strip().replace({'': None})
+    if 'food_img' in out.columns:
+        out['food_img'] = out['food_img'].astype(str).str.strip().replace({'': None})
     if 'shop_url' in out.columns:
         out['shop_url'] = out['shop_url'].astype(str).str.strip().replace({'': None})
 
