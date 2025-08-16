@@ -126,6 +126,11 @@ class AdvancedResultPage {
       this.currentOrder = orderParam;
       this.updateSortLabel(orderParam);
       this.updateSortOptionStates(orderParam);
+    } else {
+      // 정렬 파라미터가 없으면 기본순으로 설정
+      this.currentOrder = '';
+      this.updateSortLabel('정렬');
+      this.updateSortOptionStates('');
     }
     
     if (keyword) {
@@ -408,6 +413,13 @@ class AdvancedResultPage {
   // 정렬 선택
   async selectSort(order) {
     console.log('정렬 선택됨:', order);
+    
+    // 기본순인 경우 정렬 초기화
+    if (order === '기본순') {
+      this.resetSort();
+      return;
+    }
+    
     this.currentOrder = order;
     this.currentPage = 1;
     this.hasMoreData = true;
@@ -447,6 +459,42 @@ class AdvancedResultPage {
     
     // 검색 결과가 없거나 정렬할 수 없는 경우 새로 검색
     await this.refineSearch();
+  }
+
+  // 정렬 초기화
+  resetSort() {
+    console.log('정렬 초기화');
+    this.currentOrder = '';
+    this.currentPage = 1;
+    this.hasMoreData = true;
+    
+    // 정렬 드롭다운 라벨 초기화
+    this.updateSortLabel('정렬');
+    
+    // 정렬 옵션 활성화 상태 초기화
+    this.updateSortOptionStates('');
+    
+    // 사용자에게 초기화 알림
+    this.showToast('정렬이 초기화되었습니다.');
+    
+    this.hideSortModal();
+    
+    // 더보기 버튼 숨기기
+    this.hideLoadMoreButton();
+    
+    // 검색 결과가 이미 있는 경우 원본 순서로 복원
+    if (this.cachedFoods.length > 0) {
+      console.log('원본 데이터 순서로 복원:', this.cachedFoods.length);
+      
+      // 필터만 적용하고 정렬은 하지 않음
+      let filteredFoods = this.applyFiltersToFoods(this.cachedFoods);
+      this.displayFoods(filteredFoods);
+      
+      // 더보기 버튼 표시 여부 결정
+      if (filteredFoods.length >= this.ITEMS_PER_PAGE) {
+        this.showLoadMoreButton();
+      }
+    }
   }
 
   // 현재 표시된 음식들의 전체 데이터 가져오기
@@ -500,10 +548,17 @@ class AdvancedResultPage {
   updateSortOptionStates(selectedOrder) {
     const sortOptions = document.querySelectorAll('.sort-option');
     sortOptions.forEach(option => {
-      if (option.dataset.order === selectedOrder) {
+      const order = option.dataset.order;
+      
+      if (order === selectedOrder) {
         option.classList.add('active');
       } else {
         option.classList.remove('active');
+      }
+      
+      // 기본순인 경우 특별 처리
+      if (order === '기본순' && !selectedOrder) {
+        option.classList.add('active');
       }
     });
   }
