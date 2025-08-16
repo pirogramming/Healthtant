@@ -16,7 +16,7 @@ import uuid
 def food_to_dict(food):
     ret = {
         "food_id": getattr(food, "food_id"),
-        "food_img": getattr(food, "food_img", "") or "",
+        "food_img": getattr(food, "image_url", "") or getattr(food, "food_img", "") or "",
         "food_name": getattr(food, "food_name", "") or "",
         "food_category": getattr(food, "food_category", "") or "",
         "calorie": getattr(food, "calorie", 0) or 0,
@@ -32,9 +32,10 @@ def food_to_dict(food):
         "trans_fatty_acids": getattr(food, "trans_fatty_acids", 0) or 0,
         "serving_size": getattr(food, "serving_size", 0) or 0,
         "weight": getattr(food, "weight", 0) or 0,
-        "company_name": getattr(food, "company_name", "") or "",
-        "score": NutritionalScore(food),
-        "letter_grade": letterGrade(food)
+        "company_name": getattr(food, "shop_name", "") or getattr(food, "company_name", "") or "",
+        "score": getattr(food, "nutrition_score", None) or NutritionalScore(food),
+        "letter_grade": getattr(food, "nutri_score_grade", None) or letterGrade(food),
+        "nutri_score_grade": getattr(food, "nutri_score_grade", None) or letterGrade(food)
     }
     return ret
 
@@ -42,18 +43,12 @@ def food_to_dict(food):
 #영양 점수가 높은 음식들(기본으로 띄울 음식들)을 추려서 프론트로 전달합니다!
 def search_page(request):
     
-    foods = list(Food.objects.all()) #DB 전체 음식 리스트
-    
-    # 영양 점수가 높은 식품이 앞에 오도록 정렬
-    foods_sorted = sorted(
-        foods,
-        key=lambda food: NutritionalScore(food),
-        reverse=True
-    )
+    # 영양 점수가 높은 식품이 앞에 오도록 정렬 (DB에서 바로 정렬)
+    foods = Food.objects.all().order_by('-nutrition_score')
 
     # 반환할 값 구성하는 부분
     context = {"foods":[]}
-    for food in foods_sorted:
+    for food in foods:
         context["foods"].append(food_to_dict(food))
     
     return render(request, "search/search_page.html", context)

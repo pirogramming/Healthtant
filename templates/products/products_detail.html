@@ -47,12 +47,14 @@
   <!-- 제품 정보 -->
   <div class="product-info">
     <!-- 브랜드 태그 -->
-    <div class="brand-tag">등급 계산 중...</div>
+    <div class="brand-tag">{{ product.nutri_score_grade|default:"등급 없음" }}</div>
     
     <!-- 제품명과 가격 -->
     <div class="product-title-section">
       <h1 class="product-name">{{ product.food_name }}</h1>
-      {% comment %} <div class="product-price">3,500<span class="currency">원</span></div> {% endcomment %}
+      {% if product.price %}
+        <div class="product-price">{{ product.price|floatformat:0 }}<span class="currency">원</span></div>
+      {% endif %}
     </div>
 
     <!-- 영양 정보 아이콘 -->
@@ -124,7 +126,18 @@
     <div class="section-divider"></div>
     <!-- 건강 정보 -->
     <div class="health-info" aria-live="polite">
-      <div class="health-item"><span class="health-text">영양 정보를 불러오는 중…</span></div>
+      <div class="health-item">
+        <span class="health-badge {{ product.sugar_level.class|default:'NEUTRAL' }}">{{ product.sugar_level.class|default:'NEUTRAL' }}</span>
+        <span class="health-text">이 제품은 <span class="highlight-blue">당류가 {{ product.sugar_level.level|default:'적정' }}</span> 제품입니다.</span>
+      </div>
+      <div class="health-item">
+        <span class="health-badge {{ product.saturated_fatty_acids_level.class|default:'NEUTRAL' }}">{{ product.saturated_fatty_acids_level.class|default:'NEUTRAL' }}</span>
+        <span class="health-text">이 제품은 <span class="highlight-yellow">포화지방이 {{ product.saturated_fatty_acids_level.level|default:'적정' }}</span> 제품입니다.</span>
+      </div>
+      <div class="health-item">
+        <span class="health-badge {{ product.salt_level.class|default:'NEUTRAL' }}">{{ product.salt_level.class|default:'NEUTRAL' }}</span>
+        <span class="health-text">이 제품은 <span class="highlight-red">나트륨이 {{ product.salt_level.level|default:'적정' }}</span> 제품입니다.</span>
+      </div>
     </div>
     <!-- 구분선 -->
     <div class="section-divider"></div>
@@ -136,7 +149,72 @@
       <!-- 영양소 테이블 -->
       <div class="nutrition-table-container">
         <div class="nutrition-table">
-          
+          <div class="nutrition-row">
+            <span class="nutrition-name">열량</span>
+            <span class="nutrition-amount">{{ product.calorie|floatformat:0 }}kcal</span>
+          </div>
+          <div class="nutrition-row">
+            <span class="nutrition-name">탄수화물</span>
+            <span class="nutrition-amount">{{ product.carbohydrate|floatformat:1 }}g</span>
+          </div>
+          <div class="nutrition-row">
+            <span class="nutrition-name">당류</span>
+            <span class="nutrition-amount">{{ product.sugar|floatformat:1|default:'-' }}g</span>
+          </div>
+          <div class="nutrition-row">
+            <span class="nutrition-name">단백질</span>
+            <span class="nutrition-amount">{{ product.protein|floatformat:1 }}g</span>
+          </div>
+          <div class="nutrition-row">
+            <span class="nutrition-name">지방</span>
+            <span class="nutrition-amount">{{ product.fat|floatformat:1 }}g</span>
+          </div>
+          <div class="nutrition-row">
+            <span class="nutrition-name">포화지방</span>
+            <span class="nutrition-amount">{{ product.saturated_fatty_acids|floatformat:1|default:'-' }}g</span>
+          </div>
+          <div class="nutrition-row">
+            <span class="nutrition-name">트랜스지방</span>
+            <span class="nutrition-amount">{{ product.trans_fatty_acids|floatformat:1|default:'-' }}g</span>
+          </div>
+          <div class="nutrition-row">
+            <span class="nutrition-name">콜레스테롤</span>
+            <span class="nutrition-amount">{{ product.cholesterol|floatformat:0|default:'-' }}mg</span>
+          </div>
+          <div class="nutrition-row">
+            <span class="nutrition-name">나트륨</span>
+            <span class="nutrition-amount">{{ product.sodium|floatformat:0 }}mg</span>
+          </div>
+          {% if product.dietary_fiber %}
+          <div class="nutrition-row">
+            <span class="nutrition-name">식이섬유</span>
+            <span class="nutrition-amount">{{ product.dietary_fiber|floatformat:1 }}g</span>
+          </div>
+          {% endif %}
+          {% if product.calcium %}
+          <div class="nutrition-row">
+            <span class="nutrition-name">칼슘</span>
+            <span class="nutrition-amount">{{ product.calcium|floatformat:0 }}mg</span>
+          </div>
+          {% endif %}
+          {% if product.iron_content %}
+          <div class="nutrition-row">
+            <span class="nutrition-name">철분</span>
+            <span class="nutrition-amount">{{ product.iron_content|floatformat:1 }}mg</span>
+          </div>
+          {% endif %}
+          {% if product.VitaminA %}
+          <div class="nutrition-row">
+            <span class="nutrition-name">비타민A</span>
+            <span class="nutrition-amount">{{ product.VitaminA|floatformat:1 }}μg</span>
+          </div>
+          {% endif %}
+          {% if product.VitaminC %}
+          <div class="nutrition-row">
+            <span class="nutrition-name">비타민C</span>
+            <span class="nutrition-amount">{{ product.VitaminC|floatformat:1 }}mg</span>
+          </div>
+          {% endif %}
         </div>
       </div>
 
@@ -163,6 +241,9 @@
           </svg>
         </button>
         <a href="/diets/upload/?food={{ product.food_id }}" class="add-meal-btn">식사로 등록하기</a>
+        {% if product.shop_url %}
+          <a href="{{ product.shop_url }}" target="_blank" class="buy-btn">{{ product.shop_name|default:"구매하기" }}</a>
+        {% endif %}
       </div>
   </div>
 </div>

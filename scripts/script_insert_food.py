@@ -12,7 +12,7 @@ import django
 import numpy as np
 
 # ① manage.py가 있는 프로젝트 루트를 sys.path에 추가
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # 이 파일과 manage.py가 같은 폴더라면 OK
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # scripts 폴더에서 상위 폴더로
 sys.path.insert(0, BASE_DIR)
 
 # ② DJANGO_SETTINGS_MODULE을 manage.py와 동일하게
@@ -20,7 +20,10 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings.local')  # ← 
 
 django.setup()
 
-CSV_PATH = 'naver_prices_clean.csv'   # <-- 네 CSV 경로
+# 영양 점수 계산 함수 import  
+from common.nutrition_score import NutritionalScore, letterGrade
+
+CSV_PATH = '../food_clean_data.csv'   # <-- 정리된 CSV 경로
 TABLE_NAME = 'food'                       # <-- 실제 테이블명 (예: 'food' 또는 'foods_food')
 
 def safe_print(*args):
@@ -91,12 +94,16 @@ def read_csv_smart(path):
     return df
 
 def main():
-    # 1) CSV 로드 - 헤더가 없으므로 수동으로 설정
+    # 1) 기존 DB 데이터 모두 삭제
+    safe_print("=== 기존 DB 데이터 삭제 중... ===")
+    with connection.cursor() as cursor:
+        cursor.execute(f"DELETE FROM {TABLE_NAME}")
+    safe_print("기존 데이터 삭제 완료")
+    
+    # 2) CSV 로드 
     df = read_csv_smart(CSV_PATH).fillna('')
     
-    # 헤더가 없으므로 수동으로 칼럼명 설정
-    if len(df.columns) >= 6:
-        df.columns = ['food_id', 'shop_name', 'price', 'discount_price', 'shop_url', 'image_url']
+    # food_clean_data.csv는 헤더가 있으므로 컬럼명 매핑만 확인
     
     # BOM/공백 제거
     df.columns = df.columns.str.replace('\ufeff', '', regex=False).str.strip()
@@ -116,14 +123,18 @@ def main():
         safe_print("ERROR: all food_id empty. Check CSV delimiter/header.")
         return
 
-    # 2) 매핑 - naver_prices.csv 칼럼에 맞춰 수정
+    # 2) 매핑 - food_clean_data.csv 칼럼에 맞춰 수정
     csv_to_db = {
         'food_id': 'food_id',
-        'shop_name': 'shop_name',
-        'price': 'price',
-        'discount_price': 'discount_price',
-        'shop_url': 'shop_url',
-        'image_url': 'image_url',
+        'mallName': 'shop_name',
+        'lprice': 'price',
+        'hprice': 'discount_price',
+        'product_link': 'shop_url',
+        'image': 'image_url',
+        # 영양 점수 필드 추가
+        'nutrition_score': 'nutrition_score',
+        'nutri_score_grade': 'nutri_score_grade', 
+        'nrf_index': 'nrf_index',
         # 기본값들
         'food_name': 'food_name',
         'food_category': 'food_category',
@@ -211,13 +222,58 @@ def main():
         if c in out.columns:
             out[c] = out[c].astype(str).str.strip().replace('', 'UNKNOWN')
     
+    # 5) 영양 점수 계산 및 추가
+    safe_print("영양 점수 계산 중...")
+    
+    def calculate_nutrition_scores(row):
+        """각 행에 대해 영양 점수 계산"""
+        # 임시 Food 객체 생성 (DB에 저장하지 않고 계산만 위해)
+        class TempFood:
+            def __init__(self, data):
+                for key, value in data.items():
+                    setattr(self, key, value)
+        
+        temp_food = TempFood({
+            'calorie': row.get('calorie', 0),
+            'moisture': row.get('moisture', 0),
+            'protein': row.get('protein', 0),
+            'fat': row.get('fat', 0),
+            'carbohydrate': row.get('carbohydrate', 0),
+            'sugar': row.get('sugar', 0),
+            'dietary_fiber': row.get('dietary_fiber', 0),
+            'salt': row.get('salt', 0),
+            'saturated_fatty_acids': row.get('saturated_fatty_acids', 0),
+            'trans_fatty_acids': row.get('trans_fatty_acids', 0),
+            'serving_size': row.get('serving_size', None),
+            'weight': row.get('weight', 100),
+            'food_category': row.get('food_category', ''),
+        })
+        
+        try:
+            nutrition_score = NutritionalScore(temp_food)
+            nutri_grade = letterGrade(temp_food)
+            # nrf_index는 일단 None으로 (구현되어 있지 않음)
+            return nutrition_score, nutri_grade, None
+        except:
+            return None, None, None
+    
+    # 각 행에 대해 영양 점수 계산
+    nutrition_data = out.apply(calculate_nutrition_scores, axis=1, result_type='expand')
+    out['nutrition_score'] = nutrition_data[0]
+    out['nutri_score_grade'] = nutrition_data[1] 
+    out['nrf_index'] = nutrition_data[2]
+    
+    safe_print(f"영양 점수 계산 완료! A급: {(out['nutri_score_grade'] == 'A').sum()}개")
+    safe_print(f"B급: {(out['nutri_score_grade'] == 'B').sum()}개, C급: {(out['nutri_score_grade'] == 'C').sum()}개")
+    
     cols = [
         'food_id','food_img','food_name','food_category','representative_food',
         'nutritional_value_standard_amount','calorie','moisture','protein','fat',
         'carbohydrate','sugar','dietary_fiber','calcium','iron_content','phosphorus',
         'potassium','salt','VitaminA','VitaminB','VitaminC','VitaminD','VitaminE',
         'cholesterol','saturated_fatty_acids','trans_fatty_acids','serving_size',
-        'weight','company_name','shop_name','price','discount_price','shop_url','image_url'
+        'weight','company_name','nutrition_score','nutri_score_grade','nrf_index',
+        'shop_name','price','discount_price','shop_url','image_url'
     ]
 
     for c in cols:
