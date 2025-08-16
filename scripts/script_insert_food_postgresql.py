@@ -110,6 +110,13 @@ def purge_foods_and_children_auto():
         Food.objects.all().order_by().delete()
 
 def main():
+    # 0) 테이블 구조 확인
+    safe_print("=== 테이블 구조 확인 중... ===")
+    with connection.cursor() as cur:
+        cur.execute("SELECT column_name FROM information_schema.columns WHERE table_name = 'food' ORDER BY ordinal_position;")
+        db_columns = [row[0] for row in cur.fetchall()]
+        safe_print("실제 DB 컬럼 전체:", db_columns)
+    
     # 1) 기존 DB 데이터 모두 삭제
     safe_print("=== 기존 DB 데이터 삭제 중... ===")
     purge_foods_and_children_auto()
@@ -237,6 +244,19 @@ def main():
         if c in out.columns:
             out[c] = out[c].astype(str).str.strip().replace('', 'UNKNOWN')
     
+    # 모든 문자열 컬럼을 200자로 제한 (PostgreSQL 제한에 맞춤)
+    for col in out.columns:
+        if out[col].dtype == 'object':  # 문자열 컬럼
+            out[col] = out[col].astype(str).str[:200]
+    
+    # 특별히 짧은 컬럼들
+    if 'nutri_score_grade' in out.columns:
+        out['nutri_score_grade'] = out['nutri_score_grade'].astype(str).str[:3]
+    
+    # external_code 컬럼 추가 (DB에 있지만 CSV에는 없음)
+    if 'external_code' not in out.columns:
+        out['external_code'] = None
+    
     # 5) 영양 점수 계산 및 추가
     safe_print("영양 점수 계산 중...")
     
@@ -248,28 +268,46 @@ def main():
                 for key, value in data.items():
                     setattr(self, key, value)
         
+        def safe_float(val, default=0):
+            try:
+                if pd.isna(val) or val is None:
+                    return default if default is not None else 0.0
+                val_str = str(val).strip().lower()
+                if val_str in ['', 'none', 'nan']:
+                    return default if default is not None else 0.0
+                return float(val)
+            except:
+                return default if default is not None else 0.0
+        
         temp_food = TempFood({
-            'calorie': row.get('calorie', 0),
-            'moisture': row.get('moisture', 0),
-            'protein': row.get('protein', 0),
-            'fat': row.get('fat', 0),
-            'carbohydrate': row.get('carbohydrate', 0),
-            'sugar': row.get('sugar', 0),
-            'dietary_fiber': row.get('dietary_fiber', 0),
-            'salt': row.get('salt', 0),
-            'saturated_fatty_acids': row.get('saturated_fatty_acids', 0),
-            'trans_fatty_acids': row.get('trans_fatty_acids', 0),
-            'serving_size': row.get('serving_size', None),
-            'weight': row.get('weight', 100),
-            'food_category': row.get('food_category', ''),
+            'calorie': safe_float(row['calorie'], 0),
+            'moisture': safe_float(row['moisture'], 0),
+            'protein': safe_float(row['protein'], 0),
+            'fat': safe_float(row['fat'], 0),
+            'carbohydrate': safe_float(row['carbohydrate'], 0),
+            'sugar': safe_float(row['sugar'], 0),
+            'dietary_fiber': safe_float(row['dietary_fiber'], 0),
+            'salt': safe_float(row['salt'], 0),
+            'saturated_fatty_acids': safe_float(row['saturated_fatty_acids'], 0),
+            'trans_fatty_acids': safe_float(row['trans_fatty_acids'], 0),
+            'serving_size': safe_float(row['serving_size'], None) if pd.notna(row['serving_size']) else None,
+            'weight': safe_float(row['weight'], 100),
+            'food_category': str(row['food_category']) if pd.notna(row['food_category']) else '',
         })
         
         try:
             nutrition_score = NutritionalScore(temp_food)
             nutri_grade = letterGrade(temp_food)
-            # nrf_index는 일단 None으로 (구현되어 있지 않음)
             return nutrition_score, nutri_grade, None
-        except:
+        except Exception as e:
+            # 디버깅용 출력 (첫 몇 개만)
+            if hasattr(calculate_nutrition_scores, 'error_count'):
+                calculate_nutrition_scores.error_count += 1
+            else:
+                calculate_nutrition_scores.error_count = 1
+            
+            if calculate_nutrition_scores.error_count <= 3:
+                safe_print(f"영양점수 계산 오류: {e}")
             return None, None, None
     
     # 각 행에 대해 영양 점수 계산
@@ -281,20 +319,17 @@ def main():
     safe_print(f"영양 점수 계산 완료! A급: {(out['nutri_score_grade'] == 'A').sum()}개")
     safe_print(f"B급: {(out['nutri_score_grade'] == 'B').sum()}개, C급: {(out['nutri_score_grade'] == 'C').sum()}개")
     
-    cols = [
-        'food_id','food_img','food_name','food_category','representative_food',
-        'nutritional_value_standard_amount','calorie','moisture','protein','fat',
-        'carbohydrate','sugar','dietary_fiber','calcium','iron_content','phosphorus',
-        'potassium','salt','VitaminA','VitaminB','VitaminC','VitaminD','VitaminE',
-        'cholesterol','saturated_fatty_acids','trans_fatty_acids','serving_size',
-        'weight','company_name','nutrition_score','nutri_score_grade','nrf_index',
-        'shop_name','price','discount_price','shop_url','image_url'
-    ]
-
-    for c in cols:
+    # 실제 DB 컬럼과 일치하는 컬럼만 사용
+    cols = [col for col in db_columns if col in out.columns or col in ['nutrition_score', 'nutri_score_grade', 'nrf_index']]
+    
+    # 누락된 컬럼들을 None으로 추가
+    for c in db_columns:
         if c not in out.columns:
             out[c] = None
-    out = out[cols]
+    
+    # DB 컬럼 순서대로 정렬
+    out = out[db_columns]
+    cols = db_columns
 
     # PK 비어있는 행 제거
     out = out[out['food_id'].astype(str).str.strip().ne('')]
@@ -315,27 +350,43 @@ def main():
         safe_print("ERROR: no rows to upsert.")
         return
 
-    # 6) UPSERT
-    placeholders = ",".join(["?"] * len(cols))
+    # 6) UPSERT - PostgreSQL에서 대소문자 구분을 위해 따옴표 사용
+    placeholders = ",".join(["%s"] * len(cols))
+    # 컬럼명을 따옴표로 감싸기
+    quoted_cols = [f'"{c}"' for c in cols]
+    
     # Build SET clause for UPSERT with "keep existing if incoming is empty/NULL" for selected columns
     set_parts = []
     for c in cols:
         if c == 'food_id':
             continue
+        quoted_c = f'"{c}"'
         if c in ('image_url', 'shop_url'):
             # If the incoming value is NULL or empty string, keep the existing DB value
-            set_parts.append(f"{c}=COALESCE(NULLIF(excluded.{c}, ''), {c})")
+            set_parts.append(f'{quoted_c}=COALESCE(NULLIF(excluded.{quoted_c}, \'\'), {TABLE_NAME}.{quoted_c})')
         else:
-            set_parts.append(f"{c}=excluded.{c}")
+            set_parts.append(f'{quoted_c}=excluded.{quoted_c}')
     set_clause = ",\n".join(set_parts)
     sql = f"""
-    INSERT INTO {TABLE_NAME} ({", ".join(cols)})
+    INSERT INTO {TABLE_NAME} ({", ".join(quoted_cols)})
     VALUES ({placeholders})
-    ON CONFLICT(food_id) DO UPDATE SET
+    ON CONFLICT("food_id") DO UPDATE SET
     {set_clause};
     """
 
-    records = [tuple(out.iloc[i].tolist()) for i in range(n)]
+    # numpy 타입을 Python 네이티브 타입으로 변환
+    def convert_value(val):
+        if pd.isna(val):
+            return None
+        if val is None:
+            return None
+        if str(val).lower() in ['none', 'nan', '']:
+            return None
+        if hasattr(val, 'item'):  # numpy scalar
+            return val.item()
+        return val
+    
+    records = [tuple(convert_value(val) for val in out.iloc[i].tolist()) for i in range(n)]
 
     with transaction.atomic():
         with connection.cursor() as cur:
