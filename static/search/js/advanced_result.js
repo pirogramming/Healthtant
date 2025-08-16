@@ -99,6 +99,7 @@ class AdvancedResultPage {
     const urlParams = new URLSearchParams(window.location.search);
     const keyword = urlParams.get('keyword') || '';
     const favoritesParam = urlParams.get('favorites') || '';
+    const orderParam = urlParams.get('order') || '';
     
     // URL에서 좋아요 상태 복원
     if (favoritesParam) {
@@ -111,6 +112,13 @@ class AdvancedResultPage {
     } else {
       // URL 파라미터가 없으면 로컬스토리지에서 로드
       this.loadFavoritesFromStorage();
+    }
+    
+    // 정렬 상태 복원
+    if (orderParam) {
+      this.currentOrder = orderParam;
+      this.updateSortLabel(orderParam);
+      this.updateSortOptionStates(orderParam);
     }
     
     if (keyword) {
@@ -159,6 +167,20 @@ class AdvancedResultPage {
 
     this.currentKeyword = keyword;
     this.currentPage = 1;
+    
+    // 검색 시 현재 정렬 상태를 URL에 포함
+    const params = new URLSearchParams({
+      keyword: keyword
+    });
+    
+    if (this.currentOrder) {
+      params.append('order', this.currentOrder);
+    }
+    
+    // URL 업데이트
+    const newUrl = `/search/advanced/?${params.toString()}`;
+    window.history.pushState({}, '', newUrl);
+    
     await this.searchFoods(keyword);
   }
 
@@ -324,10 +346,60 @@ class AdvancedResultPage {
 
   // 정렬 선택
   async selectSort(order) {
+    console.log('정렬 선택됨:', order);
     this.currentOrder = order;
     this.currentPage = 1;
+    
+    // 정렬 드롭다운 라벨 업데이트
+    this.updateSortLabel(order);
+    
+    // 정렬 옵션 활성화 상태 업데이트
+    this.updateSortOptionStates(order);
+    
+    // 사용자에게 정렬 적용 알림
+    this.showToast(`"${order}" 순으로 정렬되었습니다.`);
+    
     this.hideSortModal();
+    
+    // 검색 결과가 이미 있는 경우 즉시 정렬 적용
+    const resultList = document.getElementById('resultList');
+    if (resultList && resultList.children.length > 0) {
+      const currentFoods = Array.from(resultList.children).map(item => {
+        const foodId = item.dataset.foodId;
+        const foodName = item.querySelector('.food-name')?.textContent || '';
+        const companyName = item.querySelector('.food-company')?.textContent || '';
+        return { food_id: foodId, food_name: foodName, company_name: companyName };
+      });
+      
+      if (currentFoods.length > 0) {
+        const sortedFoods = this.sortFoods(currentFoods, order);
+        this.displayFoods(sortedFoods);
+        return;
+      }
+    }
+    
+    // 검색 결과가 없거나 정렬할 수 없는 경우 새로 검색
     await this.refineSearch();
+  }
+
+  // 정렬 라벨 업데이트
+  updateSortLabel(order) {
+    const sortLabel = document.querySelector('.sort-label');
+    if (sortLabel) {
+      sortLabel.textContent = order || '정렬';
+    }
+  }
+
+  // 정렬 옵션 활성화 상태 업데이트
+  updateSortOptionStates(selectedOrder) {
+    const sortOptions = document.querySelectorAll('.sort-option');
+    sortOptions.forEach(option => {
+      if (option.dataset.order === selectedOrder) {
+        option.classList.add('active');
+      } else {
+        option.classList.remove('active');
+      }
+    });
   }
 
   // 필터 적용
@@ -366,34 +438,23 @@ class AdvancedResultPage {
 
   // 세밀 검색 실행
   async refineSearch() {
+    // 백엔드 API가 없으므로 프론트엔드에서 처리
     if (!this.searchToken) {
       await this.searchFoods(this.currentKeyword);
       return;
     }
 
+    // 현재 검색 결과를 다시 표시 (정렬/필터 적용)
     this.showLoading();
     
     try {
+      // 기존 검색 결과를 가져와서 프론트엔드에서 정렬/필터링
       const params = new URLSearchParams({
-        token: this.searchToken,
-        page: this.currentPage,
-        size: 30
+        keyword: this.currentKeyword,
+        page: this.currentPage
       });
 
-      if (this.currentOrder) {
-        params.append('order', this.currentOrder);
-      }
-
-      if (this.currentKeyword) {
-        params.append('keyword', this.currentKeyword);
-      }
-
-      // 필터 파라미터 추가
-      Object.entries(this.currentFilters).forEach(([key, value]) => {
-        params.append(key, value);
-      });
-
-      const response = await fetch(`/search/refine/?${params}`, {
+      const response = await fetch(`/search/advanced/?${params}`, {
         method: 'GET',
         headers: {
           'X-Requested-With': 'XMLHttpRequest'
@@ -401,16 +462,94 @@ class AdvancedResultPage {
       });
 
       if (!response.ok) {
-        throw new Error('세밀 검색 요청 실패');
+        throw new Error('검색 요청 실패');
       }
 
       const data = await response.json();
-      this.handleSearchResponse(data);
+      
+      // 프론트엔드에서 정렬 및 필터링 적용
+      if (data.foods && data.foods.length > 0) {
+        let filteredFoods = this.applyFiltersToFoods(data.foods);
+        let sortedFoods = this.sortFoods(filteredFoods, this.currentOrder);
+        
+        // 결과 표시
+        this.mergeFavoriteStates(sortedFoods);
+        this.displayFoods(sortedFoods);
+        this.displayPagination(data.page, data.total_pages, data.total);
+      }
+      
+      this.hideLoading();
     } catch (error) {
-      console.error('세밀 검색 오류:', error);
+      console.error('검색 오류:', error);
       this.showToast('검색 중 오류가 발생했습니다.');
       this.hideLoading();
     }
+  }
+
+  // 프론트엔드에서 필터링 적용
+  applyFiltersToFoods(foods) {
+    if (Object.keys(this.currentFilters).length === 0) {
+      return foods;
+    }
+
+    return foods.filter(food => {
+      // 각 필터 조건 확인
+      for (const [key, value] of Object.entries(this.currentFilters)) {
+        const [field, type] = key.split('_');
+        const foodValue = this.getFoodValue(food, field);
+        
+        if (type === 'min' && foodValue < value) return false;
+        if (type === 'max' && foodValue > value) return false;
+      }
+      return true;
+    });
+  }
+
+  // 음식 데이터에서 특정 영양성분 값 가져오기
+  getFoodValue(food, field) {
+    const fieldMap = {
+      'calorie': 'calorie',
+      'protein': 'protein',
+      'fat': 'fat',
+      'carb': 'carbohydrate',
+      'salt': 'salt',
+      'sugar': 'sugar'
+    };
+    
+    const mappedField = fieldMap[field];
+    return mappedField && food[mappedField] ? parseFloat(food[mappedField]) : 0;
+  }
+
+  // 프론트엔드에서 정렬 적용
+  sortFoods(foods, order) {
+    if (!order) return foods;
+
+    const sortedFoods = [...foods];
+    
+    switch (order) {
+      case '단백질이 많은':
+        sortedFoods.sort((a, b) => (b.protein || 0) - (a.protein || 0));
+        break;
+      case '당이 적은':
+        sortedFoods.sort((a, b) => (a.sugar || 0) - (b.sugar || 0));
+        break;
+      case '포화지방이 적은':
+        sortedFoods.sort((a, b) => (a.saturated_fat || 0) - (b.saturated_fat || 0));
+        break;
+      case '나트륨이 적은':
+        sortedFoods.sort((a, b) => (a.salt || 0) - (b.salt || 0));
+        break;
+      case '열량이 많은':
+        sortedFoods.sort((a, b) => (b.calorie || 0) - (a.calorie || 0));
+        break;
+      case '열량이 적은':
+        sortedFoods.sort((a, b) => (a.calorie || 0) - (b.calorie || 0));
+        break;
+      default:
+        break;
+    }
+    
+    return sortedFoods;
   }
 
   // 즐겨찾기 토글
@@ -472,16 +611,38 @@ class AdvancedResultPage {
   // 정렬 모달 토글
   toggleSortModal() {
     const sortModal = document.getElementById('sortModal');
+    const sortDropdown = document.getElementById('sortDropdown');
+    
     if (sortModal) {
-      sortModal.classList.toggle('show');
+      const isVisible = sortModal.classList.contains('show');
+      
+      if (!isVisible) {
+        // 모달을 열 때
+        sortModal.classList.add('show');
+        if (sortDropdown) {
+          sortDropdown.classList.add('active');
+        }
+        
+        // 현재 선택된 정렬 옵션 표시
+        this.updateSortOptionStates(this.currentOrder);
+      } else {
+        // 모달을 닫을 때
+        this.hideSortModal();
+      }
     }
   }
 
   // 정렬 모달 숨기기
   hideSortModal() {
     const sortModal = document.getElementById('sortModal');
+    const sortDropdown = document.getElementById('sortDropdown');
+    
     if (sortModal) {
       sortModal.classList.remove('show');
+    }
+    
+    if (sortDropdown) {
+      sortDropdown.classList.remove('active');
     }
   }
 
