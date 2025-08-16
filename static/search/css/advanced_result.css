@@ -413,29 +413,35 @@
 .sort-options {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
 }
 
 .sort-option {
   padding: 12px 16px;
   border: 1px solid #e9ecef;
   border-radius: 8px;
-  background: #fff;
+  background: white;
   color: #333;
+  font-size: 14px;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
   text-align: left;
 }
 
 .sort-option:hover {
   border-color: #56AAB2;
-  background: #f8f9fa;
+  background: rgba(86, 170, 178, 0.05);
 }
 
 .sort-option.active {
   background: #56AAB2;
   color: white;
   border-color: #56AAB2;
+}
+
+.sort-option.active:hover {
+  background: #4a959c;
 }
 
 /* 필터 옵션 */
@@ -548,5 +554,181 @@
   
   .range-inputs span {
     display: none;
+  }
+}
+
+/* 더보기 버튼 스타일 */
+.load-more-container {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+}
+
+.load-more-btn {
+  background: linear-gradient(135deg, #56AAB2 0%, #4A9BA3 100%);
+  color: white;
+  border: none;
+  padding: 12px 32px;
+  border-radius: 25px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0px 4px 16px rgba(86, 170, 178, 0.3);
+}
+
+.load-more-btn:hover {
+  background: linear-gradient(135deg, #4A9BA3 0%, #3F8A92 100%);
+  transform: translateY(-2px);
+  box-shadow: 0px 6px 20px rgba(86, 170, 178, 0.4);
+}
+
+.load-more-btn:active {
+  transform: translateY(0);
+}
+
+.load-more-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* 정렬 모달 스타일 */
+.sort-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.sort-modal.show {
+  display: flex;
+}
+
+.sort-modal-content {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  width: 90%;
+  max-width: 400px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+.sort-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.sort-modal-header h3 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #666;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.close-btn:hover {
+  background: #f1f3f4;
+  color: #333;
+}
+
+/* 필터 모달 스타일 */
+.filter-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.filter-modal.show {
+  display: flex;
+}
+
+.filter-modal-content {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  width: 90%;
+  max-width: 450px;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+.filter-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.filter-modal-header h3 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+}
+
+/* 모달 애니메이션 */
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* 반응형 모달 크기 조정 */
+@media (max-width: 480px) {
+  .sort-modal-content,
+  .filter-modal-content {
+    width: 95%;
+    padding: 20px;
+    max-height: 90vh;
+  }
+  
+  .sort-modal-header h3,
+  .filter-modal-header h3 {
+    font-size: 18px;
   }
 }

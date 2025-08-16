@@ -1,28 +1,4 @@
-/* 기본 스타일 리셋 */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
 
-body {
-    font-family: 'Noto Sans KR', sans-serif;
-    margin: 0;
-    padding: 0;
-}
-
-.app-header {
-    position: sticky;
-    top: 0;
-    z-index: var(--z-header);
-    background-color: white;
-}
-
-.status-bar {
-height: 61px;
-background-color: var(--white);
-width: 100%;
-}
 
 /* 식사등록페이지 전체 컨테이너 */
 .meal-register-container {
