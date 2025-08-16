@@ -39,21 +39,22 @@ def food_to_dict(food):
     return ret
 
 #일반 검색 메인 페이지 렌더링 뷰
-#영양 점수가 높은 음식들(기본으로 띄울 음식들)을 추려서 프론트로 전달합니다!
+#검색어가 있을 때만 검색 결과를 보여줍니다
 def search_page(request):
+    keyword = request.GET.get('keyword', '').strip()
     
-    foods = list(Food.objects.all()) #DB 전체 음식 리스트
+    if not keyword:
+        # 검색어가 없으면 빈 결과 반환
+        context = {"foods": [], "keyword": ""}
+        return render(request, "search/search_page.html", context)
     
-    # 영양 점수가 높은 식품이 앞에 오도록 정렬
-    foods_sorted = sorted(
-        foods,
-        key=lambda food: NutritionalScore(food),
-        reverse=True
-    )
+    # 검색어가 있으면 검색 결과 반환
+    filtered_list = Food.objects.filter(food_name__icontains=keyword)
+    sorted_list = sorted(filtered_list, key=lambda food: NutritionalScore(food), reverse=True)
 
     # 반환할 값 구성하는 부분
-    context = {"foods":[]}
-    for food in foods_sorted:
+    context = {"foods": [], "keyword": keyword}
+    for food in sorted_list:
         context["foods"].append(food_to_dict(food))
     
     return render(request, "search/search_page.html", context)
@@ -89,13 +90,20 @@ def search_before(request):
 def normal_search(request):
 
     keyword = request.GET.get('keyword')
+    page = int(request.GET.get('page', 1))
+    limit = int(request.GET.get('limit', 30))
     
     filtered_list = Food.objects.filter(food_name__icontains=keyword) # keyword를 포함한 음식 1차 필터링
     sorted_list = sorted(filtered_list, key=lambda food: NutritionalScore(food), reverse=True) # NutritionalScore 기준 점수가 높은 음식이 앞에 오도록 정렬
 
+    # 페이지네이션 적용
+    start_index = (page - 1) * limit
+    end_index = start_index + limit
+    paginated_list = sorted_list[start_index:end_index]
+
     # 반환 값을 구성하는 부분
     context = {"foods":[]}
-    for food in sorted_list:
+    for food in paginated_list:
         context["foods"].append(food_to_dict(food))
 
     # to FE: AJAX로 검색 결과를 노출해야 하므로 Json 데이터를 반환하게 구현했습니다.

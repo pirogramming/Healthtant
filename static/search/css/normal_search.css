@@ -5,7 +5,7 @@
 /* 식사등록페이지 전체 컨테이너 */
 .meal-register-container {
     background-color: white; /* 회색 배경으로 변경 */
-    min-height: 100vh;
+    min-height: auto;
     padding: 0;
     font-family: 'Noto Sans KR', sans-serif;
     max-width: 1200px;
@@ -23,7 +23,7 @@
     flex: 1;
     margin: 0 20px;
     margin-top: 0;
-    min-height: calc(100vh - 200px); /* 최소 높이 설정 */
+    min-height: auto; /* 자동 높이로 변경 */
 }
 
 .search-results-section h2 {
@@ -38,9 +38,7 @@
     display: flex;
     flex-direction: column;
     gap: 20px;
-    max-height: calc(100vh - 300px);
-    overflow-y: auto;
-    padding-bottom: 20px; /* 하단 패딩 추가 */
+    padding-bottom: 0px; /* 하단 패딩 추가 */
 }
 
 /* 제품 카드 */
@@ -187,23 +185,110 @@
     font-size: 14px;
 }
 
-/* 스크롤바 스타일링 */
+/* 로딩 인디케이터 */
+.loading-indicator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    gap: 16px;
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #56AAB2;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-indicator p {
+    color: #666;
+    font-size: 14px;
+    margin: 0;
+}
+
+/* 더보기 버튼 */
+.load-more-container {
+    display: flex;
+    justify-content: center;
+    padding: 20px 0;
+}
+
+.load-more-btn {
+    background: linear-gradient(135deg, #56AAB2 0%, #4A9BA3 100%);
+    color: white;
+    border: none;
+    padding: 12px 32px;
+    border-radius: 25px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0px 4px 16px rgba(86, 170, 178, 0.3);
+}
+
+.load-more-btn:hover {
+    background: linear-gradient(135deg, #4A9BA3 0%, #3F8A92 100%);
+    transform: translateY(-2px);
+    box-shadow: 0px 6px 20px rgba(86, 170, 178, 0.4);
+}
+
+.load-more-btn:active {
+    transform: translateY(0);
+}
+
+.load-more-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* 추가 카드 스타일 */
+.additional-card {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 2px dashed #56AAB2;
+    opacity: 0.8;
+    transition: all 0.3s ease;
+}
+
+.additional-card:hover {
+    opacity: 1;
+    transform: translateY(-2px);
+    box-shadow: 0px 8px 24px rgba(86, 170, 178, 0.2);
+}
+
+.additional-card .food-name {
+    color: #56AAB2;
+    font-weight: 600;
+}
+
+.additional-card .food-company {
+    color: #6c757d;
+    font-size: 12px;
+}
+
+.additional-card .brand-tag {
+    background: linear-gradient(135deg, #56AAB2 0%, #4A9BA3 100%);
+    color: white;
+}
+
+/* 스크롤바 제거 */
+.search-results-list {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+}
+
 .search-results-list::-webkit-scrollbar {
-    width: 6px;
-}
-
-.search-results-list::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 3px;
-}
-
-.search-results-list::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
-    border-radius: 3px;
-}
-
-.search-results-list::-webkit-scrollbar-thumb:hover {
-    background: #a8a8a8;
+    display: none; /* Chrome, Safari, Opera */
 }
 
 /* 빈 상태 스타일 */
