@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from common.nutrition_score import NutritionalScore, letterGrade
-from foods.models import Food
+from foods.models import Food, FavoriteFood
 from diets.models import Diet
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
@@ -49,10 +49,28 @@ def safe_int(value, default=0):
             return int(value)
         except:
             return default
+
+def foods_to_dict(foods, user):
+    favorite_ids = set()
+    if user and user.is_authenticated:
+        favorite_ids = set(
+            FavoriteFood.objects.filter(user=user, food__in=foods)
+            .values_list("food_id", flat=True)
+        )
+    return [
+        food_to_dict(food, user=user, favorite_ids=favorite_ids)
+        for food in foods
+    ]
         
 #to FE: food를 이런 형태의 데이터로 넘겨줄겁니다! 더 필요한 값 있거나 문제있는 값 있으면 바로 연락해주세요!!
-def food_to_dict(food):
-    
+def food_to_dict(food, user=None, favorite_ids=None):
+    is_favorite = False
+    if user and user.is_authenticated:
+        if favorite_ids is not None:
+            is_favorite = food.food_id in favorite_ids
+        else:
+            is_favorite = FavoriteFood.objects.filter(user=user, food=food).exists()  
+            
     ret = {
         "food_id": safe_str(getattr(food, "food_id", "")),
         "food_img": safe_str(getattr(food, "image_url", "") or getattr(food, "food_img", "") or ""),
@@ -74,7 +92,8 @@ def food_to_dict(food):
         "company_name": safe_str(getattr(food, "shop_name", "") or getattr(food, "company_name", "") or ""),
         "score": safe_float(getattr(food, "nutrition_score", 0)),
         "letter_grade": safe_str(getattr(food, "nutri_score_grade", "") or letterGrade(food) or ""),
-        "nutri_score_grade": safe_str(getattr(food, "nutri_score_grade", "") or letterGrade(food) or "")
+        "nutri_score_grade": safe_str(getattr(food, "nutri_score_grade", "") or letterGrade(food) or ""),
+        "is_favorite": is_favorite,
     }
     return ret
 
@@ -92,9 +111,7 @@ def search_page(request):
     filtered_list = Food.objects.filter(food_name__icontains=keyword).order_by("-nutrition_score")
     
     # 반환할 값 구성하는 부분
-    context = {"foods": [], "keyword": keyword}
-    for food in filtered_list:
-        context["foods"].append(food_to_dict(food))
+    context = {"foods": foods_to_dict(filtered_list, request.user), "keyword": keyword}
     
     return render(request, "search/search_page.html", context)
 
@@ -117,9 +134,7 @@ def normal_search(request):
     paginated_list = filtered_list[start_index:end_index]
 
     # 반환 값을 구성하는 부분
-    context = {"foods": []}
-    for food in paginated_list:
-        context["foods"].append(food_to_dict(food))
+    context = {"foods": foods_to_dict(paginated_list, request.user)}
 
     # to FE: AJAX로 검색 결과를 노출해야 하므로 Json 데이터를 반환하게 구현했습니다.
     # to FE: 만약 렌더링 해야 할 페이지가 따로 있다면 얘기해주세요!!
@@ -134,9 +149,7 @@ def search_before(request):
     random_foods = random.sample(top_foods, min(10, len(top_foods)))
 
     # 반환할 값 구성하는 부분
-    context = {"foods":[]}
-    for food in random_foods:
-        context["foods"].append(food_to_dict(food))
+    context = {"foods":foods_to_dict(random_foods, request.user)}
     
     return render(request, "search/search_before.html", context)
 
@@ -158,9 +171,7 @@ def normal_search(request):
     paginated_list = sorted_list[start_index:end_index]
 
     # 반환 값을 구성하는 부분
-    context = {"foods":[]}
-    for food in paginated_list:
-        context["foods"].append(food_to_dict(food))
+    context = {"foods":foods_to_dict(paginated_list, request.user)}
 
     # to FE: AJAX로 검색 결과를 노출해야 하므로 Json 데이터를 반환하게 구현했습니다.
     # to FE: 만약 렌더링 해야 할 페이지가 따로 있다면 얘기해주세요!!
@@ -246,9 +257,7 @@ def advanced_search_page(request):
     foods_sorted = Food.objects.order_by(*ORDER_BY)[:10]
 
     # 반환할 값 구성하는 부분
-    context = {"foods":[]}
-    for food in foods_sorted:
-        context["foods"].append(food_to_dict(food))
+    context = {"foods":foods_to_dict(foods_sorted, request.user)}
     
     return render(request, "search/advanced_search_page.html", context)
 
@@ -285,7 +294,7 @@ def search_start(request):
             "page": page_obj.number, #현재 페이지
             "total_pages": paginator.num_pages, #전체 페이지 수
             "total": paginator.count,
-            "foods": [food_to_dict(f) for f in page_obj.object_list], #검색 결과 나올 음식들 데이터
+            "foods": foods_to_dict(page_obj.object_list, request.user), #검색 결과 나올 음식들 데이터
         }
 
         return JsonResponse(data)
@@ -376,6 +385,6 @@ def search_refine(request):
         "size": size,
         "total_pages": paginator.num_pages,
         "total": paginator.count,
-        "foods": [food_to_dict(f) for f in page_obj.object_list],
+        "foods": foods_to_dict(page_obj.object_list, request.user),
     }
     return JsonResponse(data)
