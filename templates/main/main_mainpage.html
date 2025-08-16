@@ -44,7 +44,9 @@
         <div class="product-grid">
           {% for f in foods %}
             <article class="product-card">
-              {% if f.food_img %}
+              {% if f.image_url %}
+                <img src="{{ f.image_url }}" alt="{{ f.food_name }}" class="product-image">
+              {% elif f.food_img %}
                 <img src="{{ f.food_img }}" alt="{{ f.food_name }}" class="product-image">
               {% else %}
                 <div class="product-image placeholder">이미지 없음</div>
@@ -53,17 +55,16 @@
               <div class="product-info">
                 <div class="product-name">{{ f.food_name|default:"이름 없음" }}</div>
 
-                {# Price가 있으면 첫 개만 표시 (임시) #}
-                {% with p=f.prices.all.0 %}
-                  {% if p %}
-                    <div class="product-price">
-                      {{ p.shop_name }} · {{ p.price|default:"-" }}
-                    </div>
-                    {% if p.shop_url %}
-                      <a href="{{ p.shop_url }}" target="_blank" rel="noopener" class="buy-link">구매 링크</a>
-                    {% endif %}
+                {% if f.shop_name or f.price %}
+                  <div class="product-price">
+                    {% if f.shop_name %}{{ f.shop_name }}{% endif %}
+                    {% if f.shop_name and f.price %} · {% endif %}
+                    {% if f.price %}{{ f.price }}원{% endif %}
+                  </div>
+                  {% if f.shop_url %}
+                    <a href="{{ f.shop_url }}" target="_blank" rel="noopener" class="buy-link">구매 링크</a>
                   {% endif %}
-                {% endwith %}
+                {% endif %}
               </div>
             </article>
           {% endfor %}

@@ -1,21 +1,13 @@
 # views.py
 from django.shortcuts import render
-from django.db.models import Prefetch
-from foods.models import Food, Price
+from foods.models import Food
 
 def main_page(request):
-    prefetch_prices = Prefetch(
-        'prices',
-        queryset=Price.objects.order_by('-created_at', '-price_id'),
-        to_attr='price_list',
-    )
-
     foods = (
         Food.objects
-        .exclude(food_img__isnull=True)
-        .exclude(food_img='')
-        .prefetch_related(prefetch_prices)
-        .order_by('-created_at', '-food_id')[:100]
+        .exclude(image_url__isnull=True)
+        .exclude(image_url='')
+        .order_by('-food_id')[:100]
     )
 
     return render(request, 'main/main_mainpage.html', {'foods': foods})

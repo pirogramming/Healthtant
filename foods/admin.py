@@ -1,13 +1,13 @@
 from django.contrib import admin
-from .models import Food, Price
+from .models import Food
 
 
 @admin.register(Food)
 class FoodAdmin(admin.ModelAdmin):
-    list_display = ['food_id', 'food_name', 'company_name', 'food_category', 'nutrition_score', 'nutri_score_grade', 'created_at']
-    list_filter = ['food_category', 'nutri_score_grade', 'company_name', 'created_at']
+    list_display = ['food_id', 'food_name', 'company_name', 'food_category', 'shop_name', 'price']
+    list_filter = ['food_category', 'company_name', 'shop_name']
     search_fields = ['food_name', 'company_name', 'representative_food']
-    readonly_fields = ['food_id', 'created_at', 'updated_at']
+    readonly_fields = ['food_id']
     
     fieldsets = (
         ('기본 정보', {
@@ -28,18 +28,11 @@ class FoodAdmin(admin.ModelAdmin):
             'fields': ('cholesterol', 'saturated_fatty_acids', 'trans_fatty_acids'),
             'classes': ('collapse',)
         }),
-        ('영양 평가', {
-            'fields': ('nutrition_score', 'nutri_score_grade', 'nrf_index')
+        ('가격 정보', {
+            'fields': ('shop_name', 'price', 'discount_price', 'shop_url', 'image_url'),
+            'classes': ('collapse',)
         }),
         ('기타 정보', {
-            'fields': ('serving_size', 'weight', 'created_at', 'updated_at')
+            'fields': ('serving_size', 'weight')
         }),
     )
-
-
-@admin.register(Price)
-class PriceAdmin(admin.ModelAdmin):
-    list_display = ['price_id', 'food', 'shop_name', 'price', 'discount_price', 'is_available', 'created_at']
-    list_filter = ['shop_name', 'is_available', 'created_at']
-    search_fields = ['food__food_name', 'shop_name']
-    readonly_fields = ['price_id', 'created_at', 'updated_at']
