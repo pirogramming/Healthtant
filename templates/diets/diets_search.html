@@ -5,7 +5,7 @@
 {% block title %}식사등록페이지 - HEALTHTANT{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'diets/diets_search.css' %}">
+<link rel="stylesheet" href="{% static 'search/css/normal_search.css' %}">
 {% endblock %}
 
 {% block header %}
@@ -14,7 +14,7 @@
     <div class="search-section">
         <div class="search-container">
             <div class="search-input-wrapper">
-                <input type="text" id="searchInput" class="search-input" placeholder="새 제품을 검색해서 찾아보세요">
+                <input type="text" id="searchInput" class="search-input" placeholder="제품 이름을 입력해주세요." value="{{ keyword|default:'' }}">
                 <button type="button" class="search-button" onclick="performSearch()">
                     <div class="search-icon">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -36,10 +36,50 @@
 <div class="meal-register-container">
 
     <!-- 검색 결과 섹션 -->
-    <div class="search-results-section" id="searchResults" style="display: none;">
+    <div class="search-results-section" id="searchResults" {% if not keyword %}style="display: none;"{% endif %}>
         <h2>검색 결과</h2>
         <div class="search-results-list" id="searchResultsList">
-            <!-- 검색 결과가 여기에 동적으로 추가됩니다 -->
+            {% if foods %}
+                {% for food in foods %}
+                <div class="food-card" data-food-id="{{ food.food_id }}">
+                    <div class="food-image">
+                        {% if food.food_img %}
+                            <img src="{{ food.food_img }}" alt="{{ food.food_name }}">
+                        {% else %}
+                            <img src="{% static 'diets/images/default-food.jpg' %}" alt="{{ food.food_name }}">
+                        {% endif %}
+                    </div>
+                    <div class="food-info">
+                        <div class="food-header">
+                            <div class="brand-tag">등급 계산 중...</div>
+                            <div class="food-text-container">
+                                <h3 class="food-name">{{ food.food_name }}</h3>
+                                <p class="food-company">제조사: {{ food.company_name }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="register-btn btn btn-primary" onclick="registerFood('{{ food.food_id }}')">
+                        <span class="plus-icon">+</span>
+                        <span class="register-text">등록하기</span>
+                    </button>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="no-results">검색 결과가 없습니다.</div>
+            {% endif %}
+        </div>
+        
+        <!-- 로딩 인디케이터 -->
+        <div class="loading-indicator" id="loadingIndicator" style="display: none;">
+            <div class="loading-spinner"></div>
+            <p>더 많은 결과를 불러오는 중...</p>
+        </div>
+        
+        <!-- 더보기 버튼 -->
+        <div class="load-more-container" id="loadMoreContainer" style="display: none;">
+            <button class="load-more-btn" id="loadMoreBtn" onclick="loadMoreResults()">
+                더보기
+            </button>
         </div>
     </div>
 </div>

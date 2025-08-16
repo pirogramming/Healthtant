@@ -19,7 +19,7 @@ class Diet(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     food = models.ForeignKey('foods.Food', on_delete=models.CASCADE)
     date = models.DateField()
-    meal = models.CharField(max_length=2, choices=MEAL_CHOICES)
+    meal = models.CharField(max_length=10, choices=MEAL_CHOICES)
 
     # 시간 필드
     created_at = models.DateTimeField(auto_now_add=True)

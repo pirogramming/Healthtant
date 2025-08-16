@@ -316,7 +316,7 @@ def main():
         return
 
     # 6) UPSERT
-    placeholders = ",".join(["?"] * len(cols))
+    placeholders = ",".join(["%s"] * len(cols))
     # Build SET clause for UPSERT with "keep existing if incoming is empty/NULL" for selected columns
     set_parts = []
     for c in cols:
@@ -335,7 +335,18 @@ def main():
     {set_clause};
     """
 
-    records = [tuple(out.iloc[i].tolist()) for i in range(n)]
+    # numpy 타입을 Python 네이티브 타입으로 변환
+    records = []
+    for i in range(n):
+        row = out.iloc[i].tolist()
+        # numpy 타입을 Python 타입으로 변환
+        converted_row = []
+        for val in row:
+            if hasattr(val, 'item'):  # numpy 타입인 경우
+                converted_row.append(val.item())
+            else:
+                converted_row.append(val)
+        records.append(tuple(converted_row))
 
     with transaction.atomic():
         with connection.cursor() as cur:
