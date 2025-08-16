@@ -171,8 +171,101 @@ def normal_search(request):
 #사용자가 필요로 할 법한 제품을 우선으로 출력합니다.
 @login_required
 def advanced_search_page(request):
-    end_date = date.today() # 오늘 날짜
-    start_date = end_date - timedelta(days=30)  # 30일 전 날짜
+    # AJAX 요청 처리
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        page = int(request.GET.get('page', 1))
+        limit = int(request.GET.get('limit', 4))
+        
+        end_date = date.today()
+        start_date = end_date - timedelta(days=30)
+
+        diet_query_set = Diet.objects.select_related('food').filter(
+            user=request.user,
+            date__range=(start_date, end_date)
+        )
+
+        nutrients_avg = {'calorie': 0.00, 'carbohydrate': 0.00, 'protein': 0.00, 'fat':0.00, 'salt': 0.00}
+
+        for diet in diet_query_set:
+            food = diet.food
+            nutrients_avg['calorie'] += get_real_nutrient(food, "calorie")
+            nutrients_avg['carbohydrate'] += get_real_nutrient(food, "carbohydrate")
+            nutrients_avg['protein'] += get_real_nutrient(food, "protein")
+            nutrients_avg['fat'] += get_real_nutrient(food, "fat")
+            nutrients_avg['salt'] += get_real_nutrient(food, "salt")
+
+        for nutrient, sum in nutrients_avg.items():
+            nutrients_avg[nutrient] = round(sum/30, 2)
+
+        recommendation = calculate_recommendation(request.user)
+
+        calorie_evaluation = make_evaluation(
+            "calorie",
+            nutrients_avg['calorie'],
+            recommendation['calorie']['min'],
+            recommendation['calorie']['max'],
+            recommendation['calorie']['essential']
+        )
+        carbohydrate_evaluation = make_evaluation(
+            "carbohydrate",
+            nutrients_avg['carbohydrate'], 
+            recommendation['carbohydrate']['min'],
+            recommendation['carbohydrate']['max'],
+            recommendation['carbohydrate']['essential']
+        )
+        protein_evaluation = make_evaluation(
+            "protein",
+            nutrients_avg['protein'], 
+            recommendation['protein']['min'],
+            recommendation['protein']['max'],
+            recommendation['protein']['essential']
+        )
+        fat_evaluation = make_evaluation(
+            "fat",
+            nutrients_avg['fat'], 
+            recommendation['fat']['min'],
+            recommendation['fat']['max']
+        )
+        salt_evaluation = make_evaluation(
+            "salt",
+            nutrients_avg['salt'],
+            recommendation['salt']['min'],
+            recommendation['salt']['max'],
+            recommendation['salt']['essential']
+        )
+
+        def append_order(order_list, evaluation, field):
+            level = evaluation["level"]
+            if level in ("부족", "매우 부족"):
+                order_list.append(f'-{field}')
+            elif level in ("과다", "매우 과다"):
+                order_list.append(field)
+
+        ORDER_BY = ['-nutrition_score']
+        append_order(ORDER_BY, calorie_evaluation, 'calorie')
+        append_order(ORDER_BY, carbohydrate_evaluation, 'carbohydrate')
+        append_order(ORDER_BY, protein_evaluation, 'protein')
+        append_order(ORDER_BY, fat_evaluation, 'fat')
+        append_order(ORDER_BY, salt_evaluation, 'salt')
+
+        # 페이지네이션 적용
+        start = (page - 1) * limit
+        end = start + limit
+        foods_sorted = Food.objects.order_by(*ORDER_BY)[start:end]
+
+        foods_data = []
+        for food in foods_sorted:
+            foods_data.append(food_to_dict(food))
+        
+        return JsonResponse({
+            'foods': foods_data,
+            'page': page,
+            'has_more': foods_sorted.count() == limit
+        })
+
+    # 일반 HTML 요청 처리 (기존 로직)
+    end_date = date.today()
+    start_date = end_date - timedelta(days=30)
 
     diet_query_set = Diet.objects.select_related('food').filter(
         user=request.user,
