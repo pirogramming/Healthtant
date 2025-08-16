@@ -104,6 +104,12 @@ document.addEventListener('DOMContentLoaded', function() {
             // 버튼 클릭 시는 이동 막기
             if (e.target.closest('.favorite-btn')) return;
             
+            // 추가 카드인 경우 검색 페이지로 이동
+            if (card.classList.contains('additional-card')) {
+                goToSearchPage();
+                return;
+            }
+            
             const foodId = card.getAttribute('data-food-id');
             if (foodId) {
                 window.location.href = `/products/${foodId}`;

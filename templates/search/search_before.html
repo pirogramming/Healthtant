@@ -71,6 +71,25 @@
                 <div class="empty-sub">잠시만 기다려주세요.</div>
             </div>
             {% endfor %}
+            
+            <!-- 추가 food-card -->
+            <div class="food-card additional-card">
+                
+                <div class="food-info">
+                    <div class="food-header">
+                        <div class="brand-tag">추천</div>
+                        <div class="food-text-container">
+                            <h3 class="food-name">더 많은 제품 보기</h3>
+                            <p class="food-company">검색해서 더 많은 제품을 찾아보세요</p>
+                        </div>
+                    </div>
+                </div>
+                <button class="favorite-btn" type="button" aria-label="더보기" onclick="goToSearchPage()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+                        <path d="M12 5v14M5 12h14" stroke="#56AAB2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+            </div>
         </div>
     </div>
 </div>
