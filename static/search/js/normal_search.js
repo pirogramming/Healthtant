@@ -86,81 +86,78 @@ async function loadMoreResults() {
 }
 
 // 검색 결과 표시 (기존 결과에 추가)
+// 검색 결과 표시 (기존 결과에 추가) — FIXED
 function displaySearchResults(foods) {
     const searchResults = document.getElementById('searchResults');
     const searchResultsList = document.getElementById('searchResultsList');
-    
-    // 첫 페이지가 아니면 기존 결과에 추가
+  
+    // 2페이지 이상일 때 남아있을 수 있는 "no-results" 제거
     if (currentPage > 1) {
-        // 기존 no-results 메시지 제거
-        const noResults = searchResultsList.querySelector('.no-results');
-        if (noResults) {
-            noResults.remove();
-        }
+      const noResults = searchResultsList.querySelector('.no-results');
+      if (noResults) noResults.remove();
     }
-    
+  
+    // 단일 루프만 사용
     foods.forEach(food => {
-        const foodCard = document.createElement('div');
-        foodCard.className = 'food-card';
-        foodCard.setAttribute('data-food-id', food.food_id);
-        
-        foods.forEach(food => {
-            const foodCard = document.createElement('div');
-            foodCard.className = 'food-card';
-            foodCard.setAttribute('data-food-id', food.food_id);
-            
-            foodCard.innerHTML = `
-                <div class="food-image">
-                    ${food.food_img ? 
-                        `<img src="${food.food_img}" alt="${food.food_name}">` : 
-                        `<img src="/static/diets/images/default-food.jpg" alt="${food.food_name}">`
-                    }
-                </div>
-                <div class="food-info">
-                    <div class="food-header">
-                        <div class="brand-tag">${food.nutri_score_grade || '등급 없음'}</div>
-                        <div class="food-text-container">
-                            <h3 class="food-name">${food.food_name}</h3>
-                            <p class="food-company">제조사: ${food.company_name}</p>
-                        </div>
-                    </div>
-                </div>
+      const foodCard = document.createElement('div');
+      foodCard.className = 'food-card';
+      foodCard.dataset.foodId = food.food_id;
+  
+      // 마크업 정합 맞춤(버튼 포함 모두 카드 내부)
+      foodCard.innerHTML = `
+        <div class="food-image">
+          ${food.food_img
+            ? `<img src="${food.food_img}" alt="${food.food_name}">`
+            : `<img src="/static/diets/images/default-food.jpg" alt="${food.food_name}">`
+          }
+        </div>
+        <div class="food-info">
+          <div class="food-header">
+            <span class="brand-tag">${food.nutri_score_grade || '등급 없음'}</span>
+            <div class="food-text-container">
+              <h3 class="food-name">${food.food_name}</h3>
+              <p class="food-company">제조사: ${food.company_name || '-'}</p>
             </div>
-            <button class="favorite-btn" data-product-id="${food.food_id}" data-is-favorite="${food.is_favorite || 'false'}" type="button" aria-pressed="${food.is_favorite || 'false'}" aria-label="즐겨찾기">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
-                    <path class="heart-path" d="M20.84 4.61C20.3292 4.099 19.7228 3.69364 19.0554 3.41708C18.3879 3.14052 17.6725 2.99817 16.95 2.99817C16.2275 2.99817 15.5121 3.14052 14.8446 3.41708C14.1772 3.69364 13.5708 4.099 13.06 4.61L12 5.67L10.94 4.61C9.9083 3.5783 8.50903 2.9987 7.05 2.9987C5.59096 2.9987 4.19169 3.5783 3.16 4.61C2.1283 5.6417 1.5487 7.04097 1.5487 8.5C1.5487 9.95903 2.1283 11.3583 3.16 12.39L12 21.23L20.84 12.39C21.351 11.8792 21.7564 11.2728 22.0329 10.6054C22.3095 9.93789 22.4518 9.22249 22.4518 8.5C22.4518 7.77751 22.3095 7.0621 22.0329 6.39464C21.7564 5.72718 21.351 5.12075 20.84 4.61Z"/>
-                </svg>
-            </button>
-        `;
-
-        // 카드 클릭 → 상세 페이지 이동
-        foodCard.addEventListener('click', function(e) {
-            // 버튼 클릭 시는 이동 막기
-            if (e.target.closest('.favorite-btn')) return;
-            window.location.href = `/products/${food.food_id}`;
+          </div>
+        </div>
+        <button class="favorite-btn"
+                data-product-id="${food.food_id}"
+                data-is-favorite="${food.is_favorite ? 'true' : 'false'}"
+                type="button" aria-pressed="${food.is_favorite ? 'true' : 'false'}"
+                aria-label="즐겨찾기">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+               viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+            <path class="heart-path"
+                  d="M20.84 4.61C20.3292 4.099 19.7228 3.69364 19.0554 3.41708C18.3879 3.14052 17.6725 2.99817 16.95 2.99817C16.2275 2.99817 15.5121 3.14052 14.8446 3.41708C14.1772 3.69364 13.5708 4.099 13.06 4.61L12 5.67L10.94 4.61C9.9083 3.5783 8.50903 2.9987 7.05 2.9987C5.59096 2.9987 4.19169 3.5783 3.16 4.61C2.1283 5.6417 1.5487 7.04097 1.5487 8.5C1.5487 9.95903 2.1283 11.3583 3.16 12.39L12 21.23L20.84 12.39C21.351 11.8792 21.7564 11.2728 22.0329 10.6054C22.3095 9.93789 22.4518 9.22249 22.4518 8.5C22.4518 7.77751 22.3095 7.0621 22.0329 6.39464C21.7564 5.72718 21.351 5.12075 20.84 4.61Z"/>
+          </svg>
+        </button>
+      `;
+  
+      // 카드 클릭 → 상세 페이지 이동(즐겨찾기 클릭은 제외)
+      foodCard.addEventListener('click', (e) => {
+        if (e.target.closest('.favorite-btn')) return;
+        window.location.href = `/products/${food.food_id}`;
+      });
+  
+      // 좋아요 버튼 이벤트
+      const favoriteBtn = foodCard.querySelector('.favorite-btn');
+      if (favoriteBtn) {
+        favoriteBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          toggleFavorite(favoriteBtn);
         });
-        
-        searchResultsList.appendChild(foodCard);
-        
-        // 좋아요 버튼 이벤트 리스너 추가
-        const favoriteBtn = foodCard.querySelector('.favorite-btn');
-        if (favoriteBtn) {
-            favoriteBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                toggleFavorite(favoriteBtn);
-            });
-        }
-        
-        // 등급 정보 로드
-        loadGradeInfo(food.food_id, foodCard.querySelector('.brand-tag'));
-        
-        // 좋아요 상태 초기화
-        initializeFavoriteState(favoriteBtn, food.is_favorite);
+        initializeFavoriteState(favoriteBtn, !!food.is_favorite);
+      }
+  
+      // 등급 정보 최신화
+      loadGradeInfo(food.food_id, foodCard.querySelector('.brand-tag'));
+  
+      searchResultsList.appendChild(foodCard);
     });
-    
+  
     searchResults.style.display = 'block';
-}
+  }
 
 // 검색 결과 없음 표시
 function displayNoResults() {

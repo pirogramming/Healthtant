@@ -40,6 +40,19 @@ def food_to_dict(food):
     return ret
 
 #일반 검색 메인 페이지 렌더링 뷰
+#영양 점수가 높은 음식들(기본으로 띄울 음식들)을 추려서 프론트로 전달합니다!
+def search_page(request):
+    
+    # 영양 점수가 높은 식품이 앞에 오도록 정렬 (DB에서 바로 정렬)
+    foods = Food.objects.all().order_by('-nutrition_score')
+
+    # 반환할 값 구성하는 부분
+    context = {"foods":[]}
+    for food in foods:
+        context["foods"].append(food_to_dict(food))
+    
+    return render(request, "search/search_page.html", context)
+
 #검색어가 있을 때만 검색 결과를 보여줍니다
 def normal_search(request):
     keyword = (request.GET.get("keyword") or "").strip()
