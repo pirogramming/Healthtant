@@ -38,36 +38,38 @@
 {% block content %}
 <div class="screen">
   <div class="view">
-    <!-- 추천 제품 영역 -->
+    <!-- 추천 제품 롤링배너 영역 -->
     <section class="featured-container">
       {% if foods %}
-        <div class="product-grid">
-          {% for f in foods %}
-            <article class="product-card">
-              {% if f.image_url %}
-                <img src="{{ f.image_url }}" alt="{{ f.food_name }}" class="product-image">
-              {% elif f.food_img %}
-                <img src="{{ f.food_img }}" alt="{{ f.food_name }}" class="product-image">
-              {% else %}
-                <div class="product-image placeholder">이미지 없음</div>
-              {% endif %}
-
-              <div class="product-info">
-                <div class="product-name">{{ f.food_name|default:"이름 없음" }}</div>
-
-                {% if f.shop_name or f.price %}
-                  <div class="product-price">
-                    {% if f.shop_name %}{{ f.shop_name }}{% endif %}
-                    {% if f.shop_name and f.price %} · {% endif %}
-                    {% if f.price %}{{ f.price }}원{% endif %}
-                  </div>
-                  {% if f.shop_url %}
-                    <a href="{{ f.shop_url }}" target="_blank" rel="noopener" class="buy-link">구매 링크</a>
-                  {% endif %}
+        <div class="rolling-banner-container">
+          <div class="rolling-banner" id="rollingBanner">
+            {% for f in foods %}
+              <div class="banner-item" onclick="goToProductDetail('{{ f.food_id }}')">
+                {% if f.image_url %}
+                  <img src="{{ f.image_url }}" alt="{{ f.food_name }}" class="banner-image">
+                {% elif f.food_img %}
+                  <img src="{{ f.food_img }}" alt="{{ f.food_name }}" class="banner-image">
+                {% else %}
+                  <div class="banner-image placeholder">이미지 없음</div>
                 {% endif %}
+
+                <div class="banner-info">
+                  <div class="banner-title">{{ f.food_name|default:"이름 없음" }}</div>
+                  {% if f.shop_name or f.price %}
+                    <div class="banner-subtitle">
+                      {% if f.shop_name %}{{ f.shop_name }}{% endif %}
+                      {% if f.shop_name and f.price %} · {% endif %}
+                      {% if f.price %}{{ f.price }}원{% endif %}
+                    </div>
+                  {% endif %}
+                </div>
               </div>
-            </article>
-          {% endfor %}
+            {% endfor %}
+          </div>
+          
+          <!-- 네비게이션 버튼 -->
+          <button class="banner-nav prev" onclick="moveBanner(-1)">‹</button>
+          <button class="banner-nav next" onclick="moveBanner(1)">›</button>
         </div>
       {% else %}
         <p style="text-align:center; padding:24px;">표시할 식품이 없습니다.</p>

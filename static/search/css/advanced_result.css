@@ -132,6 +132,8 @@
   cursor: pointer;
   transition: all 0.2s;
   background: #fff;
+  border: 1px solid #e9ecef;
+  user-select: none;
 }
 
 .sort-dropdown:hover {
@@ -445,6 +447,8 @@
   cursor: pointer;
   transition: all 0.2s;
   text-align: left;
+  font-size: 14px;
+  font-weight: 500;
 }
 
 .sort-option:hover {

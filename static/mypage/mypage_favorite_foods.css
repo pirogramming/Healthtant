@@ -1,29 +1,3 @@
-/* 기본 스타일 리셋 */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: 'Noto Sans KR', sans-serif;
-    background-color: white;
-    margin: 0;
-    padding: 0;
-}
-
-.app-header {
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    background-color: white;
-}
-
-.status-bar {
-    height: 61px;
-    background-color: white;
-    width: 100%;
-}
 
 /* 즐겨찾는 제품 전체 컨테이너 */
 .favorite-foods-container {
