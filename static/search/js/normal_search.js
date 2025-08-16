@@ -38,7 +38,7 @@ function displaySearchResults(foods) {
         
         foods.forEach(food => {
             const foodCard = document.createElement('div');
-            foodCard.className = 'food-card card';
+            foodCard.className = 'food-card';
             foodCard.setAttribute('data-food-id', food.food_id);
             
             foodCard.innerHTML = `
