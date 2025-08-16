@@ -12,7 +12,7 @@ import django
 import numpy as np
 
 # ① manage.py가 있는 프로젝트 루트를 sys.path에 추가
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # 이 파일과 manage.py가 같은 폴더라면 OK
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # scripts 폴더에서 상위 폴더로
 sys.path.insert(0, BASE_DIR)
 
 # ② DJANGO_SETTINGS_MODULE을 manage.py와 동일하게
@@ -20,7 +20,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings.local')  # ← 
 
 django.setup()
 
-CSV_PATH = 'naver_prices_clean.csv'   # <-- 네 CSV 경로
+CSV_PATH = '../food_clean_data.csv'   # <-- 정리된 CSV 경로
 TABLE_NAME = 'food'                       # <-- 실제 테이블명 (예: 'food' 또는 'foods_food')
 
 def safe_print(*args):
@@ -91,12 +91,16 @@ def read_csv_smart(path):
     return df
 
 def main():
-    # 1) CSV 로드 - 헤더가 없으므로 수동으로 설정
+    # 1) 기존 DB 데이터 모두 삭제
+    safe_print("=== 기존 DB 데이터 삭제 중... ===")
+    with connection.cursor() as cursor:
+        cursor.execute(f"DELETE FROM {TABLE_NAME}")
+    safe_print("기존 데이터 삭제 완료")
+    
+    # 2) CSV 로드 
     df = read_csv_smart(CSV_PATH).fillna('')
     
-    # 헤더가 없으므로 수동으로 칼럼명 설정
-    if len(df.columns) >= 6:
-        df.columns = ['food_id', 'shop_name', 'price', 'discount_price', 'shop_url', 'image_url']
+    # food_clean_data.csv는 헤더가 있으므로 컬럼명 매핑만 확인
     
     # BOM/공백 제거
     df.columns = df.columns.str.replace('\ufeff', '', regex=False).str.strip()
@@ -116,14 +120,14 @@ def main():
         safe_print("ERROR: all food_id empty. Check CSV delimiter/header.")
         return
 
-    # 2) 매핑 - naver_prices.csv 칼럼에 맞춰 수정
+    # 2) 매핑 - food_clean_data.csv 칼럼에 맞춰 수정
     csv_to_db = {
         'food_id': 'food_id',
-        'shop_name': 'shop_name',
-        'price': 'price',
-        'discount_price': 'discount_price',
-        'shop_url': 'shop_url',
-        'image_url': 'image_url',
+        'mallName': 'shop_name',
+        'lprice': 'price',
+        'hprice': 'discount_price',
+        'product_link': 'shop_url',
+        'image': 'image_url',
         # 기본값들
         'food_name': 'food_name',
         'food_category': 'food_category',
