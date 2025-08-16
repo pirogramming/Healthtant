@@ -254,5 +254,72 @@ document.addEventListener('DOMContentLoaded', async () => {
 	}
   });
 
+function openShareModal() {
+  document.getElementById('shareModal').style.display = 'flex';
+}
 
+function closeShareModal() {
+  document.getElementById('shareModal').style.display = 'none';
+}
+
+function copyUrl() {
+  const urlInput = document.getElementById('shareUrl');
+  urlInput.select();
+  document.execCommand('copy');
   
+  // 복사 완료 피드백
+  const copyBtn = document.querySelector('.copy-url-btn');
+  const originalText = copyBtn.textContent;
+  copyBtn.textContent = '복사완료!';
+  copyBtn.style.background = '#56AAB2';
+  
+  setTimeout(() => {
+    copyBtn.textContent = originalText;
+    copyBtn.style.background = '#6c757d';
+  }, 2000);
+}
+
+// 모달 외부 클릭 시 닫기
+document.getElementById('shareModal').addEventListener('click', function(e) {
+  if (e.target === this) {
+    closeShareModal();
+  }
+});
+
+// 공유 모달 관련 함수들
+function openShareModal() {
+	document.getElementById('shareModal').style.display = 'flex';
+  }
+  
+  function closeShareModal() {
+	document.getElementById('shareModal').style.display = 'none';
+  }
+  
+  function copyUrl() {
+	const urlInput = document.getElementById('shareUrl');
+	urlInput.select();
+	document.execCommand('copy');
+	
+	// 복사 완료 피드백
+	const copyBtn = document.querySelector('.copy-url-btn');
+	const originalText = copyBtn.textContent;
+	copyBtn.textContent = '복사완료!';
+	copyBtn.style.background = '#28a745';
+	
+	setTimeout(() => {
+	  copyBtn.textContent = originalText;
+	  copyBtn.style.background = '#6c757d';
+	}, 2000);
+  }
+  
+  // 모달 외부 클릭 시 닫기
+  document.addEventListener('DOMContentLoaded', function() {
+	const modal = document.getElementById('shareModal');
+	if (modal) {
+	  modal.addEventListener('click', function(e) {
+		if (e.target === this) {
+		  closeShareModal();
+		}
+	  });
+	}
+  });
