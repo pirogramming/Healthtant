@@ -246,12 +246,55 @@ class AdvancedSearchPage {
     }
   
     // 즐겨찾기 토글
+    // async toggleFavorite(favoriteBtn) {
+    //   const productId = favoriteBtn.getAttribute('data-product-id');
+    //   if (!productId) return;
+  
+    //   favoriteBtn.disabled = true;
+      
+    //   try {
+    //     const response = await fetch(`/products/${productId}/like/`, {
+    //       method: 'POST',
+    //       headers: {
+    //         'Content-Type': 'application/json',
+    //         'X-CSRFToken': this.getCsrfToken(),
+    //         'X-Requested-With': 'XMLHttpRequest'
+    //       },
+    //       credentials: 'same-origin'
+    //     });
+  
+    //     if (!response.ok) {
+    //       throw new Error('네트워크 오류');
+    //     }
+  
+    //     const data = await response.json();
+    //     const isFavorite = data.is_favorite;
+
+    //     // 로컬 상태 업데이트
+    //     if (isFavorite) {
+    //       this.favorites[productId] = true;
+    //     } else {
+    //       delete this.favorites[productId];
+    //     }
+    //     this.saveFavorites();
+
+    //     favoriteBtn.classList.toggle('active', isFavorite);
+    //     favoriteBtn.setAttribute('data-is-favorite', String(isFavorite));
+    //     favoriteBtn.setAttribute('aria-pressed', String(isFavorite));
+    //   } catch (error) {
+    //     console.error('찜 처리 오류:', error);
+    //   } finally {
+    //     favoriteBtn.disabled = false;
+    //   }
+    // }
+
+    // 즐겨찾기 토글
     async toggleFavorite(favoriteBtn) {
       const productId = favoriteBtn.getAttribute('data-product-id');
       if (!productId) return;
-  
+
       favoriteBtn.disabled = true;
-      
+
       try {
         const response = await fetch(`/products/${productId}/like/`, {
           method: 'POST',
@@ -262,15 +305,15 @@ class AdvancedSearchPage {
           },
           credentials: 'same-origin'
         });
-  
+
         if (!response.ok) {
           throw new Error('네트워크 오류');
         }
-  
+
         const data = await response.json();
         const isFavorite = data.is_favorite;
 
-        // 로컬 상태 업데이트
+        // 상태 반영
         if (isFavorite) {
           this.favorites[productId] = true;
         } else {
@@ -278,15 +321,24 @@ class AdvancedSearchPage {
         }
         this.saveFavorites();
 
+        // 버튼 스타일 변경
         favoriteBtn.classList.toggle('active', isFavorite);
         favoriteBtn.setAttribute('data-is-favorite', String(isFavorite));
         favoriteBtn.setAttribute('aria-pressed', String(isFavorite));
+
+        // 하트 아이콘 색상 변경 (필요 시)
+        const heartPath = favoriteBtn.querySelector('.heart-path');
+        if (heartPath) {
+          heartPath.setAttribute('fill', isFavorite ? '#FF4081' : 'none');
+        }
+
       } catch (error) {
         console.error('찜 처리 오류:', error);
       } finally {
         favoriteBtn.disabled = false;
       }
     }
+
   
     // CSRF 토큰 가져오기
     getCsrfToken() {
