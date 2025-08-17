@@ -213,9 +213,9 @@ def validate_and_clean_row(args):
             cleaned_row[field] = value if pd.notna(value) else None
     
     # 정수 필드 정리
-    int_fields = ['nutritional_value_standard_amount', 'price', 'discount_price']
+    int_fields = ['nutritional_value_standard_amount', 'lprice', 'discount_price']
     for field in int_fields:
-        value = pd.to_numeric(row.get(field if field != 'price' else 'lprice', None), errors='coerce')
+        value = pd.to_numeric(row.get(field if field != 'lprice' else 'lprice', None), errors='coerce')
         if field == 'discount_price':
             value = pd.to_numeric(row.get('hprice', None), errors='coerce')
         if field == 'nutritional_value_standard_amount':
@@ -419,7 +419,7 @@ def main():
         'potassium','salt','"VitaminA"','"VitaminB"','"VitaminC"','"VitaminD"','"VitaminE"',
         'cholesterol','saturated_fatty_acids','trans_fatty_acids','serving_size',
         'weight','company_name','nutrition_score','nutri_score_grade','nrf_index',
-        'shop_name','price','discount_price','shop_url','image_url'
+        'shop_name','lprice','discount_price','shop_url','image_url'
     ]
     
     placeholders = ",".join(["%s"] * len(cols))
