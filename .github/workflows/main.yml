@@ -142,24 +142,7 @@ jobs:
               fi
               
               # 웹 서비스 확인 (포트 체크)
-              if docker-compose exec -T web timeout 10 python -c "
-import socket
-import sys
-try:
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.settimeout(5)
-    result = sock.connect_ex(('localhost', 8000))
-    sock.close()
-    if result == 0:
-        print('✅ Port 8000 is open')
-        sys.exit(0)
-    else:
-        print('❌ Port 8000 is not accessible')
-        sys.exit(1)
-except Exception as e:
-    print(f'❌ Health check error: {e}')
-    sys.exit(1)
-"; then
+              if docker-compose exec -T web timeout 10 python -c 'import socket; import sys; sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM); sock.settimeout(5); result = sock.connect_ex(("localhost", 8000)); sock.close(); print("✅ Port 8000 is open" if result == 0 else "❌ Port 8000 is not accessible"); sys.exit(0 if result == 0 else 1)'; then
                 echo "✅ Deployment successful!"
                 echo "📊 Final container status:"
                 docker-compose ps || true
