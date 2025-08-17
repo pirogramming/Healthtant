@@ -354,3 +354,24 @@ uploads/
 # IDE/OS
 .vscode
 node_modules
+
+# Docker
+.dockerignore
+docker-compose.override.yml
+.docker/
+
+# IDE
+.idea/
+.history/
+
+# Vim/편집기 임시파일
+*.swp
+*.swo
+
+# 테스트/커버리지 산출물
+.coverage*
+htmlcov/
+pytestdebug.log
+*.out
+*.dat
+*.bak

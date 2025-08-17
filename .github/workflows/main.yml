@@ -2,39 +2,53 @@ name: Deploy to Healthtant Server
 
 on:
   push:
-    branches: ["main"]   # main 브랜치에 push될 때 실행
+    branches: ["main"]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Set up SSH
-        uses: webfactory/ssh-agent@v0.8.0
+      - name: Set up SSH agent
+        uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-          
-      # USERNAME과 HOST 확인용 디버그 스텝
-      - name: Debug Secrets
-        run: |
-          echo "USERNAME is set to: ${{ secrets.USERNAME }}"
-          echo "HOST is set to: ${{ secrets.HOST }}"
 
-      # SSH 접속 테스트 (-vvv 옵션으로 디버깅)
-      - name: Test SSH Connection
+      # 호스트 키 등록: 첫 연결시 KnownHosts 문제 예방
+      - name: Add host to known_hosts
         run: |
-          ssh -vvv -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.HOST }} exit
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts
 
-      - name: Deploy to server
+      # SSH 연결 테스트 (keepalive 옵션)
+      - name: Test SSH connection
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.HOST }} << 'EOF'
+          ssh -o ServerAliveInterval=60 -o ServerAliveCountMax=30 ${{ secrets.USERNAME }}@${{ secrets.HOST }} "echo ok"
+
+      - name: Deploy (build on server)
+        run: |
+          ssh -o ServerAliveInterval=60 -o ServerAliveCountMax=30 ${{ secrets.USERNAME }}@${{ secrets.HOST }} << 'EOF'
+            set -euo pipefail
+            export DOCKER_BUILDKIT=1
+
             cd ~/Healthtant
-            git pull origin main
-            docker-compose down
-            docker-compose up -d --build
-            docker-compose exec -T web python manage.py migrate
-            docker-compose exec -T web python manage.py collectstatic --noinput
+            git fetch origin main
+            git reset --hard origin/main
+
+            # (선택) 디스크 부족시 청소
+            docker system prune -af --volumes || true
+
+            # docker-compose → docker compose 권장
+            docker compose down
+
+            # 서버에서 빌드 유지 시
+            docker compose build --pull
+            docker compose up -d
+
+            # DB 연결 가능해진 뒤 마이그레이션/정적 수집
+            docker compose exec -T web python manage.py migrate --noinput
+            docker compose exec -T web python manage.py collectstatic --noinput
           EOF
