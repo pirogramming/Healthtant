@@ -30,7 +30,7 @@
 
 | **김동수** | **문가원** | **정규민** | **김민지** | **여주경** |
 | :------: |  :------: | :------: | :------: | :------: |
-| [<img src="https://github.com/user-attachments/assets/4b93e7cf-3849-4388-a738-039c5b9db094" height=150 width=150> <br/> @GGo-Dong ](https://github.com/GGo-Dong)  | [<img src="https://github.com/user-attachments/assets/9399cdbb-1603-438f-8ccd-993d8cfdf49f" height=150 width=150> <br/> @cygnusA631](https://github.com/cygnusA631)  | [<img src="https://github.com/user-attachments/assets/479b0c5f-77eb-4627-9747-61fd64351deb" height=150 width=150> <br/> @Gyubuk](https://github.com/Gyubuk) | [<img src="https://github.com/user-attachments/assets/10daa841-8f2f-4144-899a-dbf779e76363" height=150 width=150> <br/> @mnjese](https://github.com/mnjese) | [<img src="https://github.com/user-attachments/assets/e7bc87ca-6891-4485-86be-6e6c3af87e3e" height=150 width=150> <br/> @JooKyung-Yuh](https://github.com/JooKyung-Yuh) |
+| [<img src="https://github.com/user-attachments/assets/4b93e7cf-3849-4388-a738-039c5b9db094" height=150 width=150> <br/> @GGo-Dong ](https://github.com/GGo-Dong)  | [<img src="https://github.com/user-attachments/assets/9399cdbb-1603-438f-8ccd-993d8cfdf49f" height=150 width=150> <br/> @cygnusA631](https://github.com/cygnusA631)  | [<img src="https://github.com/user-attachments/assets/479b0c5f-77eb-4627-9747-61fd64351deb" height=150 width=150> <br/> @Gyubuk](https://github.com/Gyubuk) | [<img src="https://github.com/user-attachments/assets/10daa841-8f2f-4144-899a-dbf779e76363" height=150 width=150> <br/> @mnjese](https://github.com/mnjese) | [<img src="https://github.com/user-attachments/assets/eb9b8dc9-6318-4f72-9895-1d04b9383277" height=150 width=150> <br/> @JooKyung-Yuh](https://github.com/JooKyung-Yuh) |
 | PM / BE |  FE | FE | BE | BE |
 | 말안되게 헬쑥턴트| 삐리리 헬쑥턴트 | 레츠끼끼 헬쑥턴트 | 정말 좋아 헬쑥턴트 | 헬쑥턴트 |
 
@@ -39,7 +39,7 @@
 
 # 🛠 기술 스택
 
-## Stacks
+### Stacks
 <div align="center">
   
 | 구분 | Stack  |
@@ -51,14 +51,14 @@
 </div>
 <br>
 
-## Tools
+### Tools
 <div align="center">
   
 ![Figma](https://img.shields.io/badge/figma-%23F24E1E.svg?style=for-the-badge&logo=figma&logoColor=white) ![Visual Studio Code](https://img.shields.io/badge/Visual%20Studio%20Code-0078d7.svg?style=for-the-badge&logo=visual-studio-code&logoColor=white) ![ChatGPT](https://img.shields.io/badge/chatGPT-74aa9c?style=for-the-badge&logo=openai&logoColor=white)
 
 </div>
 
-## Collaboration
+### Collaboration
 <div align="center">
 
 ![Notion](https://img.shields.io/badge/Notion-%23000000.svg?style=for-the-badge&logo=notion&logoColor=white) ![Discord](https://img.shields.io/badge/Discord-%235865F2.svg?style=for-the-badge&logo=discord&logoColor=white) ![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)
@@ -84,7 +84,7 @@
 
 # 📱 서비스 화면
 
-## 메인 화면
+### 메인 화면
 * 영양 점수가 높은 음식이 랜덤으로 롤링 배너를 통해 출력됩니다.
 * 하단 네비게이션 바를 통해 식단기록, 분석하기, 상세검색, 마이페이지로 이동할 수 있습니다.
 * 상단 검색 창을 클릭하면 일반검색 페이지로 이동할 수 있습니다.
@@ -97,7 +97,9 @@
 | :------: | :------: | :------: |
 | <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/50539f37-e8fa-4ceb-9368-6c262cc97d19" /> | <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/84be77a2-b382-422e-9071-0867f291b6cb" /> | <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/26ee574e-fe37-41ec-b49d-43ed5acf3ba5" /> |
 
-## 일반 검색
+<br>
+
+### 일반 검색
 * 로그인을 하지 않아도 쓸 수 있는 일반 검색 페이지입니다. 단순히 식품 검색만을 지원합니다.
 * 기본적으로 **영양 점수가 높은 식품이 랜덤으로 10개 추천**됩니다. 추천 페이지에서 다시 검색창을 누르면 실제 검색 페이지로 이동합니다.
 * 키워드를 입력해서 식품을 검색할 수 있습니다. 검색 결과는 **영양 점수가 높은 것부터** 위쪽에 출력됩니다.
@@ -107,7 +109,9 @@
 | :------: |  :------: | :------: |
 | <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/1cff1cac-7dd9-4c9b-b283-d0477911fdaa" /> | <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/2a11c8bd-b724-45c9-846f-f77eb2743ca6" /> | <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/abccd912-6fb0-43ef-bcf2-52af9da0a38a" /> |
 
-## 식단 기록
+<br>
+
+### 식단 기록
 * 사용자가 먹은 가공식품을 **기록**할 수 있습니다.
 * **'오늘의 식사 추가하기'** 또는 **'+새 식사'** 를 눌러 식품을 검색하러 이동할 수 있습니다.
 * 식품을 검색하기 전에 앞서 최근에 먹은 식품을 등록할 수 있게 표시해줍니다.
@@ -117,7 +121,9 @@
 | :------: |  :------: | :------: |  :------: |
 | <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/085a99b0-c5f7-4c45-8464-dae1514de5e2" /> | <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/1b5ecbd8-ec43-4d68-9bee-3b2704d7efd9" /> | <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/06a5ad1a-d7b2-40c4-bd43-1fa00e8eecd0" /> | <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/4ed52c81-bb18-4da1-8495-b887e1dab182" /> |
 
-## 분석하기
+<br>
+
+### 분석하기
 * **식사 등록** 페이지에서 사용자가 등록한 식사를 바탕으로 식사 패턴 및 영양 섭취에 대한 **분석**을 제공합니다.
 * 분석 시작 날짜와 분석 끝 날짜를 선택하여 분석할 수 있습니다.
 * **"1. 식사 분석", "2. 영양 섭취 분석", "3. 2020 한국인 영양소 섭취 기준과 비교"** 를 제공합니다.
@@ -136,7 +142,9 @@
 | :------: |  :------: | :------: |  :------: |
 | <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/5edabd1e-7ad6-4278-8797-ed30e2a2fd25" /> | <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/e701993d-c550-4572-a65b-5185373b6048" /> | <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/2d99dfd1-11c7-4d0e-9235-a3c2db0c4cca" /> | <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/5d7e3e88-318d-4a03-aaec-c42a5f50f51c" /> |
 
-## 상세검색
+<br>
+
+### 상세검색
 * 로그인을 해야만 사용할 수 있는 검색 기능입니다.
 * 기본적으로 사용자가 **부족하거나 과다하게 섭취 중인 영양소를 기준으로 음식을 선별하여 추천**합니다.
 * 키워드를 입력해서 식품을 검색할 수 있습니다. 검색 결과는 **영양 점수가 높은 것부터** 위쪽에 출력됩니다.
@@ -148,7 +156,21 @@
 | :------: |  :------: | :------: |  :------: |
 | <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/8ebc9190-9cd7-4680-b269-f1c16ee0f3c2" /> | <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/42385a51-eb98-4b68-8526-8ced4e68cf08" /> | <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/5c6b8de0-b19e-46e5-8810-d38250128941" /> | <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/2ed696bc-c3d3-4177-b855-da308a50ecf1" /> |
 
-## 마이페이지
+<br>
+
+### 식품 상세 페이지
+* 식품의 자세한 성분과 분석을 보여주는 페이지입니다.
+* A~E 등급까지 식품의 영양 성분을 가지고 매긴 레터그레이드를 보여줍니다.
+* 건강에 주요한 영양을 미치는 영양소(당류, 단백질, 나트륨, 포화지방)의 적정성 여부를 표시합니다.
+* 식품이 가지고 있는 각 영양소의 함량을 보여줍니다.
+
+| **식품 상세 페이지 (1)** | **식품 상세 페이지 (2)** |
+| :------: |  :------: |
+|<img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/3de58df4-e6b0-42d5-a054-daab1fcff511" /> | <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/d199a6e6-283e-4b32-abc9-fed6f9b04105" /> |
+
+<br>
+
+### 마이페이지
 * 사용자에 관련된 정보를 다루는 페이지입니다.
 * '수정하기' 버튼을 눌러 프로필 정보를 수정할 수 있습니다.
 * '즐겨찾는 제품' 배너를 눌러 즐겨찾기로 등록한 식품들을 확인할 수 있습니다.
