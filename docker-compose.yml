@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   web:
-    build: .
+    image: ghcr.io/<OWNER>/<REPO>:latest
     container_name: healthtant_web
     restart: unless-stopped
     command: >
@@ -16,13 +16,6 @@ services:
       - static_volume:/app/staticfiles
     expose:
       - "8000"
-    depends_on:
-      - db
-    healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8000/health || exit 1"]
-      interval: 30s
-      timeout: 5s
-      retries: 5
 
   nginx:
     image: nginx:1.27-alpine
@@ -38,24 +31,5 @@ services:
     depends_on:
       - web
 
-  db:
-    image: postgres:15
-    container_name: healthtant_db
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: healthtant
-      POSTGRES_USER: healthtant_user
-      POSTGRES_PASSWORD: healthtant_pass
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    # ports:
-    #   - "5432:5432"
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U healthtant_user -d healthtant || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-
 volumes:
   static_volume:
-  postgres_data:

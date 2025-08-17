@@ -1,54 +1,60 @@
-name: Deploy to Healthtant Server
+name: Deploy (Build in CI, Pull on Server)
 
 on:
   push:
     branches: ["main"]
 
 jobs:
-  deploy:
+  build_and_push:
     runs-on: ubuntu-latest
-
+    permissions:
+      contents: read
+      packages: write
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
+      - name: Log in to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Build & Push image (tag: sha + latest)
+        env:
+          IMAGE: ghcr.io/${{ github.repository }}
+          TAG: ${{ github.sha }}
+        run: |
+          docker build -t $IMAGE:$TAG -t $IMAGE:latest .
+          docker push $IMAGE:$TAG
+          docker push $IMAGE:latest
+
+  deploy:
+    needs: build_and_push
+    runs-on: ubuntu-latest
+    steps:
       - name: Set up SSH agent
         uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      # 호스트 키 등록: 첫 연결시 KnownHosts 문제 예방
       - name: Add host to known_hosts
         run: |
           mkdir -p ~/.ssh
           ssh-keyscan -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts
 
-      # SSH 연결 테스트 (keepalive 옵션)
-      - name: Test SSH connection
-        run: |
-          ssh -o ServerAliveInterval=60 -o ServerAliveCountMax=30 ${{ secrets.USERNAME }}@${{ secrets.HOST }} "echo ok"
-
-      - name: Deploy (build on server)
+      - name: Deploy (pull & up only)
+        env:
+          IMAGE: ghcr.io/${{ github.repository }}
+          TAG: ${{ github.sha }}
         run: |
           ssh -o ServerAliveInterval=60 -o ServerAliveCountMax=30 ${{ secrets.USERNAME }}@${{ secrets.HOST }} << 'EOF'
             set -euo pipefail
-            export DOCKER_BUILDKIT=1
-
             cd ~/Healthtant
-            git fetch origin main
-            git reset --hard origin/main
 
-            # (선택) 디스크 부족시 청소
-            docker system prune -af --volumes || true
+            # compose에 image: ghcr.io/<OWNER>/<REPO>:latest 가 있어야 함
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $USER --password-stdin
 
-            # docker-compose → docker compose 권장
-            docker compose down
+            docker compose pull          # 최신 이미지 받기
+            docker compose up -d         # 빠르게 재기동
 
-            # 서버에서 빌드 유지 시
-            docker compose build --pull
-            docker compose up -d
-
-            # DB 연결 가능해진 뒤 마이그레이션/정적 수집
-            docker compose exec -T web python manage.py migrate --noinput
-            docker compose exec -T web python manage.py collectstatic --noinput
+            # 마이그/정적수집 1회
+            docker compose exec -T web python manage.py migrate --noinput || true
+            docker compose exec -T web python manage.py collectstatic --noinput || true
           EOF
