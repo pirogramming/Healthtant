@@ -51,10 +51,10 @@ jobs:
             # compose에 image: ghcr.io/<OWNER>/<REPO>:latest 가 있어야 함
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $USER --password-stdin
 
-            docker compose pull          # 최신 이미지 받기
-            docker compose up -d         # 빠르게 재기동
+            docker-compose pull          # 최신 이미지 받기
+            docker-compose up -d         # 빠르게 재기동
 
             # 마이그/정적수집 1회
-            docker compose exec -T web python manage.py migrate --noinput || true
-            docker compose exec -T web python manage.py collectstatic --noinput || true
+            docker-compose exec -T web python manage.py migrate --noinput || true
+            docker-compose exec -T web python manage.py collectstatic --noinput || true
           EOF
