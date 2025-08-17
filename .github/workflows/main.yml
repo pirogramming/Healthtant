@@ -23,11 +23,8 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build & Push image (tag: sha + latest)
+      - name: Build and Push image (tag sha + latest)
         uses: docker/build-push-action@v5
-        env:
-          IMAGE: ghcr.io/pirogramming/healthtant
-          TAG: ${{ github.sha }}
         with:
           context: .
           push: true
