@@ -174,9 +174,17 @@
 .product-info {
   flex: 1;
   display: flex;
-  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.product-left {
+  display: flex;
+  justify-content:  center;
+  align-items: center;
   gap: 4px;
 }
+
 
 .product-name {
   font-size: 14px;
@@ -505,8 +513,15 @@
   }
 }
 
-// 뒤로가기 버튼 클릭 시 홈페이지로 이동
-document.querySelector('.back-button').addEventListener('click', function(e) {
-    e.preventDefault();
-    window.location.href = '/';
-});
+.brand-tag {
+  background: rgba(86, 170, 178, 1);
+  color: white;
+  padding: 8px 1px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  flex-shrink: 0;
+  min-width: 30px;
+  text-align: center;
+  margin-top: 2px;
+}

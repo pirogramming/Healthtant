@@ -3,6 +3,7 @@ from .base import *
 DEBUG = True
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
+# SQLite 사용 (개발용)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',

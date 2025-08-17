@@ -6,3 +6,15 @@
 - 🎨 [Figma 바로가기](https://www.figma.com/design/kduu8xM4jfH3J1h8oibqhP/Healthtant?node-id=0-1&p=f&t=rEzZ8L5Zlpzk6dMs-0)
 - 🗂️ [ERD Cloud 보기](https://www.erdcloud.com/d/Qnwr4hLKXEYfCok5j/)
 - 📝 [Notion 문서](https://www.notion.so/23eabfa2d88980f19fc3f939d92abd22?source=copy_link)
+
+## 팀원 구성
+
+<div align="center">
+
+| **김동수** | **문가원** | **정규민** | **김민지** | **여주경** |
+| :------: |  :------: | :------: | :------: |
+| [<img src="0" height=150 width=150> <br/> PM / BE <br/> @GGo-Dong ](https://github.com/GGo-Dong) | [<img src="0" height=150 width=150> <br/> FE <br/> @Gyubuk](https://github.com/Gyubuk) | [<img src="0" height=150 width=150> <br/> FE <br/> @cygnusA631](https://github.com/cygnusA631) | [<img src="0" height=150 width=150> <br/> BE <br/> @mnjese](https://github.com/mnjese) | [<img src="0" height=150 width=150> <br/> BE <br/> @JooKyung-Yuh](https://github.com/JooKyung-Yuh) |
+
+</div>
+
+<br>
