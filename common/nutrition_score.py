@@ -46,7 +46,7 @@ def get_level(nutrient, food):
         protein = getNutrient(food, "protein")
         calorie = getNutrient(food, "calorie")
         if calorie == 0: calorie = 1 #제로 음식인 경우 calorie로 나눠줘야 하므로 1로 처리
-        ratio = protein*4/getattr(food, "calorie") * 100
+        ratio = protein*4/calorie * 100
         if ratio < 12: return {"level": "낮음", "class": "BAD"}
         elif ratio < 20: return {"level": "적정", "class": "NEUTRAL"}
         else: return {"level": "높음", "class": "GOOD"}
