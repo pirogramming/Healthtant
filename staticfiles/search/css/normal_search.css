@@ -1,0 +1,632 @@
+
+/* 식사등록페이지 전체 컨테이너 */
+.meal-register-container {
+    background-color: white; /* 회색 배경으로 변경 */
+    min-height: auto;
+    padding: 0;
+    font-family: 'Noto Sans KR', sans-serif;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* 검색 섹션 - base.css의 공통 스타일 사용 */
+
+/* 검색 관련 스타일 - base.css의 공통 스타일 사용 */
+
+/* 검색 결과 섹션 */
+.search-results-section {
+    background-color: white; /* 회색 배경 추가 */
+    padding: 20px;
+    flex: 1;
+    margin: 0 20px;
+    margin-top: 0;
+    min-height: auto; /* 자동 높이로 변경 */
+}
+
+.search-results-section h2 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #B7B5B5;
+    margin: 0 0 20px 0;
+    padding: 0;
+}
+
+.search-results-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding-bottom: 0px; /* 하단 패딩 추가 */
+}
+
+/* 제품 카드 */
+.food-card {
+    padding: 26px 19px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background-color: white;
+    border-radius: 12px;
+    border: 1px solid var(--neutral-slate-black-slate-black-50, #E8E9EA);
+    box-shadow: 0 4px 24px -6px rgba(64, 72, 82, 0.15);
+    transition: all 0.2s ease;
+}
+
+.food-card:last-child {
+    border-bottom: none;
+}
+
+.food-card:hover {
+    background-color: #f8f9fa;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* 제품 이미지 */
+.food-image {
+    flex-shrink: 0;
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #f8f9fa;
+}
+
+.food-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* 제품 정보 */
+.food-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.food-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.food-text-container {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+}
+
+.brand-tag {
+    background: rgba(86, 170, 178, 1);
+    color: white;
+    padding: 8px 1px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    flex-shrink: 0;
+    min-width: 30px;
+    text-align: center;
+    margin-top: 2px;
+}
+
+.food-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 4px 0;
+    line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.food-company {
+    font-size: 12px;
+    color: #666;
+    margin: 0;
+    line-height: 1.2;
+}
+
+/* 좋아요 버튼 */
+.favorite-btn {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: transparent;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+}
+
+.favorite-btn:hover {
+    background-color: #fff5f5;
+    transform: scale(1.1);
+}
+
+.favorite-btn .heart-path {
+    fill: none;
+    stroke: #999;
+    stroke-width: 2;
+    transition: all 0.2s ease;
+}
+
+.favorite-btn.active .heart-path {
+    fill: #FF4444;
+    stroke: #FF4444;
+}
+
+.favorite-btn:hover .heart-path {
+    stroke: #FF4444;
+}
+
+.favorite-btn.active:hover .heart-path {
+    fill: #FF6666;
+    stroke: #FF6666;
+}
+
+.favorite-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* 등록하기 버튼 */
+.register-btn {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 12px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.register-btn:hover {
+    background-color: #f0f8ff;
+    border-radius: 6px;
+}
+
+.plus-icon {
+    font-size: 16px;
+    font-weight: 600;
+    color: rgba(86, 170, 178, 1);
+    transition: color 0.2s;
+}
+
+.register-text {
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(86, 170, 178, 1);
+    transition: color 0.2s;
+}
+
+.no-results {
+    text-align: center;
+    padding: 40px 20px;
+    color: #666;
+    font-size: 14px;
+}
+
+/* 로딩 인디케이터 */
+.loading-indicator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    gap: 16px;
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #56AAB2;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-indicator p {
+    color: #666;
+    font-size: 14px;
+    margin: 0;
+}
+
+/* 더보기 버튼 */
+.load-more-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px 0;
+    width: 100%;
+    text-align: center;
+}
+
+.load-more-btn {
+    background: linear-gradient(135deg, #56AAB2 0%, #4A9BA3 100%);
+    color: white;
+    border: none;
+    padding: 12px 32px;
+    border-radius: 25px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0px 4px 16px rgba(86, 170, 178, 0.3);
+}
+
+.load-more-btn:hover {
+    background: linear-gradient(135deg, #4A9BA3 0%, #3F8A92 100%);
+    transform: translateY(-2px);
+    box-shadow: 0px 6px 20px rgba(86, 170, 178, 0.4);
+}
+
+.load-more-btn:active {
+    transform: translateY(0);
+}
+
+.load-more-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* 추가 카드 스타일 */
+.additional-card {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 2px dashed #56AAB2;
+    opacity: 0.8;
+    transition: all 0.3s ease;
+}
+
+.additional-card:hover {
+    opacity: 1;
+    transform: translateY(-2px);
+    box-shadow: 0px 8px 24px rgba(86, 170, 178, 0.2);
+}
+
+.additional-card .food-name {
+    color: #56AAB2;
+    font-weight: 600;
+}
+
+.additional-card .food-company {
+    color: #6c757d;
+    font-size: 12px;
+}
+
+.additional-card .brand-tag {
+    background: linear-gradient(135deg, #56AAB2 0%, #4A9BA3 100%);
+    color: white;
+}
+
+/* 스크롤바 제거 */
+.search-results-list {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+}
+
+.search-results-list::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+}
+
+/* 빈 상태 스타일 */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #666;
+}
+
+.empty-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+}
+
+.empty-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+.empty-sub {
+    font-size: 14px;
+    color: #999;
+}
+
+/* 검색 아이콘 호버 툴팁 */
+.search-button {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.search-icon {
+    width: 20px;
+    height: 20px;
+    fill: #56AAB2;
+}
+
+/* 검색 입력창 패딩 조정 */
+.search-input {
+    padding-right: 40px;
+}
+
+.search-button::before {
+    content: "검색하기";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+    z-index: 1000;
+    margin-bottom: 8px;
+}
+
+.search-button::after {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: rgba(0, 0, 0, 0.8);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+    margin-bottom: 3px;
+}
+
+.search-button:hover::before,
+.search-button:hover::after {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* 빈 상태 스타일 */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #666;
+}
+
+.empty-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+}
+
+.empty-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+.empty-sub {
+    font-size: 14px;
+    color: #999;
+}
+
+/* 검색 아이콘 호버 툴팁 */
+.search-button {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.search-icon {
+    width: 20px;
+    height: 20px;
+    fill: #56AAB2;
+}
+
+/* 검색 입력창 패딩 조정 */
+.search-input {
+    padding-right: 40px;
+}
+
+.search-button::before {
+    content: "검색하기";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+    z-index: 1000;
+    margin-bottom: 8px;
+}
+
+.search-button::after {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: rgba(0, 0, 0, 0.8);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+    margin-bottom: 3px;
+}
+
+.search-button:hover::before,
+.search-button:hover::after {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .meal-register-container {
+        max-width: 100%;
+        margin: 0;
+    }
+    
+    .search-section {
+        margin: 0 15px;
+        padding: 15px;
+        gap: 10px;
+        margin-top: 15px;
+    }
+    
+    .search-container {
+        max-width: none;
+    }
+    
+    .search-input {
+        font-size: 13px;
+        border-radius: 100px;
+        border: 1px solid var(--neutral-slate-black-slate-black-50, #E8E9EA);
+        background: var(--neutral-white-pure-white, #FFF);
+        box-shadow: 0 6px 40px -10px rgba(64, 72, 82, 0.15);
+    }
+    
+    .search-placeholder {
+        font-size: 13px;
+    }
+    
+    .cancel-btn {
+        font-size: 16px;
+        padding: 6px 10px;
+    }
+    
+    .search-results-section {
+        margin: 0 15px;
+        padding: 15px;
+        margin-top: 0;
+    }
+    
+    .search-results-section h2 {
+        font-size: 15px;
+        margin-bottom: 15px;
+    }
+    
+    .food-image {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .food-name {
+        font-size: 13px;
+    }
+    
+    .food-company {
+        font-size: 11px;
+    }
+    
+    .favorite-btn {
+        width: 36px;
+        height: 36px;
+    }
+}
+
+@media (max-width: 480px) {
+    .meal-register-container {
+        max-width: 100%;
+        margin: 0;
+    }
+    
+    .search-section {
+        margin: 0 12px;
+        padding: 12px;
+        gap: 8px;
+        margin-top: 12px;
+        flex-wrap: wrap;
+    }
+    
+    .search-container {
+        flex: 1;
+        min-width: 0;
+    }
+    
+    .search-input {
+        font-size: 12px;
+    }
+    
+    .search-placeholder {
+        font-size: 12px;
+    }
+    
+    .cancel-btn {
+        font-size: 16px;
+        padding: 5px 8px;
+    }
+    
+    .search-results-section {
+        margin: 0 12px;
+        padding: 12px;
+        margin-top: 0;
+    }
+    
+    .search-results-section h2 {
+        font-size: 14px;
+        margin-bottom: 12px;
+    }
+    
+    .food-image {
+        width: 45px;
+        height: 45px;
+    }
+    
+    .food-name {
+        font-size: 15px;
+    }
+    
+    .food-company {
+        font-size: 10px;
+    }
+    
+    .favorite-btn {
+        width: 32px;
+        height: 32px;
+    }
+}
+
