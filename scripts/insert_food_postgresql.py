@@ -148,9 +148,9 @@ def main():
     # 2) 매핑 - food_clean_data.csv 칼럼에 맞춰 수정
     csv_to_db = {
         'food_id': 'food_id',
-        'mallName': 'shop_name',
-        'lprice': 'price',
-        'hprice': 'discount_price',
+        'shop_name': 'mallName',
+        'price': 'lprice',
+        'discount_price': 'discount_price',
         'shop_url': 'shop_url',
         'image_url': 'image_url',
         # 영양 점수 필드 추가
@@ -215,7 +215,7 @@ def main():
     for c in float_cols:
         out[c] = out[c].apply(to_float)
 
-    bigint_cols = ['nutritional_value_standard_amount', 'price', 'discount_price']
+    bigint_cols = ['nutritional_value_standard_amount', 'lprice', 'discount_price']
     for c in bigint_cols:
         out[c] = out[c].apply(to_bigint)
 
