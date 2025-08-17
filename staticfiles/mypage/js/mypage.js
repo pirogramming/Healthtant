@@ -140,6 +140,22 @@ function performSearch() {
     console.log('검색어:', keyword);
 }
 
+// 즐겨찾기 토글 함수
+// function toggleFavorite(foodId, button) {
+//     // 즐겨찾기 토글 기능
+//     if (button.classList.contains('active')) {
+//         // 즐겨찾기 해제
+//         if (confirm('즐겨찾기에서 제거하시겠습니까?')) {
+//             // 즐겨찾기 제거 요청
+//             window.location.href = `/mypage/food/like/${foodId}/`;
+//         }
+//     }
+//     // else {
+//     //     // 즐겨찾기 추가
+//     //     button.classList.add('active');
+//     //     button.querySelector('.favorite-text').textContent = '+ 등록하기';
+//     // }
+// }
 
 // mypage.js
 //혹시 수정하고 싶다면 여기 toggleFavorite 함수 수정하면 됨
@@ -210,15 +226,7 @@ function toggleSubmitButton() {
 
 document.addEventListener('DOMContentLoaded', function() {
     // 로그아웃 모달 생성
-    // createLogoutModal();
-    
-    const logoutBtn = document.querySelector('.section-title');
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', function() {
-            createLogoutModal();
-            confirmLogout();
-        });
-    }
+    createLogoutModal();
     
     // ========================================
     // MYPAGE PROFILE 초기화

@@ -33,7 +33,7 @@
                 <div class="profile-section">
                     <div class="profile-picture-container">
                         <div class="profile-picture" id="profile-picture">
-                            {% if profile.profile_image_url and profile.profile_image_url != 'default.png' and profile.profile_image_url != 'None' %}
+                            {% comment %} {% if profile.profile_image_url and profile.profile_image_url != 'default.png' and profile.profile_image_url != 'None' %}
                                 <img src="{{ profile.profile_image_url }}" alt="프로필 이미지" style="width: 94px; height: 94px; border-radius: 50%; object-fit: cover;">
                             {% else %}
                                 <svg xmlns="http://www.w3.org/2000/svg" width="94" height="95" viewBox="0 0 94 95" fill="none">
@@ -48,6 +48,11 @@
                                         </clipPath>
                                     </defs>
                                 </svg>
+                            {% endif %} {% endcomment %}
+                            {% if profile.profile_image_url and profile.profile_image_url != 'default.png' and profile.profile_image_url != 'None' %}
+                                <img src="{{ profile.profile_image_url }}" alt="프로필 이미지" style="width: 94px; height: 94px; border-radius: 50%; object-fit: cover;">
+                            {% else %}
+                                <img src="{% static 'images/default.png' %}" alt="기본 프로필 이미지" style="width: 94px; height: 94px; border-radius: 50%; object-fit: cover;">
                             {% endif %}
                         </div>
                         <div class="camera-icon" onclick="document.getElementById('profile-image-input').click()">
