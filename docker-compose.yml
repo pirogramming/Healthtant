@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   web:
-    image: ghcr.io/<OWNER>/<REPO>:latest
+    image: ghcr.io/pirogramming/healthtant:latest
     container_name: healthtant_web
     restart: unless-stopped
     command: >
