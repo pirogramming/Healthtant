@@ -365,7 +365,7 @@ def search_start(request):
         qs = Food.objects.all() # DB에 있는 모든 Food를 모두 가져옴
         # 키워드가 있다면 필터링까지 진행
         if keyword:
-            qs = qs.filter(Q(food_name__icontains=keyword))
+            qs = qs.filter(Q(food_name__icontains=keyword)).order_by('-nutrition_score')
 
         # 원본 결과 ID 목록을 캐시에 저장해 둠 (추후 정렬과 범위 변경을 위함)
         ids = list(qs.values_list('food_id', flat=True))
