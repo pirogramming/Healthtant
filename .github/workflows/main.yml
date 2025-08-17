@@ -66,6 +66,13 @@ jobs:
             
             cd $HOME/Healthtant
             echo "📂 Changed to: $(pwd)"
+            
+            # Git에서 최신 코드 받기
+            echo "🔄 Updating code from git..."
+            git fetch origin main
+            git reset --hard origin/main
+            echo "✅ Code updated"
+            
             echo "📋 Directory contents:"
             ls -la . || true
             
