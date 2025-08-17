@@ -48,74 +48,132 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          timeout: 300s
+          timeout: 600s
+          command_timeout: 300s
           script: |
             set -euo pipefail
+            
+            echo "🚀 Starting deployment at $(date)"
+            echo "📂 Working directory: $(pwd)"
+            
+            # 디렉토리 확인 및 이동
+            if [ ! -d "~/Healthtant" ]; then
+              echo "❌ Directory ~/Healthtant not found!"
+              echo "📋 Available directories:"
+              ls -la ~/ || true
+              exit 1
+            fi
+            
             cd ~/Healthtant
-
-            echo "🚀 Starting deployment..."
+            echo "📂 Changed to: $(pwd)"
+            echo "📋 Directory contents:"
+            ls -la . || true
             
-            # Docker 로그인 (병렬 처리 가능하도록)
-            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ secrets.USERNAME }} --password-stdin
-
+            # Docker 및 docker-compose 확인
+            echo "🐳 Checking Docker..."
+            if ! command -v docker &> /dev/null; then
+              echo "❌ Docker not found!"
+              exit 1
+            fi
+            
+            if ! command -v docker-compose &> /dev/null; then
+              echo "❌ docker-compose not found!"
+              exit 1
+            fi
+            
+            echo "✅ Docker version: $(docker --version)"
+            echo "✅ Docker-compose version: $(docker-compose --version)"
+            
+            # Docker 로그인 시도
+            echo "🔐 Logging into Docker registry..."
+            if ! echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ secrets.USERNAME }} --password-stdin; then
+              echo "❌ Docker login failed!"
+              exit 1
+            fi
+            echo "✅ Docker login successful"
+            
+            # docker-compose.yml 확인
+            if [ ! -f "docker-compose.yml" ]; then
+              echo "❌ docker-compose.yml not found!"
+              ls -la . || true
+              exit 1
+            fi
+            
             # 현재 실행 중인 컨테이너 확인
-            CURRENT_WEB=$(docker-compose ps -q web 2>/dev/null || echo "")
+            echo "🔍 Checking current containers..."
+            docker-compose ps || true
             
-            # 1. 이미지 풀 (백그라운드)
+            # 이미지 풀
             echo "📦 Pulling new images..."
-            docker-compose pull web &
-            PULL_PID=$!
-            
-            # 2. 마이그레이션 체크 (필요한 경우만)
-            echo "🔍 Checking migrations..."
-            if [ -n "$CURRENT_WEB" ]; then
-              PENDING=$(docker-compose exec -T web python manage.py showmigrations --plan | grep '\[ \]' | wc -l || echo "0")
-              if [ "$PENDING" -eq "0" ]; then
-                echo "✅ No pending migrations"
-                SKIP_MIGRATE=true
-              else
-                echo "📋 Found $PENDING pending migrations"
-                SKIP_MIGRATE=false
-              fi
-            else
-              echo "🆕 First deployment - will run migrations"
-              SKIP_MIGRATE=false
+            if ! timeout 180 docker-compose pull; then
+              echo "❌ Image pull failed or timed out!"
+              exit 1
             fi
+            echo "✅ Images pulled successfully"
             
-            # 이미지 풀 완료 대기
-            wait $PULL_PID
-            echo "✅ Images pulled"
-            
-            # 3. 빠른 재시작
-            echo "🔄 Restarting services..."
-            docker-compose up -d --remove-orphans --no-recreate web
-            
-            # 4. 조건부 마이그레이션 실행
-            if [ "$SKIP_MIGRATE" = "false" ]; then
-              echo "🔧 Running migrations..."
-              docker-compose exec -T web python manage.py migrate --noinput
+            # 서비스 시작/재시작
+            echo "🔄 Starting services..."
+            if ! timeout 120 docker-compose up -d --remove-orphans; then
+              echo "❌ Service start failed or timed out!"
+              echo "📋 Container logs:"
+              docker-compose logs --tail=50 || true
+              exit 1
             fi
+            echo "✅ Services started"
             
-            # 5. 정적파일만 필요시 수집 (개발환경에서는 스킵)
-            if [ "${DJANGO_SETTINGS_MODULE:-}" = "config.settings.production" ]; then
-              echo "📁 Collecting static files..."
-              docker-compose exec -T web python manage.py collectstatic --noinput --clear &
-            fi
-            
-            # 6. 빠른 헬스 체크
+            # 간단한 헬스 체크
             echo "🏥 Health check..."
-            for i in {1..15}; do
-              if docker-compose exec -T web python scripts/health_check.py; then
-                echo "✅ Deployment successful in $(($i * 2)) seconds!"
+            sleep 5  # 컨테이너 시작 대기
+            
+            for i in {1..10}; do
+              echo "🔍 Health check attempt $i/10..."
+              
+              # 컨테이너 상태 확인
+              if ! docker-compose ps | grep -q "Up"; then
+                echo "⚠️  Containers not running properly"
+                docker-compose ps || true
+                docker-compose logs --tail=20 web || true
+                if [ $i -eq 10 ]; then
+                  echo "❌ Health check failed - containers not running"
+                  exit 1
+                fi
+                sleep 3
+                continue
+              fi
+              
+              # 웹 서비스 확인 (포트 체크)
+              if docker-compose exec -T web timeout 10 python -c "
+import socket
+import sys
+try:
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.settimeout(5)
+    result = sock.connect_ex(('localhost', 8000))
+    sock.close()
+    if result == 0:
+        print('✅ Port 8000 is open')
+        sys.exit(0)
+    else:
+        print('❌ Port 8000 is not accessible')
+        sys.exit(1)
+except Exception as e:
+    print(f'❌ Health check error: {e}')
+    sys.exit(1)
+"; then
+                echo "✅ Deployment successful!"
+                echo "📊 Final container status:"
+                docker-compose ps || true
                 break
               fi
-              if [ $i -eq 15 ]; then
-                echo "❌ Health check failed after 30 seconds"
-                echo "📋 Container logs:"
-                docker-compose logs --tail=20 web
+              
+              if [ $i -eq 10 ]; then
+                echo "❌ Health check failed after 10 attempts"
+                echo "📋 Final container logs:"
+                docker-compose logs --tail=30 web || true
                 exit 1
               fi
-              sleep 2
+              
+              sleep 3
             done
             
-            wait # 백그라운드 작업 완료 대기
+            echo "🎉 Deployment completed at $(date)"
