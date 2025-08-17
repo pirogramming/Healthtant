@@ -149,7 +149,7 @@ def main():
     csv_to_db = {
         'food_id': 'food_id',
         'mallName': 'shop_name',
-        'lprice': 'lprice',
+        'lprice': 'price',
         'hprice': 'discount_price',
         'shop_url': 'shop_url',
         'image_url': 'image_url',
