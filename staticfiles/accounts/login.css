@@ -1,24 +1,12 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
 body {
-    font-family: "Koulen", "inter", Helvetica, Arial, sans-serif;
-    background-color: #FFF;
     min-height: 100vh;
     display: flex;
     justify-content: center;
-    align-items: center;
-    width: 402px;
-    height: 874px;
-    margin: 0 auto;
 }
 
 .nav-bar {
     
-    height: 62px;
+    height: 40px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -42,13 +30,9 @@ body {
 .container {
     background-color: var(--neutralwhitepure-white);
     width: 100%;
-    max-width: 375px;
+    max-width: 450px;
     min-height: 100vh;
     position: relative;
-    display: flex;
-    flex-direction: column;
-    border-radius: 8px;
-    margin: 20px;
 }
 
 .header {
@@ -78,6 +62,14 @@ body {
     font-weight: 400;
     color: #56AAB2;
     letter-spacing: 2px;
+    cursor: pointer !important;
+    transition: color 0.3s ease;
+    user-select: none;
+}
+
+.brand-name:hover {
+    color: #4A9AA2;
+    cursor: pointer !important;
 }
 
 .login-form {
