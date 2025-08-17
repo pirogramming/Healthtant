@@ -89,7 +89,7 @@ def food_to_dict(food, user=None, favorite_ids=None):
         "trans_fatty_acids": safe_float(getattr(food, "trans_fatty_acids", 0)),
         "serving_size": safe_float(getattr(food, "serving_size", 0)),
         "weight": safe_float(getattr(food, "weight", 0)),
-        "company_name": safe_str(getattr(food, "shop_name", "") or getattr(food, "company_name", "") or ""),
+        "company_name": safe_str(getattr(food, "mallName", "") or getattr(food, "company_name", "") or ""),
         "score": safe_float(getattr(food, "nutrition_score", 0)),
         "letter_grade": safe_str(getattr(food, "nutri_score_grade", "") or letterGrade(food) or ""),
         "nutri_score_grade": safe_str(getattr(food, "nutri_score_grade", "") or letterGrade(food) or ""),
