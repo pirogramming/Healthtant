@@ -215,7 +215,7 @@ def main():
     for c in float_cols:
         out[c] = out[c].apply(to_float)
 
-    bigint_cols = ['nutritional_value_standard_amount', 'lprice', 'discount_price']
+    bigint_cols = ['nutritional_value_standard_amount', 'price', 'discount_price']
     for c in bigint_cols:
         out[c] = out[c].apply(to_bigint)
 
