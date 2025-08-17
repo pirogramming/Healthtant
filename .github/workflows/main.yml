@@ -91,6 +91,9 @@ jobs:
 
             echo "📦 Pulling images..."
             timeout 180 $COMPOSE pull
+            echo "🧹 Cleaning up old containers..."
+            $COMPOSE down --remove-orphans || true
+            docker system prune -f || true
             echo "🔄 Starting services..."
             timeout 120 $COMPOSE up -d --remove-orphans
             echo "✅ Services started"
