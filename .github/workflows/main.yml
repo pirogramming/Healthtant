@@ -48,18 +48,74 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
+          timeout: 300s
           script: |
             set -euo pipefail
             cd ~/Healthtant
 
-            # 로그인 및 이미지 풀 병렬 처리
-            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ secrets.USERNAME }} --password-stdin
+            echo "🚀 Starting deployment..."
             
-            # 이미지 풀 후 즉시 재시작 (다운타임 최소화)
-            docker-compose pull
-            docker-compose up -d --remove-orphans
+            # Docker 로그인 (병렬 처리 가능하도록)
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ secrets.USERNAME }} --password-stdin
 
-            # 마이그레이션과 정적파일 수집을 백그라운드에서 실행
-            docker-compose exec -T web python manage.py migrate --noinput &
-            docker-compose exec -T web python manage.py collectstatic --noinput &
-            wait
+            # 현재 실행 중인 컨테이너 확인
+            CURRENT_WEB=$(docker-compose ps -q web 2>/dev/null || echo "")
+            
+            # 1. 이미지 풀 (백그라운드)
+            echo "📦 Pulling new images..."
+            docker-compose pull web &
+            PULL_PID=$!
+            
+            # 2. 마이그레이션 체크 (필요한 경우만)
+            echo "🔍 Checking migrations..."
+            if [ -n "$CURRENT_WEB" ]; then
+              PENDING=$(docker-compose exec -T web python manage.py showmigrations --plan | grep '\[ \]' | wc -l || echo "0")
+              if [ "$PENDING" -eq "0" ]; then
+                echo "✅ No pending migrations"
+                SKIP_MIGRATE=true
+              else
+                echo "📋 Found $PENDING pending migrations"
+                SKIP_MIGRATE=false
+              fi
+            else
+              echo "🆕 First deployment - will run migrations"
+              SKIP_MIGRATE=false
+            fi
+            
+            # 이미지 풀 완료 대기
+            wait $PULL_PID
+            echo "✅ Images pulled"
+            
+            # 3. 빠른 재시작
+            echo "🔄 Restarting services..."
+            docker-compose up -d --remove-orphans --no-recreate web
+            
+            # 4. 조건부 마이그레이션 실행
+            if [ "$SKIP_MIGRATE" = "false" ]; then
+              echo "🔧 Running migrations..."
+              docker-compose exec -T web python manage.py migrate --noinput
+            fi
+            
+            # 5. 정적파일만 필요시 수집 (개발환경에서는 스킵)
+            if [ "${DJANGO_SETTINGS_MODULE:-}" = "config.settings.production" ]; then
+              echo "📁 Collecting static files..."
+              docker-compose exec -T web python manage.py collectstatic --noinput --clear &
+            fi
+            
+            # 6. 빠른 헬스 체크
+            echo "🏥 Health check..."
+            for i in {1..15}; do
+              if docker-compose exec -T web python scripts/health_check.py; then
+                echo "✅ Deployment successful in $(($i * 2)) seconds!"
+                break
+              fi
+              if [ $i -eq 15 ]; then
+                echo "❌ Health check failed after 30 seconds"
+                echo "📋 Container logs:"
+                docker-compose logs --tail=20 web
+                exit 1
+              fi
+              sleep 2
+            done
+            
+            wait # 백그라운드 작업 완료 대기
