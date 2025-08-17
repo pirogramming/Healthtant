@@ -5,10 +5,10 @@
   padding: 20px;
 }
 
- .header-divider {
+.header-divider {
   height: 1px;
   background-color: #e9ecef;
- }
+}
 
 .back-button {
   background: none;
@@ -272,34 +272,52 @@
   flex-shrink: 0;
 }
 
+/* 좋아요 버튼 */
 .favorite-btn {
-  width: 48px;
-  height: 48px;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: transparent;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  background: #fff;
-  transition: box-shadow .2s ease, transform .1s ease;
-  border-radius: 25px;
-  border: 1px solid var(--Gray-5, #E0E0E0);
+  transition: all 0.2s ease;
+  padding: 0;
 }
 
-/* 좋아요(하트) 아이콘 상태 */
-.favorite-btn svg { width: 35px; height: 33px; }
-.favorite-btn .heart-path {
-  fill: transparent;          
-  stroke: #9E9E9E;            
-  stroke-width: 2px;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  transition: fill .2s ease, stroke .2s ease;
+.favorite-btn:hover {
+  background-color: #fff5f5;
+  transform: scale(1.1);
 }
-.favorite-btn:hover { background: #f8f9fa; }
+
+.favorite-btn .heart-path {
+  fill: none;
+  stroke: #999;
+  stroke-width: 2;
+  transition: all 0.2s ease;
+}
+
 .favorite-btn.active .heart-path {
-  fill: #EB5757;              
-  stroke: #EB5757;
-}   
+  fill: #FF4444;
+  stroke: #FF4444;
+}
+
+.favorite-btn:hover .heart-path {
+  stroke: #FF4444;
+}
+
+.favorite-btn.active:hover .heart-path {
+  fill: #FF6666;
+  stroke: #FF6666;
+}
+
+.favorite-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
 
 /* 추가 카드 스타일 */
 .additional-card {
@@ -486,3 +504,9 @@
     transform: translate(-50%, 20px);
   }
 }
+
+// 뒤로가기 버튼 클릭 시 홈페이지로 이동
+document.querySelector('.back-button').addEventListener('click', function(e) {
+    e.preventDefault();
+    window.location.href = '/';
+});
