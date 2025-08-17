@@ -92,7 +92,7 @@
 | :------: |  :------: | :------: |
 | <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/1cff1cac-7dd9-4c9b-b283-d0477911fdaa" /> | <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/2a11c8bd-b724-45c9-846f-f77eb2743ca6" /> | <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/abccd912-6fb0-43ef-bcf2-52af9da0a38a" /> |
 
-#### 식사 등록
+#### 식단 기록
 * 사용자가 먹은 가공식품을 **기록**할 수 있습니다.
 * **'오늘의 식사 추가하기'** 또는 **'+새 식사'** 를 눌러 식품을 검색하러 이동할 수 있습니다.
 * 식품을 검색하기 전에 앞서 최근에 먹은 식품을 등록할 수 있게 표시해줍니다.
@@ -103,11 +103,11 @@
 | <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/085a99b0-c5f7-4c45-8464-dae1514de5e2" /> | <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/1b5ecbd8-ec43-4d68-9bee-3b2704d7efd9" /> | <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/06a5ad1a-d7b2-40c4-bd43-1fa00e8eecd0" /> | <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/4ed52c81-bb18-4da1-8495-b887e1dab182" /> |
 
 #### 분석하기
-* **식사 등록** 페이지에서 사용자가 등록한 식사를 바탕으로 식사 패턴 및 영양 섭취에 대한 분석을 제공합니다.
+* **식사 등록** 페이지에서 사용자가 등록한 식사를 바탕으로 식사 패턴 및 영양 섭취에 대한 **분석**을 제공합니다.
 * 분석 시작 날짜와 분석 끝 날짜를 선택하여 분석할 수 있습니다.
-* "1. 식사 분석", "2. 영양 섭취 분석", "3. 2020 한국인 영양소 섭취 기준과 비교" 를 제공합니다.
-* "1. 식사 분석" 탭 에서 "더 자세하게 식사 분석하기" 를 클릭하면 식사 패턴에 대해 더 자세한 분석을 확인할 수 있습니다.
-* "2. 영양 섭취 분석" 탭에서 "더 다양한 영양소에 대한 통계치 보러가기" 를 클릭하면 상세 영양소의 섭취량 통계를 확인할 수 있습니다.
+* **"1. 식사 분석", "2. 영양 섭취 분석", "3. 2020 한국인 영양소 섭취 기준과 비교"** 를 제공합니다.
+* "1. 식사 분석" 탭 에서 **"더 자세하게 식사 분석하기"** 를 클릭하면 식사 패턴에 대해 더 자세한 분석을 확인할 수 있습니다.
+* "2. 영양 섭취 분석" 탭에서 **"더 다양한 영양소에 대한 통계치 보러가기"** 를 클릭하면 상세 영양소의 섭취량 통계를 확인할 수 있습니다.
 
 | **분석 날짜 선택** | **식사 분석 탭** | **영양 섭취 분석 탭** | **2020 한국인 영양소 섭취 기준 탭 (1)** |
 | :------: |  :------: | :------: |  :------: |
@@ -116,3 +116,19 @@
 | **2020 한국인 영양소 섭취 기준 탭 (2)** | **더 자세하게 식사 분석하기 (1)** | **더 자세하게 식사 분석하기 (2)** | **더 자세하게 식사 분석하기 (3)** |
 | :------: |  :------: | :------: |  :------: |
 | <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/e12385e8-159f-4de3-9dcb-db433315d990" /> | <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/dd7016d2-5487-44c0-b219-5034f1b38061" /> | <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/6c5dc0a5-c43c-49bb-b4ee-522d2b7ebb75" /> | <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/163a49d1-53ca-44c0-be5e-110feb085613" /> |
+
+| **더 다양한 영양소에 대한 통계치 보러가기** (1) | **더 다양한 영양소에 대한 통계치 보러가기** (2) | **더 다양한 영양소에 대한 통계치 보러가기** (3) | **더 다양한 영양소에 대한 통계치 보러가기** (4) |
+| :------: |  :------: | :------: |  :------: |
+| <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/5edabd1e-7ad6-4278-8797-ed30e2a2fd25" /> | <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/e701993d-c550-4572-a65b-5185373b6048" /> | <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/2d99dfd1-11c7-4d0e-9235-a3c2db0c4cca" /> | <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/5d7e3e88-318d-4a03-aaec-c42a5f50f51c" /> |
+
+#### 상세검색
+* 로그인을 해야만 사용할 수 있는 검색 기능입니다.
+* 기본적으로 사용자가 **부족하거나 과다하게 섭취 중인 영양소를 기준으로 음식을 선별하여 추천**합니다.
+* 키워드를 입력해서 식품을 검색할 수 있습니다. 검색 결과는 **영양 점수가 높은 것부터** 위쪽에 출력됩니다.
+* 하트 버튼을 눌러 검색한 식품을 **즐겨찾기**에 추가하거나, 식품 카드를 눌러 식품의 **상세 정보 페이지**로 이동할 수 있습니다.
+* 현재 검색 결과를 유지하면서 **정렬 기준을 바꿀 수 있습니다.**
+* 현재 검색 결과를 유지하면서 **영양소 범위를 설정**하여 필터링 할 수 있습니다. ( ex | 열량이 100kcal ~ 200kcal 이면서 탄수화물 100g ~ 200g 사이의 음식만 필터링 )
+
+| **상세 검색(음식 추천)** | **상세 검색 페이지** | **정렬 기준** | **영양소 범위 설정** |
+| :------: |  :------: | :------: |  :------: |
+| <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/8ebc9190-9cd7-4680-b269-f1c16ee0f3c2" /> | <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/42385a51-eb98-4b68-8526-8ced4e68cf08" /> | <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/5c6b8de0-b19e-46e5-8810-d38250128941" /> | <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/2ed696bc-c3d3-4177-b855-da308a50ecf1" /> |
