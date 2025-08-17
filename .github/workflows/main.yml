@@ -16,7 +16,7 @@ jobs:
       - name: Log in to GHCR
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-      - name: Build & Push image (tag: sha + latest)
+      - name: "Build & Push image (tag: sha + latest)"
         env:
           IMAGE: ghcr.io/${{ github.repository }}
           TAG: ${{ github.sha }}
