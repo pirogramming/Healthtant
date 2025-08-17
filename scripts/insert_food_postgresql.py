@@ -345,7 +345,7 @@ def main():
 
     # Debug counters for incoming media fields
     try:
-        _img_nonempty = int((out['image_url'].notna()) & (out['image_url'].astype(str).str.strip() != '')).sum()
+        _img_nonempty = ((out['image_url'].notna()) & (out['image_url'].astype(str).str.strip() != '')).sum()
         _url_nonempty = int((out['shop_url'].notna()) & (out['shop_url'].astype(str).str.strip() != '')).sum()
         safe_print("incoming non-empty image_url rows:", _img_nonempty)
         safe_print("incoming non-empty shop_url rows:", _url_nonempty)
