@@ -38,7 +38,7 @@ jobs:
           cache-to: type=gha,mode=max
           platforms: linux/amd64
 
-  deploy:
+    deploy:
     needs: build_and_push
     runs-on: ubuntu-latest
     steps:
@@ -46,129 +46,81 @@ jobs:
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
+          username: ${{ secrets.USERNAME }} 
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           timeout: 600s
           command_timeout: 300s
           script: |
             set -euo pipefail
-            
+
             echo "🚀 Starting deployment at $(date)"
-            echo "📂 Working directory: $(pwd)"
-            
-            # 디렉토리 확인 및 이동
-            if [ ! -d "$HOME/Healthtant" ]; then
-              echo "❌ Directory $HOME/Healthtant not found!"
-              echo "📋 Available directories:"
-              ls -la $HOME/ || true
-              exit 1
+            echo "whoami=$(whoami)  HOME=$HOME"
+
+            # 1) 프로젝트 경로 찾기 (없으면 최초 클론)
+            if   [ -d /root/Healthtant ]; then cd /root/Healthtant
+            elif [ -d /home/ubuntu/Healthtant ]; then cd /home/ubuntu/Healthtant
+            elif [ -d "$HOME/Healthtant" ]; then cd "$HOME/Healthtant"
+            else
+              echo "📦 First-time setup: cloning repo to /opt/apps"
+              sudo mkdir -p /opt/apps && sudo chown -R "$(whoami)":"$(whoami)" /opt/apps
+              cd /opt/apps
+              git clone --depth 1 https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/pirogramming/Healthtant.git
+              cd Healthtant
             fi
-            
-            cd $HOME/Healthtant
-            echo "📂 Changed to: $(pwd)"
-            
-            # Git에서 최신 코드 받기
+            echo "📂 Using project dir: $(pwd)"
+
+            # 2) 코드 최신화
             echo "🔄 Updating code from git..."
             git fetch origin main
             git reset --hard origin/main
             echo "✅ Code updated"
-            
-            echo "📋 Directory contents:"
-            ls -la . || true
-            
-            # Docker 및 docker-compose 확인
-            echo "🐳 Checking Docker..."
-            if ! command -v docker &> /dev/null; then
-              echo "❌ Docker not found!"
-              exit 1
+
+            # 3) compose 명령 감지(없으면 설치)
+            if docker compose version >/dev/null 2>&1; then COMPOSE="docker compose";
+            elif docker-compose --version >/dev/null 2>&1; then COMPOSE="docker-compose";
+            else
+              echo "🧩 Installing docker compose plugin..."
+              sudo apt-get update -y
+              sudo apt-get install -y docker-compose-plugin
+              COMPOSE="docker compose"
             fi
-            
-            if ! command -v docker-compose &> /dev/null; then
-              echo "❌ docker-compose not found!"
-              exit 1
-            fi
-            
-            echo "✅ Docker version: $(docker --version)"
-            echo "✅ Docker-compose version: $(docker-compose --version)"
-            
-            # Docker 로그인 시도
-            echo "🔐 Logging into Docker registry..."
-            if ! echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ secrets.USERNAME }} --password-stdin; then
-              echo "❌ Docker login failed!"
-              exit 1
-            fi
+            echo "✅ Using: $COMPOSE"
+
+            # 4) GHCR 로그인 (actor 사용)
+            echo "🔐 Logging into GHCR..."
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
             echo "✅ Docker login successful"
-            
-            # docker-compose.yml 확인
-            if [ ! -f "docker-compose.yml" ]; then
-              echo "❌ docker-compose.yml not found!"
-              ls -la . || true
-              exit 1
-            fi
-            
-            # 현재 실행 중인 컨테이너 확인
-            echo "🔍 Checking current containers..."
-            docker-compose ps || true
-            
-            # 이미지 풀
-            echo "📦 Pulling new images..."
-            if ! timeout 180 docker-compose pull; then
-              echo "❌ Image pull failed or timed out!"
-              exit 1
-            fi
-            echo "✅ Images pulled successfully"
-            
-            # 기존 컨테이너 강제 정리 (호환성 문제 해결)
-            echo "🧹 Cleaning up old containers..."
-            docker-compose down --remove-orphans || true
-            docker system prune -f --volumes || true
-            
-            # 서비스 시작/재시작
+
+            # 5) compose 파일 확인
+            test -f docker-compose.yml || { echo "❌ docker-compose.yml not found"; exit 1; }
+
+            # 6) 이미지 pull & 기동
+            echo "📦 Pulling images..."
+            timeout 180 $COMPOSE pull
             echo "🔄 Starting services..."
-            if ! timeout 120 docker-compose up -d; then
-              echo "❌ Service start failed or timed out!"
-              echo "📋 Container logs:"
-              docker-compose logs --tail=50 || true
-              exit 1
-            fi
+            timeout 120 $COMPOSE up -d --remove-orphans
             echo "✅ Services started"
-            
-            # 간단한 헬스 체크
+
+            # 7) 헬스 체크
             echo "🏥 Health check..."
-            sleep 5  # 컨테이너 시작 대기
-            
+            sleep 5
             for i in {1..10}; do
               echo "🔍 Health check attempt $i/10..."
-              
-              # 컨테이너 상태 확인
-              if ! docker-compose ps | grep -q "Up"; then
-                echo "⚠️  Containers not running properly"
-                docker-compose ps || true
-                docker-compose logs --tail=20 web || true
-                if [ $i -eq 10 ]; then
-                  echo "❌ Health check failed - containers not running"
-                  exit 1
-                fi
-                sleep 3
-                continue
+              if ! $COMPOSE ps | grep -q "Up"; then
+                $COMPOSE ps || true
+                $COMPOSE logs --tail=50 web || true
+                [ $i -eq 10 ] && { echo "❌ Containers not running"; exit 1; }
+                sleep 3; continue
               fi
-              
-              # 웹 서비스 확인 (포트 체크)
-              if docker-compose exec -T web timeout 10 python -c 'import socket; import sys; sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM); sock.settimeout(5); result = sock.connect_ex(("localhost", 8000)); sock.close(); print("✅ Port 8000 is open" if result == 0 else "❌ Port 8000 is not accessible"); sys.exit(0 if result == 0 else 1)'; then
+
+              if $COMPOSE exec -T web timeout 10 python -c 'import socket,sys; s=socket.socket(); s.settimeout(5); r=s.connect_ex(("localhost",8000)); s.close(); print("✅ 8000 open" if r==0 else "❌ 8000 closed"); sys.exit(0 if r==0 else 1)'; then
                 echo "✅ Deployment successful!"
-                echo "📊 Final container status:"
-                docker-compose ps || true
+                $COMPOSE ps || true
                 break
               fi
-              
-              if [ $i -eq 10 ]; then
-                echo "❌ Health check failed after 10 attempts"
-                echo "📋 Final container logs:"
-                docker-compose logs --tail=30 web || true
-                exit 1
-              fi
-              
+
+              [ $i -eq 10 ] && { echo "❌ Health check failed"; $COMPOSE logs --tail=100 web || true; exit 1; }
               sleep 3
             done
-            
+
             echo "🎉 Deployment completed at $(date)"
