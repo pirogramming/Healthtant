@@ -381,3 +381,8 @@ function loadMoreProducts() {
     window.advancedSearch.loadMoreProducts();
   }
 }
+
+// 홈페이지로 이동하는 전역 함수
+function goToHome() {
+  window.location.href = '/';
+}

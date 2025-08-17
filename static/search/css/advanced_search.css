@@ -504,3 +504,9 @@
     transform: translate(-50%, 20px);
   }
 }
+
+// 뒤로가기 버튼 클릭 시 홈페이지로 이동
+document.querySelector('.back-button').addEventListener('click', function(e) {
+    e.preventDefault();
+    window.location.href = '/';
+});
