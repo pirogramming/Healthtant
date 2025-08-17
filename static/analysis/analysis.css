@@ -657,24 +657,6 @@ a{
   height: 100%;
 }
 
-/* .compare-krda-card .y-axis{
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: flex-end;
-  width: 30px;
-  margin-right: 10px;
-  height: 190px;
-} */
-
-/* .compare-krda-card .y-label{
-  font-size: 10px;
-  color: #999;
-  font-weight: 500;
-  line-height: 1;
-  font-family: Inter;
-} */
-
 .compare-krda-card .bars-container{
   flex: 1;
   display: flex;
