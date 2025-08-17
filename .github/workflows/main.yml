@@ -39,88 +39,88 @@ jobs:
           platforms: linux/amd64
 
     deploy:
-    needs: build_and_push
-    runs-on: ubuntu-latest
-    steps:
-      - name: Deploy to server
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }} 
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          timeout: 600s
-          command_timeout: 300s
-          script: |
-            set -euo pipefail
+      needs: build_and_push
+      runs-on: ubuntu-latest
+      steps:
+        - name: Deploy to server
+          uses: appleboy/ssh-action@v1.0.3
+          with:
+            host: ${{ secrets.HOST }}
+            username: ${{ secrets.USERNAME }} 
+            key: ${{ secrets.SSH_PRIVATE_KEY }}
+            timeout: 600s
+            command_timeout: 300s
+            script: |
+              set -euo pipefail
 
-            echo "🚀 Starting deployment at $(date)"
-            echo "whoami=$(whoami)  HOME=$HOME"
+              echo "🚀 Starting deployment at $(date)"
+              echo "whoami=$(whoami)  HOME=$HOME"
 
-            # 1) 프로젝트 경로 찾기 (없으면 최초 클론)
-            if   [ -d /root/Healthtant ]; then cd /root/Healthtant
-            elif [ -d /home/ubuntu/Healthtant ]; then cd /home/ubuntu/Healthtant
-            elif [ -d "$HOME/Healthtant" ]; then cd "$HOME/Healthtant"
-            else
-              echo "📦 First-time setup: cloning repo to /opt/apps"
-              sudo mkdir -p /opt/apps && sudo chown -R "$(whoami)":"$(whoami)" /opt/apps
-              cd /opt/apps
-              git clone --depth 1 https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/pirogramming/Healthtant.git
-              cd Healthtant
-            fi
-            echo "📂 Using project dir: $(pwd)"
-
-            # 2) 코드 최신화
-            echo "🔄 Updating code from git..."
-            git fetch origin main
-            git reset --hard origin/main
-            echo "✅ Code updated"
-
-            # 3) compose 명령 감지(없으면 설치)
-            if docker compose version >/dev/null 2>&1; then COMPOSE="docker compose";
-            elif docker-compose --version >/dev/null 2>&1; then COMPOSE="docker-compose";
-            else
-              echo "🧩 Installing docker compose plugin..."
-              sudo apt-get update -y
-              sudo apt-get install -y docker-compose-plugin
-              COMPOSE="docker compose"
-            fi
-            echo "✅ Using: $COMPOSE"
-
-            # 4) GHCR 로그인 (actor 사용)
-            echo "🔐 Logging into GHCR..."
-            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-            echo "✅ Docker login successful"
-
-            # 5) compose 파일 확인
-            test -f docker-compose.yml || { echo "❌ docker-compose.yml not found"; exit 1; }
-
-            # 6) 이미지 pull & 기동
-            echo "📦 Pulling images..."
-            timeout 180 $COMPOSE pull
-            echo "🔄 Starting services..."
-            timeout 120 $COMPOSE up -d --remove-orphans
-            echo "✅ Services started"
-
-            # 7) 헬스 체크
-            echo "🏥 Health check..."
-            sleep 5
-            for i in {1..10}; do
-              echo "🔍 Health check attempt $i/10..."
-              if ! $COMPOSE ps | grep -q "Up"; then
-                $COMPOSE ps || true
-                $COMPOSE logs --tail=50 web || true
-                [ $i -eq 10 ] && { echo "❌ Containers not running"; exit 1; }
-                sleep 3; continue
+              # 1) 프로젝트 경로 찾기 (없으면 최초 클론)
+              if   [ -d /root/Healthtant ]; then cd /root/Healthtant
+              elif [ -d /home/ubuntu/Healthtant ]; then cd /home/ubuntu/Healthtant
+              elif [ -d "$HOME/Healthtant" ]; then cd "$HOME/Healthtant"
+              else
+                echo "📦 First-time setup: cloning repo to /opt/apps"
+                sudo mkdir -p /opt/apps && sudo chown -R "$(whoami)":"$(whoami)" /opt/apps
+                cd /opt/apps
+                git clone --depth 1 https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/pirogramming/Healthtant.git
+                cd Healthtant
               fi
+              echo "📂 Using project dir: $(pwd)"
 
-              if $COMPOSE exec -T web timeout 10 python -c 'import socket,sys; s=socket.socket(); s.settimeout(5); r=s.connect_ex(("localhost",8000)); s.close(); print("✅ 8000 open" if r==0 else "❌ 8000 closed"); sys.exit(0 if r==0 else 1)'; then
-                echo "✅ Deployment successful!"
-                $COMPOSE ps || true
-                break
+              # 2) 코드 최신화
+              echo "🔄 Updating code from git..."
+              git fetch origin main
+              git reset --hard origin/main
+              echo "✅ Code updated"
+
+              # 3) compose 명령 감지(없으면 설치)
+              if docker compose version >/dev/null 2>&1; then COMPOSE="docker compose";
+              elif docker-compose --version >/dev/null 2>&1; then COMPOSE="docker-compose";
+              else
+                echo "🧩 Installing docker compose plugin..."
+                sudo apt-get update -y
+                sudo apt-get install -y docker-compose-plugin
+                COMPOSE="docker compose"
               fi
+              echo "✅ Using: $COMPOSE"
 
-              [ $i -eq 10 ] && { echo "❌ Health check failed"; $COMPOSE logs --tail=100 web || true; exit 1; }
-              sleep 3
-            done
+              # 4) GHCR 로그인 (actor 사용)
+              echo "🔐 Logging into GHCR..."
+              echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+              echo "✅ Docker login successful"
 
-            echo "🎉 Deployment completed at $(date)"
+              # 5) compose 파일 확인
+              test -f docker-compose.yml || { echo "❌ docker-compose.yml not found"; exit 1; }
+
+              # 6) 이미지 pull & 기동
+              echo "📦 Pulling images..."
+              timeout 180 $COMPOSE pull
+              echo "🔄 Starting services..."
+              timeout 120 $COMPOSE up -d --remove-orphans
+              echo "✅ Services started"
+
+              # 7) 헬스 체크
+              echo "🏥 Health check..."
+              sleep 5
+              for i in {1..10}; do
+                echo "🔍 Health check attempt $i/10..."
+                if ! $COMPOSE ps | grep -q "Up"; then
+                  $COMPOSE ps || true
+                  $COMPOSE logs --tail=50 web || true
+                  [ $i -eq 10 ] && { echo "❌ Containers not running"; exit 1; }
+                  sleep 3; continue
+                fi
+
+                if $COMPOSE exec -T web timeout 10 python -c 'import socket,sys; s=socket.socket(); s.settimeout(5); r=s.connect_ex(("localhost",8000)); s.close(); print("✅ 8000 open" if r==0 else "❌ 8000 closed"); sys.exit(0 if r==0 else 1)'; then
+                  echo "✅ Deployment successful!"
+                  $COMPOSE ps || true
+                  break
+                fi
+
+                [ $i -eq 10 ] && { echo "❌ Health check failed"; $COMPOSE logs --tail=100 web || true; exit 1; }
+                sleep 3
+              done
+
+              echo "🎉 Deployment completed at $(date)"
