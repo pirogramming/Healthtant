@@ -13,48 +13,53 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Log in to GHCR
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: "Build & Push image (tag: sha + latest)"
+        uses: docker/build-push-action@v5
         env:
           IMAGE: ghcr.io/pirogramming/healthtant
           TAG: ${{ github.sha }}
-        run: |
-          docker build -t $IMAGE:$TAG -t $IMAGE:latest .
-          docker push $IMAGE:$TAG
-          docker push $IMAGE:latest
+        with:
+          context: .
+          push: true
+          tags: |
+            ghcr.io/pirogramming/healthtant:${{ github.sha }}
+            ghcr.io/pirogramming/healthtant:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: linux/amd64
 
   deploy:
     needs: build_and_push
     runs-on: ubuntu-latest
     steps:
-      - name: Set up SSH agent
-        uses: webfactory/ssh-agent@v0.9.0
+      - name: Deploy to server
+        uses: appleboy/ssh-action@v1.0.3
         with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-      - name: Add host to known_hosts
-        run: |
-          mkdir -p ~/.ssh
-          ssh-keyscan -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts
-
-      - name: Deploy (pull & up only)
-        env:
-          IMAGE: ghcr.io/pirogramming/healthtant
-          TAG: ${{ github.sha }}
-        run: |
-          ssh -o ServerAliveInterval=60 -o ServerAliveCountMax=30 ${{ secrets.USERNAME }}@${{ secrets.HOST }} << 'EOF'
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
             set -euo pipefail
             cd ~/Healthtant
 
-            # compose에 image: ghcr.io/<OWNER>/<REPO>:latest 가 있어야 함
-            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $USER --password-stdin
+            # 로그인 및 이미지 풀 병렬 처리
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ secrets.USERNAME }} --password-stdin
+            
+            # 이미지 풀 후 즉시 재시작 (다운타임 최소화)
+            docker-compose pull
+            docker-compose up -d --remove-orphans
 
-            docker-compose pull          # 최신 이미지 받기
-            docker-compose up -d         # 빠르게 재기동
-
-            # 마이그/정적수집 1회
-            docker-compose exec -T web python manage.py migrate --noinput || true
-            docker-compose exec -T web python manage.py collectstatic --noinput || true
-          EOF
+            # 마이그레이션과 정적파일 수집을 백그라운드에서 실행
+            docker-compose exec -T web python manage.py migrate --noinput &
+            docker-compose exec -T web python manage.py collectstatic --noinput &
+            wait
