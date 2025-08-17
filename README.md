@@ -91,7 +91,7 @@
 
 | **메인화면** | **일반검색** | **식단기록** |
 | :------: |  :------: | :------: |
-| <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/6ac51112-c96f-4a81-a025-d02f130d1a2b" /> | <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/98127bf1-367d-4b87-aedd-3a1c5fa48f55" /> | <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/42ad2b88-7c80-4c93-ba6e-f73a41e47ba0" /> | 
+| <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/97cd7400-6d98-4f14-ae8a-2102d0be9bc6" /> | <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/98127bf1-367d-4b87-aedd-3a1c5fa48f55" /> | <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/42ad2b88-7c80-4c93-ba6e-f73a41e47ba0" /> | 
 
 | **분석하기** | **상세검색** | **마이페이지** |
 | :------: | :------: | :------: |
