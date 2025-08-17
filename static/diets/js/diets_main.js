@@ -71,7 +71,21 @@ async function deleteMeal(el) {
     headers: { "X-CSRFToken": getCookie("csrftoken") },
   });
   if (res.status === 204) {
-    el.closest(".meal-item")?.remove(); // 또는: location.reload();
+    // 해당 식사 항목과 날짜 카드 찾기 (삭제 전에)
+    const mealItem = el.closest(".meal-item");
+    const dayCard = mealItem?.closest(".day-card");
+    
+    // 해당 식사 항목 삭제
+    mealItem?.remove();
+    
+    // 해당 날짜 카드에서 모든 식사가 삭제되었는지 확인
+    if (dayCard) {
+      const remainingMeals = dayCard.querySelectorAll(".meal-item");
+      if (remainingMeals.length === 0) {
+        // 모든 식사가 삭제되었으면 날짜 카드도 숨기기
+        dayCard.style.display = "none";
+      }
+    }
   } else {
     alert(`삭제 실패 (${res.status})`);
   }

@@ -9,12 +9,20 @@ class AdvancedResultPage {
     this.isLoading = false;
     this.currentFavorites = {};
     
+    // 페이지네이션 관련 변수 추가
+    this.hasMoreData = true;
+    this.ITEMS_PER_PAGE = 30;
+    
+    // 원본 음식 데이터 캐시 추가
+    this.cachedFoods = [];
+    
     this.init();
   }
 
   init() {
     this.bindEvents();
     this.loadInitialResults();
+    this.updateFavoriteButtons();
   }
 
   bindEvents() {
@@ -119,6 +127,11 @@ class AdvancedResultPage {
       this.currentOrder = orderParam;
       this.updateSortLabel(orderParam);
       this.updateSortOptionStates(orderParam);
+    } else {
+      // 정렬 파라미터가 없으면 기본순으로 설정
+      this.currentOrder = '';
+      this.updateSortLabel('정렬');
+      this.updateSortOptionStates('');
     }
     
     if (keyword) {
@@ -127,6 +140,9 @@ class AdvancedResultPage {
     } else {
       this.showNoResults();
     }
+    
+    // 즐겨찾기 버튼 상태 업데이트
+    this.updateFavoriteButtons();
   }
 
   // 로컬스토리지에서 좋아요 상태 로드
@@ -155,6 +171,24 @@ class AdvancedResultPage {
     return this.currentFavorites && this.currentFavorites[foodId] === true;
   }
 
+  // 좋아요 버튼 상태 업데이트
+  updateFavoriteButtons() {
+    const favoriteBtns = document.querySelectorAll('.favorite-button');
+    favoriteBtns.forEach(btn => {
+      const productId = btn.getAttribute('data-product-id');
+      if (productId && this.currentFavorites[productId]) {
+        btn.classList.add('active');
+        btn.setAttribute('data-is-favorite', 'true');
+        btn.setAttribute('aria-pressed', 'true');
+      }
+    });
+  }
+
+  // 로컬스토리지에 좋아요 상태 저장
+  saveFavorites() {
+    localStorage.setItem('healthtant_favorites', JSON.stringify(this.currentFavorites));
+  }
+
   // 검색 실행
   async performSearch() {
     const searchInput = document.getElementById('searchInput');
@@ -167,6 +201,7 @@ class AdvancedResultPage {
 
     this.currentKeyword = keyword;
     this.currentPage = 1;
+    this.hasMoreData = true;
     
     // 검색 시 현재 정렬 상태를 URL에 포함
     const params = new URLSearchParams({
@@ -181,7 +216,77 @@ class AdvancedResultPage {
     const newUrl = `/search/advanced/?${params.toString()}`;
     window.history.pushState({}, '', newUrl);
     
+    this.hideLoadMoreButton();
     await this.searchFoods(keyword);
+  }
+
+  // 더 많은 결과 로드 (페이지네이션)
+  async loadMoreResults() {
+    if (this.isLoading || !this.hasMoreData || !this.currentKeyword) return;
+    
+    console.log(`페이지 로드: ${this.currentPage}, 검색어: ${this.currentKeyword}`);
+    
+    this.isLoading = true;
+    this.showLoading();
+    this.hideLoadMoreButton();
+    
+    try {
+      const params = new URLSearchParams({
+        keyword: this.currentKeyword,
+        page: this.currentPage,
+        limit: this.ITEMS_PER_PAGE
+      });
+      
+      // 정렬과 필터 파라미터 추가
+      if (this.currentOrder) {
+        params.append('order', this.currentOrder);
+      }
+      
+      if (Object.keys(this.currentFilters).length > 0) {
+        Object.entries(this.currentFilters).forEach(([key, value]) => {
+          if (value !== null && value !== '') {
+            params.append(key, value);
+          }
+        });
+      }
+      
+      const response = await fetch(`/search/advanced/?${params.toString()}`, {
+        method: 'GET',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest'
+        }
+      });
+      const data = await response.json();
+      
+      console.log(`받은 데이터: ${data.foods.length}개 제품`);
+      
+      if (data.foods.length === 0) {
+        this.hasMoreData = false;
+        console.log('더 이상 데이터가 없습니다.');
+        if (this.currentPage === 1) {
+          this.showNoResults();
+        }
+      } else {
+        this.displaySearchResults(data.foods);
+        
+        // 더 이상 데이터가 없으면
+        if (data.foods.length < this.ITEMS_PER_PAGE) {
+          this.hasMoreData = false;
+          console.log('마지막 페이지입니다.');
+        } else {
+          this.showLoadMoreButton();
+          console.log('더보기 버튼을 표시합니다.');
+        }
+        
+        this.currentPage++;
+      }
+    } catch (error) {
+      console.error('검색 중 오류가 발생했습니다:', error);
+      this.showToast('검색 중 오류가 발생했습니다.');
+    } finally {
+      this.isLoading = false;
+      this.hideLoading();
+    }
   }
 
   // 음식 검색 API 호출
@@ -191,7 +296,8 @@ class AdvancedResultPage {
     try {
       const params = new URLSearchParams({
         keyword: keyword,
-        page: this.currentPage
+        page: this.currentPage,
+        limit: this.ITEMS_PER_PAGE
       });
 
       const response = await fetch(`/search/advanced/?${params}`, {
@@ -222,8 +328,18 @@ class AdvancedResultPage {
     if (data.foods && data.foods.length > 0) {
       // 서버에서 받은 좋아요 상태와 로컬 상태 병합
       this.mergeFavoriteStates(data.foods);
+      
+      // 원본 데이터 캐시에 저장
+      this.cachedFoods = [...data.foods];
+      
       this.displayFoods(data.foods);
-      this.displayPagination(data.page, data.total_pages, data.total);
+      
+      // 더 이상 데이터가 없으면
+      if (data.foods.length < this.ITEMS_PER_PAGE) {
+        this.hasMoreData = false;
+      } else {
+        this.showLoadMoreButton();
+      }
     } else {
       this.showNoResults();
     }
@@ -255,6 +371,32 @@ class AdvancedResultPage {
       const foodElement = this.createFoodElement(food);
       resultList.appendChild(foodElement);
     });
+    
+    // 즐겨찾기 버튼 상태 업데이트
+    this.updateFavoriteButtons();
+  }
+
+  // 검색 결과 표시 (페이지네이션용)
+  displaySearchResults(foods) {
+    const resultList = document.getElementById('resultList');
+    if (!resultList) return;
+
+    // 첫 페이지가 아니면 기존 결과에 추가
+    if (this.currentPage > 1) {
+      // 기존 no-results 메시지 제거
+      const noResults = resultList.querySelector('.no-results');
+      if (noResults) {
+        noResults.remove();
+      }
+      
+      // 캐시된 데이터에 추가
+      this.cachedFoods = [...this.cachedFoods, ...foods];
+    }
+    
+    foods.forEach(food => {
+      const foodElement = this.createFoodElement(food);
+      resultList.appendChild(foodElement);
+    });
   }
 
   // 음식 요소 생성
@@ -269,86 +411,56 @@ class AdvancedResultPage {
     const isFavorite = serverFavorite || localFavorite;
     
     const favoriteClass = isFavorite ? 'active' : '';
-    const svgFill = isFavorite ? 'currentColor' : 'none';
+    const dataIsFavorite = isFavorite ? 'true' : 'false';
+    const ariaPressed = isFavorite ? 'true' : 'false';
 
     foodDiv.innerHTML = `
       <div class="food-image">
-        ${food.image ? `<img src="${food.image}" alt="${food.food_name}">` : '이미지 없음'}
+        ${food.food_img ? `<img src="${food.food_img}" alt="${food.food_name}">` : '이미지 없음'}
       </div>
       <div class="food-info">
         <div class="food-name clickable" onclick="advancedResult.goToProductDetail('${food.food_id}')">${food.food_name}</div>
         <div class="food-company">${food.company_name || '제조사 정보 없음'}</div>
       </div>
       <button class="favorite-button ${favoriteClass}" 
-              onclick="advancedResult.toggleFavorite('${food.food_id}')">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="${svgFill}">
-          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" 
-                stroke="currentColor" stroke-width="2" fill-rule="evenodd"/>
+              data-product-id="${food.food_id}" 
+              data-is-favorite="${dataIsFavorite}" 
+              type="button" 
+              aria-pressed="${ariaPressed}" 
+              aria-label="즐겨찾기">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+          <path class="heart-path" d="M20.84 4.61C20.3292 4.099 19.7228 3.69364 19.0554 3.41708C18.3879 3.14052 17.6725 2.99817 16.95 2.99817C16.2275 2.99817 15.5121 3.14052 14.8446 3.41708C14.1772 3.69364 13.5708 4.099 13.06 4.61L12 5.67L10.94 4.61C9.9083 3.5783 8.50903 2.9987 7.05 2.9987C5.59096 2.9987 4.19169 3.5783 3.16 4.61C2.1283 5.6417 1.5487 7.04097 1.5487 8.5C1.5487 9.95903 2.1283 11.3583 3.16 12.39L12 21.23L20.84 12.39C21.351 11.8792 21.7564 11.2728 22.0329 10.6054C22.3095 9.93789 22.4518 9.22249 22.4518 8.5C22.4518 7.77751 22.3095 7.0621 22.0329 6.39464C21.7564 5.72718 21.351 5.12075 20.84 4.61Z"/>
         </svg>
       </button>
     `;
 
+    // 생성된 버튼에 이벤트 리스너 추가
+    const favoriteBtn = foodDiv.querySelector('.favorite-button');
+    if (favoriteBtn) {
+      favoriteBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.toggleFavorite(favoriteBtn);
+      });
+    }
+
     return foodDiv;
   }
 
-  // 페이지네이션 표시
-  displayPagination(currentPage, totalPages, total) {
-    const pagination = document.getElementById('pagination');
-    if (!pagination) return;
 
-    if (totalPages <= 1) {
-      pagination.style.display = 'none';
-      return;
-    }
-
-    pagination.style.display = 'flex';
-    
-    // 이전/다음 버튼
-    const prevBtn = document.getElementById('prevBtn');
-    const nextBtn = document.getElementById('nextBtn');
-    
-    if (prevBtn) prevBtn.disabled = currentPage <= 1;
-    if (nextBtn) nextBtn.disabled = currentPage >= totalPages;
-
-    // 페이지 번호들
-    const pageNumbers = document.getElementById('pageNumbers');
-    if (pageNumbers) {
-      pageNumbers.innerHTML = '';
-      
-      const startPage = Math.max(1, currentPage - 2);
-      const endPage = Math.min(totalPages, currentPage + 2);
-      
-      for (let i = startPage; i <= endPage; i++) {
-        const pageBtn = document.createElement('div');
-        pageBtn.className = `page-number ${i === currentPage ? 'active' : ''}`;
-        pageBtn.textContent = i;
-        pageBtn.addEventListener('click', () => this.goToPage(i));
-        pageNumbers.appendChild(pageBtn);
-      }
-    }
-
-    // 이전/다음 버튼 이벤트
-    if (prevBtn) {
-      prevBtn.onclick = () => this.goToPage(currentPage - 1);
-    }
-    if (nextBtn) {
-      nextBtn.onclick = () => this.goToPage(currentPage + 1);
-    }
-  }
-
-  // 특정 페이지로 이동
-  async goToPage(page) {
-    if (page < 1 || this.isLoading) return;
-    
-    this.currentPage = page;
-    await this.refineSearch();
-  }
 
   // 정렬 선택
   async selectSort(order) {
     console.log('정렬 선택됨:', order);
+    
+    // 기본순인 경우 정렬 초기화
+    if (order === '기본순') {
+      this.resetSort();
+      return;
+    }
+    
     this.currentOrder = order;
     this.currentPage = 1;
+    this.hasMoreData = true;
     
     // 정렬 드롭다운 라벨 업데이트
     this.updateSortLabel(order);
@@ -361,25 +473,105 @@ class AdvancedResultPage {
     
     this.hideSortModal();
     
+    // 더보기 버튼 숨기기
+    this.hideLoadMoreButton();
+    
     // 검색 결과가 이미 있는 경우 즉시 정렬 적용
     const resultList = document.getElementById('resultList');
     if (resultList && resultList.children.length > 0) {
-      const currentFoods = Array.from(resultList.children).map(item => {
-        const foodId = item.dataset.foodId;
-        const foodName = item.querySelector('.food-name')?.textContent || '';
-        const companyName = item.querySelector('.food-company')?.textContent || '';
-        return { food_id: foodId, food_name: foodName, company_name: companyName };
-      });
+      // 현재 표시된 음식들의 전체 데이터를 저장된 상태에서 가져오기
+      const currentFoods = this.getCurrentDisplayedFoods();
       
       if (currentFoods.length > 0) {
+        console.log('기존 데이터로 정렬 적용:', currentFoods.length);
         const sortedFoods = this.sortFoods(currentFoods, order);
         this.displayFoods(sortedFoods);
+        
+        // 정렬 후 더보기 버튼 표시 여부 결정
+        if (sortedFoods.length >= this.ITEMS_PER_PAGE) {
+          this.showLoadMoreButton();
+        }
         return;
       }
     }
     
     // 검색 결과가 없거나 정렬할 수 없는 경우 새로 검색
     await this.refineSearch();
+  }
+
+  // 정렬 초기화
+  resetSort() {
+    console.log('정렬 초기화');
+    this.currentOrder = '';
+    this.currentPage = 1;
+    this.hasMoreData = true;
+    
+    // 정렬 드롭다운 라벨 초기화
+    this.updateSortLabel('정렬');
+    
+    // 정렬 옵션 활성화 상태 초기화
+    this.updateSortOptionStates('');
+    
+    // 사용자에게 초기화 알림
+    this.showToast('정렬이 초기화되었습니다.');
+    
+    this.hideSortModal();
+    
+    // 더보기 버튼 숨기기
+    this.hideLoadMoreButton();
+    
+    // 검색 결과가 이미 있는 경우 원본 순서로 복원
+    if (this.cachedFoods.length > 0) {
+      console.log('원본 데이터 순서로 복원:', this.cachedFoods.length);
+      
+      // 필터만 적용하고 정렬은 하지 않음
+      let filteredFoods = this.applyFiltersToFoods(this.cachedFoods);
+      this.displayFoods(filteredFoods);
+      
+      // 더보기 버튼 표시 여부 결정
+      if (filteredFoods.length >= this.ITEMS_PER_PAGE) {
+        this.showLoadMoreButton();
+      }
+    }
+  }
+
+  // 현재 표시된 음식들의 전체 데이터 가져오기
+  getCurrentDisplayedFoods() {
+    const resultList = document.getElementById('resultList');
+    if (!resultList) return [];
+    
+    const foods = [];
+    const foodItems = resultList.querySelectorAll('.food-item');
+    
+    foodItems.forEach(item => {
+      const foodId = item.dataset.foodId;
+      const foodName = item.querySelector('.food-name')?.textContent || '';
+      const companyName = item.querySelector('.food-company')?.textContent || '';
+      const foodImage = item.querySelector('.food-image img')?.src || '';
+      
+      // 저장된 원본 데이터에서 찾기
+      const originalFood = this.findOriginalFoodData(foodId);
+      
+      if (originalFood) {
+        foods.push(originalFood);
+      } else {
+        // 원본 데이터가 없으면 기본 정보로 구성
+        foods.push({
+          food_id: foodId,
+          food_name: foodName,
+          company_name: companyName,
+          food_img: foodImage,
+          is_favorite: this.isFavorite(foodId)
+        });
+      }
+    });
+    
+    return foods;
+  }
+
+  // 원본 음식 데이터 찾기 (캐시된 데이터에서)
+  findOriginalFoodData(foodId) {
+    return this.cachedFoods.find(food => food.food_id === foodId) || null;
   }
 
   // 정렬 라벨 업데이트
@@ -394,10 +586,17 @@ class AdvancedResultPage {
   updateSortOptionStates(selectedOrder) {
     const sortOptions = document.querySelectorAll('.sort-option');
     sortOptions.forEach(option => {
-      if (option.dataset.order === selectedOrder) {
+      const order = option.dataset.order;
+      
+      if (order === selectedOrder) {
         option.classList.add('active');
       } else {
         option.classList.remove('active');
+      }
+      
+      // 기본순인 경우 특별 처리
+      if (order === '기본순' && !selectedOrder) {
+        option.classList.add('active');
       }
     });
   }
@@ -406,7 +605,12 @@ class AdvancedResultPage {
   async applyFilters() {
     this.currentFilters = this.getFilterValues();
     this.currentPage = 1;
+    this.hasMoreData = true;
     this.hideFilterModal();
+    
+    // 더보기 버튼 숨기기
+    this.hideLoadMoreButton();
+    
     await this.refineSearch();
   }
 
@@ -433,11 +637,38 @@ class AdvancedResultPage {
     
     this.currentFilters = {};
     this.currentPage = 1;
+    this.hasMoreData = true;
+    
+    // 더보기 버튼 숨기기
+    this.hideLoadMoreButton();
+    
     this.refineSearch();
   }
 
   // 세밀 검색 실행
   async refineSearch() {
+    // 캐시된 데이터가 있으면 프론트엔드에서 처리
+    if (this.cachedFoods.length > 0) {
+      console.log('캐시된 데이터로 정렬/필터 적용:', this.cachedFoods.length);
+      
+      // 프론트엔드에서 정렬 및 필터링 적용
+      let filteredFoods = this.applyFiltersToFoods(this.cachedFoods);
+      let sortedFoods = this.sortFoods(filteredFoods, this.currentOrder);
+      
+      // 결과 표시
+      this.mergeFavoriteStates(sortedFoods);
+      this.displayFoods(sortedFoods);
+      
+      // 더보기 버튼 표시 여부 결정
+      if (sortedFoods.length < this.ITEMS_PER_PAGE) {
+        this.hasMoreData = false;
+      } else {
+        this.showLoadMoreButton();
+      }
+      
+      return;
+    }
+
     // 백엔드 API가 없으므로 프론트엔드에서 처리
     if (!this.searchToken) {
       await this.searchFoods(this.currentKeyword);
@@ -475,7 +706,13 @@ class AdvancedResultPage {
         // 결과 표시
         this.mergeFavoriteStates(sortedFoods);
         this.displayFoods(sortedFoods);
-        this.displayPagination(data.page, data.total_pages, data.total);
+        
+        // 더보기 버튼 표시 여부 결정
+        if (sortedFoods.length < this.ITEMS_PER_PAGE) {
+          this.hasMoreData = false;
+        } else {
+          this.showLoadMoreButton();
+        }
       }
       
       this.hideLoading();
@@ -553,51 +790,45 @@ class AdvancedResultPage {
   }
 
   // 즐겨찾기 토글
-  async toggleFavorite(foodId) {
+  async toggleFavorite(favoriteBtn) {
+    const productId = favoriteBtn.getAttribute('data-product-id');
+    if (!productId) return;
+
+    favoriteBtn.disabled = true;
+    
     try {
-      const response = await fetch(`/products/${foodId}/like/`, {
+      const response = await fetch(`/products/${productId}/like/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'X-CSRFToken': this.getCsrfToken(),
           'X-Requested-With': 'XMLHttpRequest'
-        }
+        },
+        credentials: 'same-origin'
       });
 
       if (!response.ok) {
-        throw new Error('즐겨찾기 처리 실패');
+        throw new Error('네트워크 오류');
       }
 
       const data = await response.json();
-      
+      const isFavorite = data.is_favorite;
+
       // 로컬 상태 업데이트
-      if (data.is_favorite) {
-        this.currentFavorites[foodId] = true;
+      if (isFavorite) {
+        this.currentFavorites[productId] = true;
       } else {
-        delete this.currentFavorites[foodId];
+        delete this.currentFavorites[productId];
       }
-      localStorage.setItem('healthtant_favorites', JSON.stringify(this.currentFavorites));
-      
-      // UI 업데이트
-      const favoriteBtn = document.querySelector(`[data-food-id="${foodId}"] .favorite-button`);
-      
-      if (favoriteBtn) {
-        favoriteBtn.classList.toggle('active', data.is_favorite);
-        const svg = favoriteBtn.querySelector('svg');
-        if (svg) {
-          svg.setAttribute('fill', data.is_favorite ? 'currentColor' : 'none');
-        }
-      }
+      this.saveFavorites();
 
-      // 다른 페이지와의 동기화를 위한 이벤트 발생
-      window.dispatchEvent(new CustomEvent('favoriteChanged', {
-        detail: { foodId, isFavorite: data.is_favorite }
-      }));
-
-      this.showToast(data.is_favorite ? '즐겨찾기에 추가되었습니다.' : '즐겨찾기에서 제거되었습니다.');
+      favoriteBtn.classList.toggle('active', isFavorite);
+      favoriteBtn.setAttribute('data-is-favorite', String(isFavorite));
+      favoriteBtn.setAttribute('aria-pressed', String(isFavorite));
     } catch (error) {
-      console.error('즐겨찾기 오류:', error);
-      this.showToast('즐겨찾기 처리 중 오류가 발생했습니다.');
+      console.error('찜 처리 오류:', error);
+    } finally {
+      favoriteBtn.disabled = false;
     }
   }
 
@@ -690,6 +921,24 @@ class AdvancedResultPage {
     }
   }
 
+  // 더보기 버튼 표시
+  showLoadMoreButton() {
+    const loadMoreContainer = document.getElementById('loadMoreContainer');
+    if (loadMoreContainer) {
+      loadMoreContainer.style.display = 'flex';
+      console.log('더보기 버튼이 표시되었습니다.');
+    }
+  }
+
+  // 더보기 버튼 숨김
+  hideLoadMoreButton() {
+    const loadMoreContainer = document.getElementById('loadMoreContainer');
+    if (loadMoreContainer) {
+      loadMoreContainer.style.display = 'none';
+      console.log('더보기 버튼이 숨겨졌습니다.');
+    }
+  }
+
   // 검색 결과 없음 표시
   showNoResults() {
     const noResults = document.getElementById('noResults');
@@ -702,10 +951,8 @@ class AdvancedResultPage {
       resultList.style.display = 'none';
     }
     
-    const pagination = document.getElementById('pagination');
-    if (pagination) {
-      pagination.style.display = 'none';
-    }
+    // 더보기 버튼 숨기기
+    this.hideLoadMoreButton();
   }
 
   // 토스트 메시지 표시
@@ -791,3 +1038,10 @@ document.head.appendChild(style);
 document.addEventListener('DOMContentLoaded', () => {
   window.advancedResult = new AdvancedResultPage();
 });
+
+// 더 많은 결과 로드하는 전역 함수
+function loadMoreResults() {
+  if (window.advancedResult) {
+    window.advancedResult.loadMoreResults();
+  }
+}

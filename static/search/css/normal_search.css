@@ -1,6 +1,3 @@
-/* 기본 스타일 리셋 */
-
-
 
 /* 식사등록페이지 전체 컨테이너 */
 .meal-register-container {
@@ -178,6 +175,38 @@
     cursor: not-allowed;
 }
 
+/* 등록하기 버튼 */
+.register-btn {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 12px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.register-btn:hover {
+    background-color: #f0f8ff;
+    border-radius: 6px;
+}
+
+.plus-icon {
+    font-size: 16px;
+    font-weight: 600;
+    color: rgba(86, 170, 178, 1);
+    transition: color 0.2s;
+}
+
+.register-text {
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(86, 170, 178, 1);
+    transition: color 0.2s;
+}
+
 .no-results {
     text-align: center;
     padding: 40px 20px;
@@ -219,7 +248,10 @@
 .load-more-container {
     display: flex;
     justify-content: center;
+    align-items: center;
     padding: 20px 0;
+    width: 100%;
+    text-align: center;
 }
 
 .load-more-btn {

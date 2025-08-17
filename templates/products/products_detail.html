@@ -20,11 +20,27 @@
       </svg>
     </button>
     <h1 class="page-title">{{ product.food_name }}</h1>
-    <button class="share-btn">
+    <button class="share-btn" onclick="openShareModal()">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
         <path d="M18 8C19.6569 8 21 6.65685 21 5C21 3.34315 19.6569 2 18 2C16.3431 2 15 3.34315 15 5C15 5.58835 15.1978 6.1264 15.5357 6.56066L8.46434 10.5607C8.1264 10.1978 7.58835 10 7 10C5.34315 10 4 11.3431 4 13C4 14.6569 5.34315 16 7 16C7.58835 16 8.1264 15.8022 8.46434 15.4393L15.5357 19.4393C15.1978 19.8736 15 20.4117 15 21C15 22.6569 16.3431 24 18 24C19.6569 24 21 22.6569 21 21C21 19.3431 19.6569 18 18 18C17.4117 18 16.8736 18.1978 16.4393 18.5357L9.36066 14.5357C9.69822 14.1264 9.9 13.5883 9.9 13C9.9 12.4117 9.69822 11.8736 9.36066 11.4393L16.4393 7.43934C16.8736 7.80218 17.4117 8 18 8Z" fill="currentColor"/>
       </svg>
     </button>
+    
+    <!-- 공유하기 모달창 -->
+    <div id="shareModal" class="share-modal" style="display: none;">
+      <div class="share-modal-content">
+        <div class="share-modal-header">
+          <h3>공유하기</h3>
+          <button class="close-btn" onclick="closeShareModal()">×</button>
+        </div>
+        <div class="share-modal-body">
+          <div class="url-section">
+            <input type="text" id="shareUrl" value="{% if product.shop_url %}{{ product.shop_url }}{% else %}{{ request.build_absolute_uri }}{% endif %}" readonly>
+            <button class="copy-url-btn" onclick="copyUrl()">URL복사</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </header>
 {% endblock %}
@@ -241,9 +257,9 @@
           </svg>
         </button>
         <a href="/diets/upload/?food={{ product.food_id }}" class="add-meal-btn">식사로 등록하기</a>
-        {% if product.shop_url %}
+        {% comment %} {% if product.shop_url %}
           <a href="{{ product.shop_url }}" target="_blank" class="buy-btn">{{ product.shop_name|default:"구매하기" }}</a>
-        {% endif %}
+        {% endif %} {% endcomment %}
       </div>
   </div>
 </div>
@@ -286,5 +302,5 @@
 {% endblock %}
 
 {% block extra_js %}
-<script type="module" defer src="{% static 'products/js/products.js' %}"></script>
+<script defer src="{% static 'products/js/products.js' %}"></script>
 {% endblock %}

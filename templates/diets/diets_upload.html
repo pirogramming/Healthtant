@@ -47,6 +47,15 @@
 
       <!-- 제품 이미지 카드 -->
       <section class="product-card">
+
+        <div style="background: #f0f0f0; padding: 10px; margin: 10px 0;">
+          <p><strong>디버깅 정보:</strong></p>
+          <p>food 객체: {{ food }}</p>
+          <p>food.food_id: {{ food.food_id }}</p>
+          <p>food.food_img: {{ food.food_img }}</p>
+          <p>food.food_name: {{ food.food_name }}</p>
+        </div>
+
         {% if food and food.food_id %}
           <div class="product-image-large">
             {% if food.food_img %}
