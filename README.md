@@ -1,5 +1,5 @@
 # 💪 Healthtant
-**🏆 피로그래밍 23기 최종 프로젝트**
+**🏆 피로그래밍 23기 최종 프로젝트** <br>
 **즉석식품을 더 건강하게 먹을 수 있도록 돕는 웹서비스입니다!**
 
 <br>
@@ -132,3 +132,14 @@
 | **상세 검색(음식 추천)** | **상세 검색 페이지** | **정렬 기준** | **영양소 범위 설정** |
 | :------: |  :------: | :------: |  :------: |
 | <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/8ebc9190-9cd7-4680-b269-f1c16ee0f3c2" /> | <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/42385a51-eb98-4b68-8526-8ced4e68cf08" /> | <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/5c6b8de0-b19e-46e5-8810-d38250128941" /> | <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/2ed696bc-c3d3-4177-b855-da308a50ecf1" /> |
+
+#### 마이페이지
+* 사용자에 관련된 정보를 다루는 페이지입니다.
+* '수정하기' 버튼을 눌러 프로필 정보를 수정할 수 있습니다.
+* '즐겨찾는 제품' 배너를 눌러 즐겨찾기로 등록한 식품들을 확인할 수 있습니다.
+* 로그아웃 / 회원탈퇴를 진행할 수 있습니다.
+
+| **마이페이지** | **프로필 수정** | **즐겨찾는 제품** | **로그아웃/회원탈퇴 후** |
+| :------: |  :------: | :------: |  :------: |
+| <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/5c5291ce-d3e9-4586-bebd-8ea8658f9878" /> | <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/b317be09-2ad2-4780-98ff-f2225c09734c" /> | <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/452ddfcd-0540-417c-ba81-693ba96872be" /> | <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/e9961973-b4d6-4d3d-b09e-5e21a4bc23d5" /> |
+
