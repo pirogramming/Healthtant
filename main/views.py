@@ -11,7 +11,7 @@ def main_page(request):
         .order_by('-nutrition_score')[:300]
     )
 
-    foods = random.sample(sorted_foods, 10)
+    foods = sorted_foods[:10]
 
     return render(request, 'main/main_mainpage.html', {'foods': foods})
 
