@@ -78,7 +78,7 @@
       {% endfor %}
       
       <!-- 더 많은 제품 보기 카드 -->
-      <div class="product-card additional-card" onclick="goToAdvancedResult()">
+      <div class="product-card additional-card" onclick="loadMoreProducts()">
         <div class="product-info">
           <h4 class="product-name">더 많은 제품 보기</h4>
           <p class="product-manufacturer">고급 검색으로 더 많은 제품을 찾아보세요</p>
@@ -88,6 +88,12 @@
             <path d="M12 5v14M5 12h14" stroke="#56AAB2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </button>
+      </div>
+      
+      <!-- 로딩 인디케이터 -->
+      <div class="loading-indicator" id="loadingIndicator" style="display: none;">
+        <div class="loading-spinner"></div>
+        <p>더 많은 제품을 불러오는 중...</p>
       </div>
     </div>
   </div>
