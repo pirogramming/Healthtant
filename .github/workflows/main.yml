@@ -57,14 +57,14 @@ jobs:
             echo "📂 Working directory: $(pwd)"
             
             # 디렉토리 확인 및 이동
-            if [ ! -d "~/Healthtant" ]; then
-              echo "❌ Directory ~/Healthtant not found!"
+            if [ ! -d "$HOME/Healthtant" ]; then
+              echo "❌ Directory $HOME/Healthtant not found!"
               echo "📋 Available directories:"
-              ls -la ~/ || true
+              ls -la $HOME/ || true
               exit 1
             fi
             
-            cd ~/Healthtant
+            cd $HOME/Healthtant
             echo "📂 Changed to: $(pwd)"
             echo "📋 Directory contents:"
             ls -la . || true
