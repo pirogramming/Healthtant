@@ -66,7 +66,22 @@ def is_non_food_item(naver_title, food_name):
         '폰케이스', '슬리퍼', '샌달', '자비츠', '풀빵', '쿠키', 'cookie',
         # 추가 키워드들
         '마그넷', '뱃지', '홀더', '파우치', '세트', '한정판', 'vol', '시즌',
-        '컬렉션', '한정', '특별판', '프리미엄', '에디션', '버전'
+        '컬렉션', '한정', '특별판', '프리미엄', '에디션', '버전',
+        # 바나나 관련 키워드들
+        '나라사랑 족발편육', '연세대학교연세바나나우유', '뽀로로가 좋아하는 바나나우유',
+        '붕장어(아나고)회/필렛', '새송이버섯나물 밀키트', '애호박나물', '취나물무침 (2개)',
+        '선물세트 달보드레_하나', '몽키나나', '쇼콜라 판나코타', '앙버터모나카 (2개)',
+        '가나슈데니쉬식빵', '가나소프트콘', '연세우유 초코 모나카', '주문하신 카페라떼 나왔습니다',
+        '마켓진양호 시나몬라떼', '다크나이트(DARK KNIGHT)', '오나의살들아',
+        '데일리슬림쉐이크 바나나', '양수면옥 건호박나물볶음', '칼집요리비엔나',
+        '연세바나나우유', '나는 미니김', '정월대보름나물', '미니콘 바나나',
+        '만나마카롱3구SET', '바나나머랭쿠키 (2개)', '바나나샌드웨이퍼',
+        # 추가 키워드들
+        '이삭시그니처', '버터롤', '미라클 블렌드', '요거트비스켓', '백합막장용메주가루',
+        '한입 우리콩 두부과자', '두부바게트', '야채두부버터빵', '프로틴플러스두유두부식빵',
+        '두부 치즈케이크', '곰곰 우리콩두부', '소이요 백태 전두부', '순두부 치즈 그라탕 볼로네제',
+        '우리 쌀콩 미숫가루', '못말림 블렌드', '월넛 브레드', '스키니팝콘', '보리바게트',
+        '찐크 프로틴 크래커(참깨맛)', '17곡미숫가루A+', '포시즌블렌드', '알바 블랜드'
     ]
     
     # 의심스러운 패턴들
@@ -160,18 +175,22 @@ def validate_and_clean_row(args):
     # 5. 데이터 정리
     cleaned_row = {}
     
-    # 문자열 필드 정리
+    # 문자열 필드 정리 (길이 제한 적용)
     string_fields = {
-        'food_name': row.get('food_name', ''),
-        'food_category': row.get('food_category', ''),
-        'representative_food': row.get('representative_food', ''),
-        'company_name': row.get('company_name', ''),
-        'shop_name': row.get('mallName', ''),
-        'nutri_score_grade': row.get('nutri_score_grade', ''),
+        'food_name': (row.get('food_name', ''), 255),
+        'food_category': (row.get('food_category', ''), 255),
+        'representative_food': (row.get('representative_food', ''), 255),
+        'company_name': (row.get('company_name', ''), 255),
+        'shop_name': (row.get('mallName', ''), 100),
+        'nutri_score_grade': (row.get('nutri_score_grade', ''), 10),
     }
     
-    for field, value in string_fields.items():
+    for field, (value, max_length) in string_fields.items():
         cleaned_value = str(value).strip() if pd.notna(value) else ''
+        # 길이 제한 적용
+        if cleaned_value and len(cleaned_value) > max_length:
+            cleaned_value = cleaned_value[:max_length]
+        
         if field in ['food_name', 'food_category', 'representative_food', 'company_name']:
             cleaned_row[field] = cleaned_value or 'UNKNOWN'
         else:
@@ -204,7 +223,7 @@ def validate_and_clean_row(args):
         else:
             cleaned_row[field] = int(value) if pd.notna(value) else None
     
-    # URL 필드 정리
+    # URL 필드 정리 (길이 제한 적용)
     url_fields = ['food_img', 'shop_url', 'image_url']
     for field in url_fields:
         source_field = field
@@ -214,10 +233,16 @@ def validate_and_clean_row(args):
             source_field = 'product_link'
         
         value = str(row.get(source_field, '')).strip() if pd.notna(row.get(source_field)) else ''
+        # URL 길이 제한 (200자)
+        if value and len(value) > 200:
+            value = value[:200]
         cleaned_row[field] = value if value else None
     
-    # food_id 설정
-    cleaned_row['food_id'] = str(row.get('food_id', '')).strip()
+    # food_id 설정 (길이 제한 50자)
+    food_id = str(row.get('food_id', '')).strip()
+    if len(food_id) > 50:
+        food_id = food_id[:50]
+    cleaned_row['food_id'] = food_id
     
     return idx, cleaned_row, "유효"
 
@@ -391,7 +416,7 @@ def main():
         'food_id','food_img','food_name','food_category','representative_food',
         'nutritional_value_standard_amount','calorie','moisture','protein','fat',
         'carbohydrate','sugar','dietary_fiber','calcium','iron_content','phosphorus',
-        'potassium','salt','VitaminA','VitaminB','VitaminC','VitaminD','VitaminE',
+        'potassium','salt','"VitaminA"','"VitaminB"','"VitaminC"','"VitaminD"','"VitaminE"',
         'cholesterol','saturated_fatty_acids','trans_fatty_acids','serving_size',
         'weight','company_name','nutrition_score','nutri_score_grade','nrf_index',
         'shop_name','price','discount_price','shop_url','image_url'

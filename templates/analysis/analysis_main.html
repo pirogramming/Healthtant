@@ -135,25 +135,14 @@
     <div class="krda-chart-container">
       <div class="krda-chart">
         <div class="chart-grid">
-          <!-- Y축 눈금 -->
-          <div class="y-axis">
-            <span class="y-label">140</span>
-            <span class="y-label">120</span>
-            <span class="y-label">100</span>
-            <span class="y-label">80</span>
-            <span class="y-label">60</span>
-            <span class="y-label">40</span>
-            <span class="y-label">20</span>
-            <span class="y-label">0</span>
-          </div>
-          
           <!-- 막대들 -->
           <div class="bars-container">
             {% for item in nutrients_evaluation %}
               {% if item.name != "지방" %}
                 <div class="bar-wrapper">
                   <div class="bar-track-bg">
-                    <div class="bar-fill-krda" style="height: {{ item.percentage }}%;"></div>
+                    <div class="bar-fill-krda" style="height: {{ item.percentage }}%;"
+                    data-percentage="{{ item.percentage|floatformat:0 }}%"></div>
                   </div>
                   <span class="bar-label-krda">{{ item.name }}</span>
                 </div>
@@ -222,6 +211,19 @@
 
 {% block extra_js %}
 <script>
+document.addEventListener('DOMContentLoaded', function() {
+  const bars = document.querySelectorAll('.bar-fill-krda');
+  
+  bars.forEach(bar => {
+    bar.addEventListener('mouseenter', function() {
+      this.style.transform = 'scale(1.05)';
+    });
+    
+    bar.addEventListener('mouseleave', function() {
+      this.style.transform = 'scale(1)';
+    });
+  });
+});
 (function () {
   const el = document.getElementById('category-data');
   const target = document.getElementById('categoryChart');

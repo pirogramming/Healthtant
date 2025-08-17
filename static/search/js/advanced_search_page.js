@@ -208,8 +208,13 @@ class AdvancedSearchPage {
       productCard.innerHTML = `
         <img src="${food.food_img || ''}" alt="${food.food_name}" class="product-image">
         <div class="product-info">
-          <h4 class="product-name clickable" data-product-id="${food.food_id}">${food.food_name}</h4>
-          <p class="product-manufacturer">제조사: ${food.company_name || '제조사 정보 없음'}</p>
+          <div class="product-left">
+            <span class="brand-tag">${food.nutri_score_grade || '등급 없음'}</span>
+          </div>
+          <div class="product-right">
+            <h4 class="product-name clickable" data-product-id="${food.food_id}">${food.food_name}</h4>
+            <p class="product-manufacturer">제조사: ${food.company_name || '제조사 정보 없음'}</p>
+          </div>
         </div>
         <button class="favorite-btn" data-product-id="${food.food_id}" data-is-favorite="false" type="button" aria-pressed="false" aria-label="즐겨찾기">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
@@ -244,49 +249,7 @@ class AdvancedSearchPage {
         loadMoreCard.style.display = 'none';
       }
     }
-  
-    // 즐겨찾기 토글
-    // async toggleFavorite(favoriteBtn) {
-    //   const productId = favoriteBtn.getAttribute('data-product-id');
-    //   if (!productId) return;
-  
-    //   favoriteBtn.disabled = true;
-      
-    //   try {
-    //     const response = await fetch(`/products/${productId}/like/`, {
-    //       method: 'POST',
-    //       headers: {
-    //         'Content-Type': 'application/json',
-    //         'X-CSRFToken': this.getCsrfToken(),
-    //         'X-Requested-With': 'XMLHttpRequest'
-    //       },
-    //       credentials: 'same-origin'
-    //     });
-  
-    //     if (!response.ok) {
-    //       throw new Error('네트워크 오류');
-    //     }
-  
-    //     const data = await response.json();
-    //     const isFavorite = data.is_favorite;
 
-    //     // 로컬 상태 업데이트
-    //     if (isFavorite) {
-    //       this.favorites[productId] = true;
-    //     } else {
-    //       delete this.favorites[productId];
-    //     }
-    //     this.saveFavorites();
-
-    //     favoriteBtn.classList.toggle('active', isFavorite);
-    //     favoriteBtn.setAttribute('data-is-favorite', String(isFavorite));
-    //     favoriteBtn.setAttribute('aria-pressed', String(isFavorite));
-    //   } catch (error) {
-    //     console.error('찜 처리 오류:', error);
-    //   } finally {
-    //     favoriteBtn.disabled = false;
-    //   }
-    // }
 
     // 즐겨찾기 토글
     async toggleFavorite(favoriteBtn) {
@@ -380,4 +343,9 @@ function loadMoreProducts() {
   if (window.advancedSearch) {
     window.advancedSearch.loadMoreProducts();
   }
+}
+
+// 홈페이지로 이동하는 전역 함수
+function goToHome() {
+  window.location.href = '/';
 }

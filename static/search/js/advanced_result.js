@@ -419,8 +419,13 @@ class AdvancedResultPage {
         ${food.food_img ? `<img src="${food.food_img}" alt="${food.food_name}">` : '이미지 없음'}
       </div>
       <div class="food-info">
-        <div class="food-name clickable" onclick="advancedResult.goToProductDetail('${food.food_id}')">${food.food_name}</div>
-        <div class="food-company">${food.company_name || '제조사 정보 없음'}</div>
+        <div class="food-left">
+          <span class="brand-tag">${food.nutri_score_grade || '등급 없음'}</span>
+        </div>
+        <div class="food-right">
+          <div class="food-name clickable" onclick="advancedResult.goToProductDetail('${food.food_id}')">${food.food_name}</div>
+          <div class="food-company">${food.company_name || '제조사 정보 없음'}</div>
+        </div>
       </div>
       <button class="favorite-button ${favoriteClass}" 
               data-product-id="${food.food_id}" 
