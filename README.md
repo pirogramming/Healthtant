@@ -19,7 +19,7 @@
 ### Stacks
 | 구분 | Stack  |
 | FE | . |
-| BE | . |
+| BE | ![Django](https://img.shields.io/badge/django-%23092E20.svg?style=for-the-badge&logo=django&logoColor=white) |
 - 🎨 [Figma](https://www.figma.com/design/kduu8xM4jfH3J1h8oibqhP/Healthtant?node-id=0-1&p=f&t=rEzZ8L5Zlpzk6dMs-0)
 - 🗂️ [ERD Cloud](https://www.erdcloud.com/d/Qnwr4hLKXEYfCok5j/)
 - 📝 [Notion](https://www.notion.so/23eabfa2d88980f19fc3f939d92abd22?source=copy_link)
