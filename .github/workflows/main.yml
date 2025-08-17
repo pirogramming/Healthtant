@@ -45,8 +45,10 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
           timeout: 600s
           command_timeout: 300s
+          debug: true
           script: |
             set -euo pipefail
             echo "🚀 Starting deployment at $(date)"
