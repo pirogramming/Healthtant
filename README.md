@@ -1,11 +1,25 @@
 # 💪 Healthtant
-**🏆 피로그래밍 23기 최종 프로젝트** <br>
-**즉석식품을 더 건강하게 먹을 수 있도록 돕는 웹서비스입니다!**
+**🏆 피로그래밍 23기 최종 프로젝트**
+
+개발 기간 : 2025.07.26. - 2025.08.19.
+
+<br>
+
+> **즉석식품을 더 건강하게 먹을 수 있도록 돕는 웹서비스입니다!**
+
+직접 요리 해먹기는 부담스러운 식사, 갈수록 가공식품이 많아지고 있고 끼니를 가공식품으로 떼우는 일도 많아지고 있습니다. "가공식품을 먹는건 그렇다 쳐도 더 건강한 걸 먹는게 좋지 않을까?" 라고 하는 생각에서 탄생한 **헬스턴트**. **헬스턴트**가 제공하는 영양 점수와 식사 관리 시스템을 통해 한 층 더 건강한 식탁을 꾸려나가요!    
+<br>
+
+<img width="1147" height="415" alt="image" src="https://github.com/user-attachments/assets/150c8f0b-bb46-4ddf-b5a8-22e6f026d4cb" />
 
 <br>
 
 ## 📌 목차
-- [프로젝트 소개](#-프로젝트-소개)
+- #### [💪🏻 팀원 구성](#💪🏻-팀원-구성)
+- #### [🛠 기술 스택](#🛠-기술-스택)
+- #### [🏗 시스템 아키텍처](#🏗-시스템-아키텍처)
+- #### [🔗 협업 & 문서](#🔗-협업-&-문서)
+- #### [## 📱 서비스 화면](#📱-서비스-화면)
 
 <br>
 
@@ -143,3 +157,7 @@
 | :------: |  :------: | :------: |  :------: |
 | <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/5c5291ce-d3e9-4586-bebd-8ea8658f9878" /> | <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/b317be09-2ad2-4780-98ff-f2225c09734c" /> | <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/452ddfcd-0540-417c-ba81-693ba96872be" /> | <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/e9961973-b4d6-4d3d-b09e-5e21a4bc23d5" /> |
 
+<br>
+
+
+## 🪛 개발 환경
