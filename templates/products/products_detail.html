@@ -68,12 +68,7 @@
     <!-- 제품명과 가격 -->
     <div class="product-title-section">
       <h1 class="product-name">{{ product.food_name }}</h1>
-      {% if product.price and product.price > 0 %}
-        <div class="product-price">{{ product.price|floatformat:0 }}<span class="currency">원</span></div>
-      {% endif %}
-      {% if product.shop_name %}
-        <div class="product-shop">{{ product.shop_name }}</div>
-      {% endif %}
+      <div class="product-price">{{ product.price|floatformat:0 }}<span class="currency">원</span></div>
     </div>
 
     <!-- 영양 정보 아이콘 -->
