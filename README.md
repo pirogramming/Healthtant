@@ -163,10 +163,11 @@
 * A~E 등급까지 식품의 영양 성분을 가지고 매긴 레터그레이드를 보여줍니다.
 * 건강에 주요한 영양을 미치는 영양소(당류, 단백질, 나트륨, 포화지방)의 적정성 여부를 표시합니다.
 * 식품이 가지고 있는 각 영양소의 함량을 보여줍니다.
+* 상단 공유 버튼을 누르면 실제 음식 판매처 링크를 복사할 수 있습니다.
 
 | **식품 상세 페이지 (1)** | **식품 상세 페이지 (2)** |
 | :------: |  :------: |
-|<img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/3de58df4-e6b0-42d5-a054-daab1fcff511" /> | <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/d199a6e6-283e-4b32-abc9-fed6f9b04105" /> |
+|<img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/89073078-dda2-4952-8238-37f5dddf38ea" /> | <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/af05db35-02ec-4c96-9b39-f7b5fe7dd45f" /> |
 
 <br>
 
