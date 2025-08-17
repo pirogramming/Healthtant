@@ -1,19 +1,7 @@
 
 
-/* 스크롤 비활성화 */
-html, body {
-    overflow: hidden;
-    height: 100%;
-}
-
-.screen {
-    overflow: hidden;
-    height: 100vh;
-}
-
 .view {
-    overflow: hidden;
-    height: 100%;
+    height:1%;
 }
 
 .app-title {
