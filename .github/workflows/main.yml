@@ -18,7 +18,7 @@ jobs:
 
       - name: "Build & Push image (tag: sha + latest)"
         env:
-          IMAGE: ghcr.io/${{ github.repository }}
+          IMAGE: ghcr.io/pirogramming/healthtant
           TAG: ${{ github.sha }}
         run: |
           docker build -t $IMAGE:$TAG -t $IMAGE:latest .
@@ -41,7 +41,7 @@ jobs:
 
       - name: Deploy (pull & up only)
         env:
-          IMAGE: ghcr.io/${{ github.repository }}
+          IMAGE: ghcr.io/pirogramming/healthtant
           TAG: ${{ github.sha }}
         run: |
           ssh -o ServerAliveInterval=60 -o ServerAliveCountMax=30 ${{ secrets.USERNAME }}@${{ secrets.HOST }} << 'EOF'
