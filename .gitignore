@@ -345,3 +345,12 @@ $RECYCLE.BIN/
 #csv 파일 추출 코드
 analyze_categories.py
 analyze_prices.py
+
+# 산출물/업로드 (빌드 제외)
+staticfiles/
+media/
+uploads/
+
+# IDE/OS
+.vscode
+node_modules
