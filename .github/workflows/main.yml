@@ -118,9 +118,14 @@ jobs:
             fi
             echo "✅ Images pulled successfully"
             
+            # 기존 컨테이너 강제 정리 (호환성 문제 해결)
+            echo "🧹 Cleaning up old containers..."
+            docker-compose down --remove-orphans || true
+            docker system prune -f --volumes || true
+            
             # 서비스 시작/재시작
             echo "🔄 Starting services..."
-            if ! timeout 120 docker-compose up -d --remove-orphans; then
+            if ! timeout 120 docker-compose up -d; then
               echo "❌ Service start failed or timed out!"
               echo "📋 Container logs:"
               docker-compose logs --tail=50 || true
