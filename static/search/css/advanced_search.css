@@ -5,10 +5,10 @@
   padding: 20px;
 }
 
- .header-divider {
+.header-divider {
   height: 1px;
   background-color: #e9ecef;
- }
+}
 
 .back-button {
   background: none;

@@ -337,6 +337,8 @@
     flex: 1;
     max-width: 80px;
     position: relative; /* 툴팁 위치 설정을 위해 추가 */
+    height: 200px; /* 고정 높이 설정 */
+    justify-content: flex-end; /* 하단 정렬 */
 }
 
 .bar-track {
@@ -348,6 +350,7 @@
     display: flex;
     align-items: flex-end;
     justify-content: center;
+    flex-shrink: 0; /* 크기 고정 */
 }
 
 .bar-fill {
@@ -364,12 +367,17 @@
     margin-top: 10px;
     text-align: center;
     color: var(--Gray-04, #666);
-    text-align: right;
     font-family: Inter;
     font-size: 10px;
     font-style: normal;
     font-weight: 400;
-    line-height: normal;
+    line-height: 1.2;
+    white-space: nowrap; /* 한 줄로 제한 */
+    overflow: hidden; /* 넘치는 텍스트 숨김 */
+    text-overflow: ellipsis; /* 말줄임표 표시 */
+    width: 100%; /* 전체 너비 사용 */
+    max-width: 80px; /* 최대 너비 제한 */
+    height: 20px; /* 고정 높이 */
 }
 
 /* 빈 막대 차트 스타일 */
