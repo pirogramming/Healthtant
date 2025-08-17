@@ -151,8 +151,8 @@ def main():
         'mallName': 'shop_name',
         'lprice': 'price',
         'hprice': 'discount_price',
-        'product_link': 'shop_url',
-        'image': 'image_url',
+        'shop_url': 'shop_url',
+        'image_url': 'image_url',
         # 영양 점수 필드 추가
         'nutrition_score': 'nutrition_score',
         'nutri_score_grade': 'nutri_score_grade', 
