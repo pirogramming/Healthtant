@@ -297,6 +297,8 @@
 .section-title {
     cursor: pointer;
     transition: color 0.2s ease;
+    border: none;
+    background: white;
 }
 
 .section-title:hover {

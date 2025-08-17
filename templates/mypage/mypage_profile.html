@@ -29,7 +29,7 @@
                 {% if user_data.profile_image_url %}
                     <img src="{{ user_data.profile_image_url }}" alt="프로필 이미지">
                 {% else %}
-                    <svg xmlns="http://www.w3.org/2000/svg" width="94" height="95" viewBox="0 0 94 95" fill="none">
+                    {% comment %} <svg xmlns="http://www.w3.org/2000/svg" width="94" height="95" viewBox="0 0 94 95" fill="none">
                         <g clip-path="url(#clip0_357_1027)">
                             <path d="M47 82.75C66.468 82.75 82.25 66.968 82.25 47.5C82.25 28.032 66.468 12.25 47 12.25C27.532 12.25 11.75 28.032 11.75 47.5C11.75 66.968 27.532 82.75 47 82.75Z" fill="black" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                             <path d="M46.666 28.6666C54.2229 28.6668 60.3486 34.7933 60.3486 42.3502C60.3485 49.907 54.2228 56.0327 46.666 56.0328C39.1091 56.0328 32.9826 49.9071 32.9824 42.3502C32.9824 34.7932 39.109 28.6666 46.666 28.6666Z" fill="white" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -40,7 +40,8 @@
                                 <rect width="94" height="94" fill="white" transform="translate(0 0.5)"/>
                             </clipPath>
                         </defs>
-                    </svg>
+                    </svg> {% endcomment %}
+                    <img src="{% static 'images/default.png' %}" alt="기본 프로필 이미지">
                 {% endif %}
             </div>
         </div>
@@ -94,7 +95,7 @@
 
     <!-- 로그아웃/탈퇴 섹션 -->
     <div class="section">
-        <h3 class="section-title" onclick="confirmLogout()">로그아웃</h3>
+        <button class="section-title" onclick="confirmLogout()">로그아웃</button>
         <p class="withdrawal-text"
             onclick="window.location.href='{% url 'mypage:account_withdraw' %}'">
             탈퇴하기
