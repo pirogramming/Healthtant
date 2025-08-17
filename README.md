@@ -2,7 +2,6 @@
 **🏆 피로그래밍 23기 최종 프로젝트**
 **즉석식품을 더 건강하게 먹을 수 있도록 돕는 웹서비스입니다!**
 
-
 <br>
 
 ## 📌 목차
@@ -110,6 +109,10 @@
 * "1. 식사 분석" 탭 에서 "더 자세하게 식사 분석하기" 를 클릭하면 식사 패턴에 대해 더 자세한 분석을 확인할 수 있습니다.
 * "2. 영양 섭취 분석" 탭에서 "더 다양한 영양소에 대한 통계치 보러가기" 를 클릭하면 상세 영양소의 섭취량 통계를 확인할 수 있습니다.
 
-| **분석 날짜 선택** | **식사 분석 탭** | **영양 섭취 분석 탭** | **2020 한국인 영양소 섭취 기준 탭** |
+| **분석 날짜 선택** | **식사 분석 탭** | **영양 섭취 분석 탭** | **2020 한국인 영양소 섭취 기준 탭 (1)** |
 | :------: |  :------: | :------: |  :------: |
-| | | | |
+| <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/d2be5b9b-af73-418a-858b-ca428e30fe32" /> | <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/45d5d243-e19c-45f1-9ad3-6144ae63479b" /> | <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/f5329f65-1105-46d9-899f-275c3e335687" /> | <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/a881e95f-87b2-4147-9e5c-7ee0e6321348" /> |
+
+| **2020 한국인 영양소 섭취 기준 탭 (2)** | **더 자세하게 식사 분석하기 (1)** | **더 자세하게 식사 분석하기 (2)** | **더 자세하게 식사 분석하기 (3)** |
+| :------: |  :------: | :------: |  :------: |
+| <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/e12385e8-159f-4de3-9dcb-db433315d990" /> | <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/dd7016d2-5487-44c0-b219-5034f1b38061" /> | <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/6c5dc0a5-c43c-49bb-b4ee-522d2b7ebb75" /> | <img width="402" height="874" alt="image" src="https://github.com/user-attachments/assets/163a49d1-53ca-44c0-be5e-110feb085613" /> |
