@@ -69,8 +69,8 @@
     <div class="product-title-section">
       <h1 class="product-name">{{ product.food_name }}</h1>
       <div class="product-price">
-        {% if product.price %}
-          {{ product.price }}<span class="currency">원</span>
+        {% if product.lprice %}
+          {{ product.lprice }}<span class="currency">원</span>
         {% else %}
           가격 정보 없음
         {% endif %}

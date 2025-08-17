@@ -149,7 +149,7 @@ def main():
     csv_to_db = {
         'food_id': 'food_id',
         'mallName': 'shop_name',
-        'lprice': 'price',
+        'lprice': 'lprice',
         'hprice': 'discount_price',
         'shop_url': 'shop_url',
         'image_url': 'image_url',
@@ -215,7 +215,7 @@ def main():
     for c in float_cols:
         out[c] = out[c].apply(to_float)
 
-    bigint_cols = ['nutritional_value_standard_amount', 'price', 'discount_price']
+    bigint_cols = ['nutritional_value_standard_amount', 'lprice', 'discount_price']
     for c in bigint_cols:
         out[c] = out[c].apply(to_bigint)
 

@@ -51,9 +51,9 @@ class Food(models.Model):
     nrf_index = models.FloatField(null=True, blank=True)
     
     # 가격 정보 (CSV 칼럼에 맞춰 추가)
-    shop_name = models.CharField(max_length=100, null=True, blank=True)
-    price = models.BigIntegerField(null=True, blank=True)
+    lprice = models.BigIntegerField(null=True, blank=True)  # 네이버 쇼핑 최저가
     discount_price = models.BigIntegerField(null=True, blank=True)
+    mallName = models.CharField(max_length=100, null=True, blank=True)  # 쇼핑몰 이름
     shop_url = models.URLField(null=True, blank=True)
     image_url = models.URLField(null=True, blank=True)
 

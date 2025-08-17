@@ -4,8 +4,8 @@ from .models import Food
 
 @admin.register(Food)
 class FoodAdmin(admin.ModelAdmin):
-    list_display = ['food_id', 'food_name', 'company_name', 'food_category', 'shop_name', 'price']
-    list_filter = ['food_category', 'company_name', 'shop_name']
+    list_display = ['food_id', 'food_name', 'company_name', 'food_category', 'mallName', 'lprice']
+    list_filter = ['food_category', 'company_name', 'mallName']
     search_fields = ['food_name', 'company_name', 'representative_food']
     readonly_fields = ['food_id']
     
@@ -29,7 +29,7 @@ class FoodAdmin(admin.ModelAdmin):
             'classes': ('collapse',)
         }),
         ('가격 정보', {
-            'fields': ('shop_name', 'price', 'discount_price', 'shop_url', 'image_url'),
+            'fields': ('mallName', 'lprice', 'discount_price', 'shop_url', 'image_url'),
             'classes': ('collapse',)
         }),
         ('기타 정보', {
