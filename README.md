@@ -14,7 +14,7 @@
 
 <br>
 
-## 📌 목차
+# 📌 목차
 - #### [💪🏻 팀원 구성](#💪🏻-팀원-구성)
 - #### [🛠 기술 스택](#🛠-기술-스택)
 - #### [🏗 시스템 아키텍처](#🏗-시스템-아키텍처)
@@ -23,7 +23,7 @@
 
 <br>
 
-## 💪🏻 팀원 구성
+# 💪🏻 팀원 구성
 
 <div align="center">
 
@@ -36,7 +36,7 @@
 </div>
 <br>
 
-## 🛠 기술 스택
+# 🛠 기술 스택
 
 ### Stacks
 <div align="center">
@@ -66,14 +66,14 @@
 
 <br>
 
-## 🏗 시스템 아키텍처
+# 🏗 시스템 아키텍처
 <div align="center">
   <img width="1338" height="364" alt="image" src="https://github.com/user-attachments/assets/094a59e6-9776-4bce-b38c-33331d56aaeb" />
 </div>
 
 <br>
 
-## 🔗 협업 & 문서
+# 🔗 협업 & 문서
 - 🎨 [Figma](https://www.figma.com/design/kduu8xM4jfH3J1h8oibqhP/Healthtant?node-id=0-1&p=f&t=rEzZ8L5Zlpzk6dMs-0)
 - 🗂️ [ERD Cloud](https://www.erdcloud.com/d/Qnwr4hLKXEYfCok5j/)
 - 📕 [Notion](https://www.notion.so/23eabfa2d88980f19fc3f939d92abd22?source=copy_link)
@@ -81,7 +81,7 @@
 
 <br>
 
-## 📱 서비스 화면
+# 📱 서비스 화면
 
 #### 메인 화면
 * 영양 점수가 높은 음식이 랜덤으로 롤링 배너를 통해 출력됩니다.
