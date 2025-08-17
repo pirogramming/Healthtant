@@ -2,7 +2,7 @@
 from .base import *
 
 DEBUG = False
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')
+OWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')
 
 # PostgreSQL 데이터베이스 설정 (배포용)
 DATABASES = {

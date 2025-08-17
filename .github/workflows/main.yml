@@ -1,40 +1,121 @@
-name: Deploy to Healthtant Server
+name: Deploy (Build in CI, Pull on Server)
 
 on:
   push:
-    branches: ["main"]   # main 브랜치에 push될 때 실행
+    branches: ["main"]
 
 jobs:
-  deploy:
+  build_and_push:
     runs-on: ubuntu-latest
-
+    permissions:
+      contents: read
+      packages: write
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - name: Set up SSH
-        uses: webfactory/ssh-agent@v0.8.0
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
         with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-          
-      # USERNAME과 HOST 확인용 디버그 스텝
-      - name: Debug Secrets
-        run: |
-          echo "USERNAME is set to: ${{ secrets.USERNAME }}"
-          echo "HOST is set to: ${{ secrets.HOST }}"
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      # SSH 접속 테스트 (-vvv 옵션으로 디버깅)
-      - name: Test SSH Connection
-        run: |
-          ssh -vvv -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.HOST }} exit
+      - name: Build and Push image (tag sha + latest)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            ghcr.io/pirogramming/healthtant:${{ github.sha }}
+            ghcr.io/pirogramming/healthtant:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: linux/amd64
 
+  deploy:
+    needs: build_and_push
+    runs-on: ubuntu-latest
+    steps:
       - name: Deploy to server
-        run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.HOST }} << 'EOF'
-            cd ~/Healthtant
-            git pull origin main
-            docker-compose down
-            docker-compose up -d --build
-            docker-compose exec -T web python manage.py migrate
-            docker-compose exec -T web python manage.py collectstatic --noinput
-          EOF
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          timeout: 600s
+          command_timeout: 300s
+          debug: true
+          use_insecure_cipher: false
+          fingerprint: ""
+          script: |
+            set -euo pipefail
+            echo "🚀 Starting deployment at $(date)"
+            echo "whoami=$(whoami)  HOME=$HOME"
+
+            if   [ -d /root/Healthtant ]; then cd /root/Healthtant
+            elif [ -d /home/ubuntu/Healthtant ]; then cd /home/ubuntu/Healthtant
+            elif [ -d "$HOME/Healthtant" ]; then cd "$HOME/Healthtant"
+            else
+              echo "📦 First-time setup: cloning repo to /opt/apps"
+              sudo mkdir -p /opt/apps && sudo chown -R "$(whoami)":"$(whoami)" /opt/apps
+              cd /opt/apps
+              git clone --depth 1 https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/pirogramming/Healthtant.git
+              cd Healthtant
+            fi
+            echo "📂 Using project dir: $(pwd)"
+
+            echo "🔄 Updating code from git..."
+            git fetch origin main
+            git reset --hard origin/main
+            echo "✅ Code updated"
+
+            if docker compose version >/dev/null 2>&1; then COMPOSE="docker compose";
+            elif docker-compose --version >/dev/null 2>&1; then COMPOSE="docker-compose";
+            else
+              echo "🧩 Installing docker compose plugin..."
+              sudo apt-get update -y
+              sudo apt-get install -y docker-compose-plugin
+              COMPOSE="docker compose"
+            fi
+            echo "✅ Using: $COMPOSE"
+
+            echo "🔐 Logging into GHCR..."
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            echo "✅ Docker login successful"
+
+            test -f docker-compose.yml || { echo "❌ docker-compose.yml not found"; exit 1; }
+
+            echo "📦 Pulling images..."
+            timeout 180 $COMPOSE pull
+            echo "🧹 Cleaning up old containers..."
+            $COMPOSE down --remove-orphans || true
+            docker system prune -f || true
+            echo "🔄 Starting services..."
+            timeout 120 $COMPOSE up -d --remove-orphans
+            echo "✅ Services started"
+
+            echo "🏥 Health check..."
+            sleep 5
+            for i in {1..10}; do
+              echo "🔍 Health check attempt $i/10..."
+              if ! $COMPOSE ps | grep -q "Up"; then
+                $COMPOSE ps || true
+                $COMPOSE logs --tail=50 web || true
+                [ $i -eq 10 ] && { echo "❌ Containers not running"; exit 1; }
+                sleep 3; continue
+              fi
+              if $COMPOSE exec -T web timeout 10 python -c 'import socket,sys; s=socket.socket(); s.settimeout(5); r=s.connect_ex(("localhost",8000)); s.close(); print("✅ 8000 open" if r==0 else "❌ 8000 closed"); sys.exit(0 if r==0 else 1)'; then
+                echo "✅ Deployment successful!"
+                $COMPOSE ps || true
+                break
+              fi
+              [ $i -eq 10 ] && { echo "❌ Health check failed"; $COMPOSE logs --tail=100 web || true; exit 1; }
+              sleep 3
+            done
+
+            echo "🎉 Deployment completed at $(date)"
+          
