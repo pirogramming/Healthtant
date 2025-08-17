@@ -2,12 +2,13 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from diets.models import Diet
 from datetime import datetime, timedelta
-from django.http import JsonResponse
 from django.db.models import Sum, F, Count, Q
 from django.db.models.functions import Coalesce
 from django.http import HttpResponseBadRequest
 from statistics import pstdev
 
+# DB에 csv 데이터 넣을 때 숫자 데이터들이 텍스트로 인식된 상태로 들어온 것 같습니다...
+# 그래서 float를 숫자 형태로 안전하게 변환해주는 함수를 정의했습니다.
 def _to_float(v, default=0.0):
     if v is None:
         return default
@@ -28,9 +29,8 @@ def _to_float(v, default=0.0):
     except Exception:
         return default
     
-# 임시 날짜 선택 페이지 뷰 (확인용)
+# 분석에 앞서 분석할 기간을 선택하는 페이지를 렌더링하는 뷰!!
 def analysis_date(request):
-    # 로그인 상태 확인 - 로그인 안 되어도 페이지는 렌더링
     return render(request, 'analysis/analysis_date.html')
 
 #user의 각 영양소별 필수섭취량, 적정량 범위를 구하는 메소드
@@ -50,6 +50,7 @@ def calculate_recommendation(user):
     if not (gender == "M" or gender == "F"):
         gender = "M"
 
+    # user가 각 영양소를 얼마나 필요로 하며 얼마가 적정량인지 저장할 데이터 형식 (min~max가 적정이고 essential은 최소섭취량입니다!)
     ret = {
         'calorie' : {
             'min': 0, #user의 적정 에너지 min 값
@@ -77,6 +78,7 @@ def calculate_recommendation(user):
         }
     }
 
+    # KDRIs 기준 권장섭취량이 나눠지는 인터벌을 계산 (idx에 저장)
     age_interval = [(1,2), (3,5), (6,8), (9,11), (12,14), (15,18), (19,29), (30,49), (50,64), (65,74), (75,150)]
     for i in range(len(age_interval)):
         start, end = age_interval[i]
@@ -168,12 +170,8 @@ def make_evaluation(name, avg, min, max, essential=0):
         "message": nutrition_message
     }
 
-
+# food를 1회 섭취했을 때 실제로 얻는 영양소 양을 반환
 def get_real_nutrient(food, nutrient_name):
-    """
-    라벨 표기 기준량(nutritional_value_standard_amount) 대비 실제 섭취량 환산.
-    값이 None/str/bytes여도 안전하게 float으로 계산합니다.
-    """
     serving_size = _to_float(
         getattr(food, "serving_size", None),
         default=_to_float(getattr(food, "weight", None), 100.0) or 100.0
@@ -187,8 +185,8 @@ def get_real_nutrient(food, nutrient_name):
     if nutrient == 0.0:
         return 0.0
     if standard_amount == 0.0:
-        # 기준량 정보가 없으면 라벨 값 그대로 반환
-        return nutrient
+        # 기준량 정보가 없으면 100g 기준으로 반환
+        return nutrient / 100 * serving_size
     return nutrient / standard_amount * serving_size
 
 #메인 분석 페이지 뷰
@@ -344,6 +342,7 @@ def analysis_main(request):
     # return JsonResponse(context, json_dumps_params={'ensure_ascii': False})
 
 
+# 표준편차를 입력 받아서 분석 메세지를 반환하는 함수
 def stdev_summary(stdev):
     if stdev <= 100:
         return "비교적 꾸준히 가공식품을 섭취하고 있어요. 대체로 안정적인 식사 형태를 보이는 것 같습니다!"
@@ -522,7 +521,6 @@ def analysis_nutrients(request):
         for n in NUTRIENTS
     }
 
-    #나중에 프론트에서 diet_analysis.html 같은 템플릿 만들고 나면 아래 주석처리 해놓은 render 함수로 바꿔 사용해주세요!
+    #나중에 프론트에서 diet_analysis.html 같은 템플릿 만들고 나면 아래 주석 처리 해놓은 render 함수로 바꿔 사용해주세요!
     return render(request, "analysis/analysis_nutrients.html", context)
     #return JsonResponse(context, json_dumps_params={'ensure_ascii': False})
-    

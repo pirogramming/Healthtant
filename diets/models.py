@@ -29,8 +29,6 @@ class Diet(models.Model):
         db_table = 'diet'
         verbose_name = "식단"
         verbose_name_plural = "식단들"
-        # 같은 사용자가 같은 날, 같은 끼니에 같은 음식을 중복 등록하지 않도록
-        unique_together = ['user', 'food', 'date', 'meal']
 
     def __str__(self):
         return f"{self.user} | {self.date} | {self.get_meal_display()}"
