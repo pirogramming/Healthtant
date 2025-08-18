@@ -83,17 +83,11 @@ body {
     width: 94px;
     height: 94px;
     border-radius: 50%;
-    background-color: var(--neutralslate-blackslate-black-50);
     display: flex;
     align-items: center;
     justify-content: center;
-
-    border: 2px solid var(--variable-collection-border-gary40);
 }
 
-.profile-picture:hover {
-    background-color: var(--neutralslate-blackslate-black-100);
-}
 
 .profile-icon {
     width: 40px;
