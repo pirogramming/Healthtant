@@ -33,6 +33,7 @@
 | [<img src="https://github.com/user-attachments/assets/4b93e7cf-3849-4388-a738-039c5b9db094" height=150 width=150> <br/> @GGo-Dong ](https://github.com/GGo-Dong)  | [<img src="https://github.com/user-attachments/assets/9399cdbb-1603-438f-8ccd-993d8cfdf49f" height=150 width=150> <br/> @cygnusA631](https://github.com/cygnusA631)  | [<img src="https://github.com/user-attachments/assets/479b0c5f-77eb-4627-9747-61fd64351deb" height=150 width=150> <br/> @Gyubuk](https://github.com/Gyubuk) | [<img src="https://github.com/user-attachments/assets/10daa841-8f2f-4144-899a-dbf779e76363" height=150 width=150> <br/> @mnjese](https://github.com/mnjese) | [<img src="https://github.com/user-attachments/assets/eb9b8dc9-6318-4f72-9895-1d04b9383277" height=150 width=150> <br/> @JooKyung-Yuh](https://github.com/JooKyung-Yuh) |
 | PM / BE |  FE | FE | BE | BE |
 | 말안되게 헬쑥턴트| 삐리리 헬쑥턴트 | 레츠끼끼 헬쑥턴트 | 정말 좋아 헬쑥턴트 | 헬쑥턴트 |
+| [블로그](https://ggo-dong.tistory.com/) | [블로그](https://cygnusa.tistory.com/1) | [블로그](https://blog.naver.com/nanhe730/223958594937) | [블로그](https://mjk5949.tistory.com/29) | |
 
 </div>
 <br>
