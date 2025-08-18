@@ -148,7 +148,6 @@ def main():
     # 2) 매핑 - food_clean_data.csv 칼럼에 맞춰 수정
     csv_to_db = {
         'food_id': 'food_id',
-        'shop_name': 'mallName',
         'price': 'lprice',
         'discount_price': 'discount_price',
         'shop_url': 'shop_url',

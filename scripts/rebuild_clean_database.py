@@ -181,7 +181,6 @@ def validate_and_clean_row(args):
         'food_category': (row.get('food_category', ''), 255),
         'representative_food': (row.get('representative_food', ''), 255),
         'company_name': (row.get('company_name', ''), 255),
-        'shop_name': (row.get('mallName', ''), 100),
         'nutri_score_grade': (row.get('nutri_score_grade', ''), 10),
     }
     
@@ -419,7 +418,7 @@ def main():
         'potassium','salt','"VitaminA"','"VitaminB"','"VitaminC"','"VitaminD"','"VitaminE"',
         'cholesterol','saturated_fatty_acids','trans_fatty_acids','serving_size',
         'weight','company_name','nutrition_score','nutri_score_grade','nrf_index',
-        'shop_name','lprice','discount_price','shop_url','image_url'
+        'lprice','discount_price','shop_url','image_url'
     ]
     
     placeholders = ",".join(["%s"] * len(cols))

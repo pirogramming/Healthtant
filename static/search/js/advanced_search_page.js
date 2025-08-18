@@ -213,7 +213,7 @@ class AdvancedSearchPage {
           </div>
           <div class="product-right">
             <h4 class="product-name clickable" data-product-id="${food.food_id}">${food.food_name}</h4>
-            <p class="product-manufacturer">판매처: ${food.company_name || '판매처 정보 없음'}</p>
+            <p class="product-manufacturer">제조사: ${food.company_name || '제조사 정보 없음'}</p>
           </div>
         </div>
         <button class="favorite-btn" data-product-id="${food.food_id}" data-is-favorite="false" type="button" aria-pressed="false" aria-label="즐겨찾기">

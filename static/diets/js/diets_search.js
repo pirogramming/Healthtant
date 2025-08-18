@@ -124,7 +124,7 @@ function createFoodElement(food) {
         </div>
         <div class="food-info">
             <h3 class="food-name">${food.food_name}</h3>
-            <p class="food-company">판매처: ${food.company_name || '판매처 정보 없음'}</p>
+            <p class="food-company">제조사: ${food.company_name || '제조사 정보 없음'}</p>
         </div>
         <button class="register-btn btn btn-primary" onclick="registerFood('${food.food_id}')">
             <span class="plus-icon">+</span>
