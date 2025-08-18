@@ -54,7 +54,7 @@ def food_to_dict(food):
         "trans_fatty_acids": safe_float(getattr(food, "trans_fatty_acids", 0)),
         "serving_size": safe_float(getattr(food, "serving_size", 0)),
         "weight": safe_float(getattr(food, "weight", 0)),
-        "company_name": safe_str(getattr(food, "mallName", "") or getattr(food, "company_name", "") or ""),
+        "company_name": safe_str(getattr(food, "company_name", "") or ""),
         "score": safe_float(getattr(food, "nutrition_score", 0)),
         "letter_grade": safe_str(getattr(food, "nutri_score_grade", "") or letterGrade(food) or ""),
         "nutri_score_grade": safe_str(getattr(food, "nutri_score_grade", "") or letterGrade(food) or "")
@@ -181,7 +181,7 @@ def diet_list(request):
             recent_foods.append({
                 "food_id": str(cur_food.food_id),
                 "food_name" : cur_food.food_name,
-                "company_name": cur_food.mallName or cur_food.company_name,
+                "company_name": cur_food.company_name,
                 "food_img": cur_food.image_url or cur_food.food_img
                 })
             cnt += 1 #식품 카운팅
@@ -212,7 +212,7 @@ def diet_search(request):
         food_data = dict() #food의 정보를 담을 dict
         food_data['food_id'] = str(food.food_id)
         food_data['food_name'] = food.food_name
-        food_data['company_name'] = food.mallName or food.company_name
+        food_data['company_name'] = food.company_name
         food_data['food_img'] = food.image_url or food.food_img
         ret['foods'].append(food_data) #food_data 에 정보를 모두 담았으니 ret['foods']에 추가
 

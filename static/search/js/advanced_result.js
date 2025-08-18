@@ -424,7 +424,7 @@ class AdvancedResultPage {
         </div>
         <div class="food-right">
           <div class="food-name clickable" onclick="advancedResult.goToProductDetail('${food.food_id}')">${food.food_name}</div>
-          <div class="food-company">${food.company_name || '판매처 정보 없음'}</div>
+          <div class="food-company">${food.company_name || '제조사 정보 없음'}</div>
         </div>
       </div>
       <button class="favorite-button ${favoriteClass}" 
