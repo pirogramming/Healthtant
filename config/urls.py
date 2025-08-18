@@ -41,3 +41,4 @@ handler500 = 'main.views.server_error_view'
 # 미디어 파일 서빙 (개발 환경에서만)
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

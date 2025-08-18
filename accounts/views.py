@@ -102,7 +102,7 @@ def signup(request):
                 image_url = _save_image_and_get_url(request.FILES["profile_image"], user.id)
                 profile.profile_image_url = image_url
             else:
-                profile.profile_image_url = "/static/images/default_img.png"
+                profile.profile_image_url = None
 
             profile.save()
 
