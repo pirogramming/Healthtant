@@ -154,30 +154,6 @@ def search_before(request):
     return render(request, "search/search_before.html", context)
 
 
-#실제 검색 기능을 구현한 뷰
-#Ajax 쓰라는 의미에서 JsonResponse로 드렸습니다 ^^
-def normal_search(request):
-
-    keyword = request.GET.get('keyword')
-    page = int(request.GET.get('page', 1))
-    limit = int(request.GET.get('limit', 30))
-    
-    filtered_list = Food.objects.filter(food_name__icontains=keyword) # keyword를 포함한 음식 1차 필터링
-    sorted_list = sorted(filtered_list, key=lambda food: NutritionalScore(food), reverse=True) # NutritionalScore 기준 점수가 높은 음식이 앞에 오도록 정렬
-
-    # 페이지네이션 적용
-    start_index = (page - 1) * limit
-    end_index = start_index + limit
-    paginated_list = sorted_list[start_index:end_index]
-
-    # 반환 값을 구성하는 부분
-    context = {"foods":foods_to_dict(paginated_list, request.user)}
-
-    # to FE: AJAX로 검색 결과를 노출해야 하므로 Json 데이터를 반환하게 구현했습니다.
-    # to FE: 만약 렌더링 해야 할 페이지가 따로 있다면 얘기해주세요!!
-    return JsonResponse(context, json_dumps_params={'ensure_ascii': False})
-
-
 #상세 검색 렌더링 뷰
 #사용자가 필요로 할 법한 제품을 우선으로 출력합니다.
 @login_required
