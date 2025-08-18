@@ -32,8 +32,8 @@ COPY --from=builder /opt/venv /opt/venv
 # 소스코드 복사 (마지막에 복사하여 캐시 활용)
 COPY . .
 
-# 정적파일 디렉토리 생성
-RUN mkdir -p /app/staticfiles
+# 정적파일 및 미디어 디렉토리 생성
+RUN mkdir -p /app/staticfiles /app/media
 
 EXPOSE 8000
 CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "2", "--timeout", "120", "--max-requests", "1000", "--max-requests-jitter", "50"]

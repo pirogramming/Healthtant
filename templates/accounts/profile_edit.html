@@ -50,7 +50,7 @@
                                     </defs>
                                 </svg>
                             {% endif %} {% endcomment %}
-                            {% if profile.profile_image_url and profile.profile_image_url != 'default.png' and profile.profile_image_url != 'None' %}
+                            {% if profile.profile_image_url and profile.profile_image_url != 'default.png' and profile.profile_image_url != 'None' and profile.profile_image_url != '/static/images/default_img.png' %}
                                 <img src="{{ profile.profile_image_url }}" alt="프로필 이미지" style="width: 94px; height: 94px; border-radius: 50%; object-fit: cover;">
                             {% else %}
                                 <img src="{% static 'images/default_img.png' %}" alt="기본 프로필 이미지" style="width: 94px; height: 94px; border-radius: 50%; object-fit: cover;">
@@ -295,7 +295,7 @@
             const serverImageUrl = '{{ profile.profile_image_url }}';
             const profilePicture = document.getElementById('profile-picture');
             
-            if (serverImageUrl && serverImageUrl.trim() !== '' && serverImageUrl !== 'default.png' && serverImageUrl !== 'None') {
+            if (serverImageUrl && serverImageUrl.trim() !== '' && serverImageUrl !== 'default.png' && serverImageUrl !== 'None' && serverImageUrl !== '/static/images/default_img.png') {
                 profilePicture.innerHTML = `<img src="${serverImageUrl}" alt="프로필 이미지" style="width: 94px; height: 94px; border-radius: 50%; object-fit: cover;">`;
             }
         });
