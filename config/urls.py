@@ -38,6 +38,5 @@ handler403 = 'main.views.permission_denied_view'
 handler404 = 'main.views.not_found_view'
 handler500 = 'main.views.server_error_view'
 
-# 미디어 파일 서빙 (개발 환경에서만)
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# 미디어 파일 서빙 (개발 및 배포 환경 모두)
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
