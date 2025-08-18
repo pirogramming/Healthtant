@@ -116,7 +116,7 @@ function displaySearchResults(foods) {
             <span class="brand-tag">${food.nutri_score_grade || '등급 없음'}</span>
             <div class="food-text-container">
               <h3 class="food-name">${food.food_name}</h3>
-              <p class="food-company">제조사: ${food.company_name || '-'}</p>
+              <p class="food-company">판매처: ${food.company_name || '-'}</p>
             </div>
           </div>
         </div>
