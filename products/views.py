@@ -7,6 +7,44 @@ from common import nutrition_score
 
 from foods.models import Food, FavoriteFood
 
+# bytes 타입을 문자열로 변환하는 헬퍼 함수
+def safe_str(value):
+    if isinstance(value, bytes):
+        return value.decode('utf-8', errors='ignore')
+    elif value is None:
+        return ""
+    else:
+        return str(value)
+
+# 안전한 숫자 변환 함수
+def safe_float(value, default=0.0):
+    if isinstance(value, bytes):
+        try:
+            return float(value.decode('utf-8', errors='ignore'))
+        except:
+            return default
+    elif value is None:
+        return default
+    else:
+        try:
+            return float(value)
+        except:
+            return default
+        
+# 안전한 숫자 변환 함수
+def safe_int(value, default=0):
+    if isinstance(value, bytes):
+        try:
+            return int(value.decode('utf-8', errors='ignore'))
+        except:
+            return default
+    elif value is None:
+        return default
+    else:
+        try:
+            return int(value)
+        except:
+            return default
 
 def _product_dict(food, is_favorite: bool):
     return {
@@ -47,7 +85,6 @@ def _product_dict(food, is_favorite: bool):
         "protein_level": None,
         "is_favorite": is_favorite,
     }
-
 
 @require_GET
 def product_detail(request, food_id):
