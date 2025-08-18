@@ -55,15 +55,14 @@
 
                 <div class="banner-info">
                   <div class="banner-title">{{ f.food_name|default:"이름 없음" }}</div>
-                  <div class="banner-subtitle">
-                    {% if f.company_name %}{{ f.company_name }}{% endif %}
-                    {% if f.company_name and f.mallName %} · {% endif %}
-                    {% if f.mallName %}{{ f.mallName }}{% endif %}
-                    {% if f.mallName and f.lprice %} · {% endif %}
-                    {% if f.lprice and f.lprice != "None" and f.lprice != "0" and f.lprice != "" %}
-                      {{ f.lprice }}원
-                    {% else %}가격 정보 없음{% endif %}
-                  </div>
+
+                  {% if f.company_name or f.lprice %}
+                    <div class="banner-subtitle">
+                      {% if f.company_name %}{{ f.company_name }}{% endif %}
+                      {% if f.company_name and f.lprice %} · {% endif %}
+                      {% if f.lprice %}{{ f.lprice }}원{% endif %}
+                    </div>
+                  {% endif %}
                 </div>
               </div>
             {% endfor %}

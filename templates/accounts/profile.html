@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="{% static 'accounts/profile.css' %}">
     <link rel="stylesheet" href="{% static 'base/variables.css' %}">
     <link rel="stylesheet" href="{% static 'base/base.css' %}">
+    <link rel="icon" type="image/png" href="{% static 'images/default_img.png' %}">
 </head>
 <body>
     <div class="container">
@@ -35,7 +36,7 @@
                             {% elif user.profile_image_url %}
                                 <img src="{{ user.profile_image_url }}" alt="프로필 이미지">
                             {% else %}
-                                <img style="width : 94px; height : 94px; border-radius: 50%; border: 2px solid rgba(248, 248, 248, 1); " src="{% static 'images/default.png' %}" alt="기본 프로필 이미지">
+                                <img style="width : 94px; height : 94px; border-radius: 50%; border: 2px solid rgba(248, 248, 248, 1); " src="{% static 'images/default_img.png' %}" alt="기본 프로필 이미지">
                             {% endif %}
                         </div>
                         <button type="button" class="change-picture" onclick="document.getElementById('profile_image').click()">
