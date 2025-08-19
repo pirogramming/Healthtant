@@ -40,6 +40,9 @@
   <div class="view">
     <!-- 추천 제품 롤링배너 영역 -->
     <section class="featured-container">
+      <div class="main-text">
+        <h2><span class="username-highlight">{{ user.username | default:"사용자" }}</span>님을 위한 맞춤 추천</h2>
+      </div>
       {% if foods %}
         <div class="rolling-banner-container">
           <div class="rolling-banner" id="rollingBanner">
@@ -75,6 +78,14 @@
         <p style="text-align:center; padding:24px;">표시할 식품이 없습니다.</p>
       {% endif %}
     </section>
+    <section class="about-healthtant">
+      <h2 class="about-title">헬스턴트 서비스란?</h2>
+      <p class="about-text">
+        헬스턴트는 일상 속 식단을 기록하고 분석하여 건강한 생활을 돕는 서비스입니다. 
+        나의 식습관을 데이터로 확인하고, 맞춤형 인사이트를 얻어보세요!
+      </p>
+    </section>
+    
   </div>
 </div>
 {% endblock %}
