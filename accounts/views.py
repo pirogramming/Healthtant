@@ -93,7 +93,10 @@ def signup(request):
                 return JsonResponse({"error": "이미 존재하는 닉네임입니다."}, status=400)
 
             user = User.objects.create_user(username=username, email=email, password=password)
-            profile = user.profile
+            try:
+                profile = user.profile
+            except UserProfile.DoesNotExist:
+                profile = UserProfile.objects.create(user=user, nickname=nickname)
             profile.nickname = nickname
             profile.user_gender = gender
             profile.user_age = age
