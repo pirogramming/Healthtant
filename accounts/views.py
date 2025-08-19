@@ -117,8 +117,7 @@ def signup(request):
             profile.save()
 
             login(request, user)
-            request.session["just_signed_up"] = True
-            return redirect("/accounts/profile/")
+            return redirect("/")
 
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=400)

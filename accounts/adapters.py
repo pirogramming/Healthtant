@@ -19,28 +19,28 @@ class CustomAccountAdapter(DefaultAccountAdapter):
         return user
     
     def get_signup_redirect_url(self, request):
-        request.session["just_signed_up"] = True
-        return "/accounts/profile/"
+        # 일반 회원가입 후 바로 메인 페이지로 이동
+        return "/"
     
     def get_login_redirect_url(self, request):
-        return "/accounts/profile/"
+        return "/"
 
 
 class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
     def save_user(self, request, sociallogin, form=None):
         user = super().save_user(request, sociallogin, form)
-        # 소셜 로그인 시 UserProfile 생성
+        # 소셜 로그인 시 UserProfile 생성 (기본값으로)
         try:
             profile = user.profile
         except UserProfile.DoesNotExist:
-            # 닉네임 중복 방지를 위해 고유한 닉네임 생성
-            base_nickname = user.username or sociallogin.account.extra_data.get('name', 'SocialUser')
+            # 기본 닉네임으로 UserProfile 생성 (중복 방지)
+            base_nickname = f"User{user.id}"
             nickname = base_nickname
             counter = 1
             
             # 닉네임이 중복되면 숫자를 붙여서 고유하게 만들기
             while UserProfile.objects.filter(nickname=nickname).exists():
-                nickname = f"{base_nickname}{counter}"
+                nickname = f"{base_nickname}_{counter}"
                 counter += 1
             
             UserProfile.objects.create(
@@ -52,5 +52,9 @@ class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
         return user
     
     def get_signup_redirect_url(self, request):
-        request.session["just_signed_up"] = True
-        return "/accounts/profile/"
+        # 소셜 로그인 후 바로 메인 페이지로 이동
+        return "/"
+    
+    def get_login_redirect_url(self, request):
+        # 소셜 로그인 후 바로 메인 페이지로 이동
+        return "/"
