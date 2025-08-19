@@ -34,11 +34,18 @@ def _save_image_and_get_url(file, user_id):
 @login_required(login_url='/accounts/login/')
 def profile(request):
     if request.method == "GET":
-        if request.session.get("just_signed_up", False):
+        # 소셜 로그인으로 새로 가입한 사용자이거나 프로필이 완전하지 않은 경우 프로필 입력 페이지 표시
+        try:
+            profile = request.user.profile
+            is_incomplete = not profile.nickname or profile.nickname == request.user.username
+        except:
+            is_incomplete = True
+            
+        if request.session.get("just_signed_up", False) or is_incomplete:
             request.session["just_signed_up"] = False
             return render(request, 'accounts/profile.html', {
                 "user": request.user,
-                "profile": request.user.profile,
+                "profile": getattr(request.user, 'profile', None),
             })
         return redirect("/")
 
