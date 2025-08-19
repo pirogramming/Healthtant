@@ -6,6 +6,48 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'main/main.css' %}">
+<style>
+.status-bar {
+    height: 10px;
+}
+h2 {
+    font-family: "Satoshi", Helvetica;
+    font-size: 20px;
+    font-weight: 700;
+    color: #2c3e50;
+    line-height: 1.2;
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+.username-highlight {
+    color: var(--main);
+    font-weight: 800;
+}
+
+.about-healthtant {
+    padding: 32px 20px;
+    text-align: center;
+    margin: 20px;
+    border-top: 1px solid #e0e0e0;
+    padding-top: 40px;
+}
+  
+.about-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #56AAB2;
+    margin-bottom: 12px;
+}
+  
+.about-text {
+    font-size: 14px;
+    font-weight: 400;
+    color: #444;
+    line-height: 1.5;
+    text-align: left;
+}
+</style>
 {% endblock %}
 
 {% block extra_js %}
@@ -41,7 +83,7 @@
     <!-- 추천 제품 롤링배너 영역 -->
     <section class="featured-container">
       <div class="main-text">
-        <h2><span class="username-highlight">{{ user.username | default:"사용자" }}</span>님을 위한 맞춤 추천</h2>
+        <h2><span class="username-highlight">{{ user.profile.nickname | default:"사용자" }}</span>님을 위한 추천</h2>
       </div>
       {% if foods %}
         <div class="rolling-banner-container">
