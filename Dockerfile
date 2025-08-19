@@ -35,5 +35,10 @@ COPY . .
 # 정적파일 및 미디어 디렉토리 생성
 RUN mkdir -p /app/staticfiles /app/media
 
+# entrypoint 스크립트 복사 및 실행 권한 부여
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
 EXPOSE 8000
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "2", "--timeout", "120", "--max-requests", "1000", "--max-requests-jitter", "50"]
