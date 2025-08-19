@@ -5,12 +5,22 @@
 
 <br>
 
-> **즉석식품을 더 건강하게 먹을 수 있도록 돕는 웹서비스입니다!**
+> **가공식품을 더 건강하게 먹을 수 있도록 돕는 웹서비스입니다!**
 
 직접 요리 해먹기는 부담스러운 식사, 갈수록 가공식품이 많아지고 있고 끼니를 가공식품으로 떼우는 일도 많아지고 있습니다. "가공식품을 먹는건 그렇다 쳐도 더 건강한 걸 먹는게 좋지 않을까?" 라고 하는 생각에서 탄생한 **헬스턴트**. **헬스턴트**가 제공하는 영양 점수와 식사 관리 시스템을 통해 한 층 더 건강한 식탁을 꾸려나가요!    
 <br>
 
-<img width="1147" height="415" alt="image" src="https://github.com/user-attachments/assets/150c8f0b-bb46-4ddf-b5a8-22e6f026d4cb" />
+<div align="center">
+  
+| **헬스턴트 배너** | **헬스턴트 로고** |
+| :------: |  :------: |
+| ![헬스턴트 배너](https://github.com/user-attachments/assets/34c29a54-b8eb-4549-8e6b-778603e725f2) | ![헬스턴트 로고](https://github.com/user-attachments/assets/5606eeb9-9d45-4db7-8a1e-288f81516672) |
+
+</div>
+
+<br>
+
+### **헬스턴트 url : [https://healthtant.com/](https://healthtant.com/)**
 
 <br>
 <br>
@@ -33,6 +43,7 @@
 | [<img src="https://github.com/user-attachments/assets/4b93e7cf-3849-4388-a738-039c5b9db094" height=150 width=150> <br/> @GGo-Dong ](https://github.com/GGo-Dong)  | [<img src="https://github.com/user-attachments/assets/9399cdbb-1603-438f-8ccd-993d8cfdf49f" height=150 width=150> <br/> @cygnusA631](https://github.com/cygnusA631)  | [<img src="https://github.com/user-attachments/assets/479b0c5f-77eb-4627-9747-61fd64351deb" height=150 width=150> <br/> @Gyubuk](https://github.com/Gyubuk) | [<img src="https://github.com/user-attachments/assets/10daa841-8f2f-4144-899a-dbf779e76363" height=150 width=150> <br/> @mnjese](https://github.com/mnjese) | [<img src="https://github.com/user-attachments/assets/eb9b8dc9-6318-4f72-9895-1d04b9383277" height=150 width=150> <br/> @JooKyung-Yuh](https://github.com/JooKyung-Yuh) |
 | PM / BE |  FE | FE | BE | BE |
 | 말안되게 헬쑥턴트| 삐리리 헬쑥턴트 | 레츠끼끼 헬쑥턴트 | 정말 좋아 헬쑥턴트 | 헬쑥턴트 |
+| [블로그](https://ggo-dong.tistory.com/) | [블로그](https://cygnusa.tistory.com/1) | [블로그](https://nanhe.tistory.com/1) | [블로그](https://mjk5949.tistory.com/29) | [블로그]() |
 
 </div>
 <br>
