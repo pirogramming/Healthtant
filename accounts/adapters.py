@@ -33,9 +33,19 @@ class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
         try:
             profile = user.profile
         except UserProfile.DoesNotExist:
+            # 닉네임 중복 방지를 위해 고유한 닉네임 생성
+            base_nickname = user.username or sociallogin.account.extra_data.get('name', 'SocialUser')
+            nickname = base_nickname
+            counter = 1
+            
+            # 닉네임이 중복되면 숫자를 붙여서 고유하게 만들기
+            while UserProfile.objects.filter(nickname=nickname).exists():
+                nickname = f"{base_nickname}{counter}"
+                counter += 1
+            
             UserProfile.objects.create(
                 user=user,
-                nickname=user.username or sociallogin.account.extra_data.get('name', 'Social User'),
+                nickname=nickname,
                 user_gender=None,
                 user_age=None
             )
