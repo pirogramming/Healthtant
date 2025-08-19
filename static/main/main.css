@@ -1,4 +1,6 @@
-
+.status-bar {
+    height: 10px;
+}
 
 .view {
     height:1%;
@@ -319,5 +321,41 @@
     z-index: 1;
 }
 
-/* 고정 크기 설정 - 반응형 제거 */
-/* 모든 화면 크기에서 동일한 고정 크기 유지 */
+h2{
+    font-family: "Satoshi", Helvetica;
+    font-size: 20px;
+    font-weight: 700;
+    color: #2c3e50;
+    line-height: 1.2;
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+.username-highlight {
+    color: var(--main);
+    font-weight: 800;
+}
+
+.about-healthtant {
+    padding: 32px 20px;
+    text-align: center;
+    margin: 20px;
+    border-top: 1px solid #e0e0e0;
+    padding-top: 40px;
+  }
+  
+  .about-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #56AAB2;
+    margin-bottom: 12px;
+  }
+  
+  .about-text {
+    font-size: 14px;
+    font-weight: 400;
+    color: #444;
+    line-height: 1.5;
+    text-align: left;
+  }
+  
