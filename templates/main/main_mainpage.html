@@ -80,7 +80,7 @@ h2 {
     <!-- 추천 제품 롤링배너 영역 -->
     <section class="featured-container">
       <div class="main-text">
-        <h2><span class="username-highlight">{{ user.username | default:"사용자" }}</span>님을 위한 추천</h2>
+        <h2><span class="username-highlight">{{ user.profile.nickname | default:"사용자" }}</span>님을 위한 추천</h2>
       </div>
       {% if foods %}
         <div class="rolling-banner-container">
