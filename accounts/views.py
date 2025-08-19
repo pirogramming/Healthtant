@@ -93,10 +93,18 @@ def signup(request):
                 return JsonResponse({"error": "이미 존재하는 닉네임입니다."}, status=400)
 
             user = User.objects.create_user(username=username, email=email, password=password)
-            profile = user.profile
-            profile.nickname = nickname
-            profile.user_gender = gender
-            profile.user_age = age
+            profile, created = UserProfile.objects.get_or_create(
+                user=user,
+                defaults={
+                    'nickname': nickname,
+                    'user_gender': gender,
+                    'user_age': age
+                }
+            )
+            if not created:
+                profile.nickname = nickname
+                profile.user_gender = gender
+                profile.user_age = age
 
             if request.FILES.get("profile_image"):
                 image_url = _save_image_and_get_url(request.FILES["profile_image"], user.id)
