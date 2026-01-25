@@ -20,7 +20,7 @@
 
 <br>
 
-### **헬스턴트 url : [https://healthtant.com/](https://healthtant.com/)**
+### **헬스턴트 url : [https://healthtant.com/](https://healthtant.com/)** (현재 서버를 정지한 상태입니다.)
 
 <br>
 <br>
